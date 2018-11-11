@@ -1,9 +1,15 @@
 import copy
 
 class Literal:
-	def __init__(self, index, sign=False):
+	def __init__(self, index, sign=True):
 		self.index = index
 		self.sign = sign
+
+	def __str__(self):
+		s = ""
+		if not self.sign:
+			s += "neg "
+		return s + str(self.index)
 
 	def __eq__(self, other):
 		if self.index == other.index and self.sign==other.sign:
@@ -25,8 +31,8 @@ class Clause:
 		self.satisfied = False
 
 	#number of literals in clause
-	def c_size(self):
-		return self.size
+	def __iter__(self):
+		return self
 
 	#add literal to clause
 	def addLiteral(self, literal):
@@ -41,9 +47,6 @@ class Clause:
 			self.literals.append(l)
 			self.size += 1
 		return self
-
-	def is_satisfied(self):
-		return self.satisfied
 
 	#return all literals in the clause that have not been excluded
 	def nonExcludedLiterals(self):
@@ -60,18 +63,17 @@ class Clause:
 				if l.literal.sign == literal.sign:
 					l.satisfied = True
 					self.satisfied = True
-					return self
 				else:
 					l.excluded = True
-					return self
+		return self
 
 # TESTING
 # c1 = Clause()
 # c1.addLiterals([Literal(0, False), Literal(1, True)])
 # print(c1.c_size())
-# print(c1.is_satisfied())
+# print(c1.satisfied)
 # c1.satisfy(Literal(0, False))
-# print(c1.is_satisfied())
+# print(c1.satisfied)
 # print(Literal(0, False) == Literal(0, True))
 
 
@@ -82,11 +84,29 @@ class Graph:
 			self.literal = literal
 			self.clause = clause
 			self.conflict = True
+		def __str__(self):
+			if self.conflict:
+				s = "K: C" + self.clause
+			else:
+				s = str(self.literal) + "@" + self.level
+				if clause != None:
+					s += ": C" + self.clause 
+			return s
 
 	#initialize graph
 	def __init__(self):
 		self.size = 0
 		self.edges = {}
+
+	def __str__(self):
+		s = ""
+		for i in self.edges:
+			s += str(i) + " : "
+			for j in self.edges[i]:
+				s += str(j)
+				s += "; "
+			s += "\n"
+
 
 	def allNodes(self):
 		nodes = []
@@ -124,41 +144,62 @@ class Graph:
 					nodes.append(i)
 
 #TESTING
-g = Graph()
-print(g.allNodes())
-node1 = Graph.Node(Literal(1,True), 2)
-g.addNode(node1)
-print(g.allNodes())
-test = g.getNode(Literal(1,True))
-node2 = Graph.Node(Literal(2), 2)
-g.addNode(node2)
-g.addEdge(node1, node2)
-print(g.is_connected(node1, node2))
-print(g.is_connected(node2, node1))
+# g = Graph()
+# print(g.allNodes())
+# node1 = Graph.Node(Literal(1,True), 2)
+# g.addNode(node1)
+# print(g.allNodes())
+# test = g.getNode(Literal(1,True))
+# node2 = Graph.Node(Literal(2), 2)
+# g.addNode(node2)
+# g.addEdge(node1, node2)
+# print(g.is_connected(node1, node2))
+# print(g.is_connected(node2, node1))
 
 
 original_clause_database = []
 clause_database = []
 unsatisfied_clauses = []
+g = Graph()
 
 #Generate Database
 num_literals = 8
-c1 = Clause().addLiterals([Literal(1), Literal(2)])
-c2 = Clause().addLiteral(Literal(1, False))
-original_clause_database.extend((c1, c2))
+c1 = Clause().addLiterals([Literal(1, False), Literal(2, False), Literal(4, False)])
+c2 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(3, False)])
+c3 = Clause().addLiterals([Literal(3), Literal(4, False)])
+c4 = Clause().addLiterals([Literal(4), Literal(5), Literal(6)])
+c5 = Clause().addLiterals([Literal(5, False), Literal(7)])
+c6 = Clause().addLiterals([Literal(6, False), Literal(7), Literal(8, False)])
+original_clause_database.extend((c1, c2, c3, c4, c5, c6))
 clause_database = copy.deepcopy(original_clause_database)
+level = 1
 # c1 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(4, False)])
 # c2 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(3, False)])
 # c3 = Clause().addLiterals([Literal(3, False), Literal(4, False)])
 
 
-def conflict_check():
+def print_database():
+	print("Clause Database:")
+	for c in clause_database:
+		s = ""
+		for l in (c.literals):
+			s += str(l.literal)
+			s += " or "
+		print(s[0:len(s)-4])
+	print()
+
+def print_decided():
+	print("Solution:")
+	for i in decided:
+		print(str(i))
+
+def conflict():
 	for i in clause_database:
-		if conflict(i):
+		if conflict_check(i):
 			#TO DO: create conflict!
 			return False
 
-def conflict(clause):
+def conflict_check(clause):
 	if not clause.satisfied and clause.nonExcludedLiterals() == 0:
 		return False
 	else:
@@ -167,24 +208,62 @@ def conflict(clause):
 def finished():
 	finished = True
 	for i in clause_database:
-		if i.satisfied = False:
+		if not i.satisfied:
 			finished = False
 	return finished
 
 
 
 #decide literal l
-def decide(l, level, clause=None):
+def decide(level, l, clause=None):
+	print("in decide")
+	print(str(l))
 	g.addNode(Graph.Node(l, level, clause))
+	#find literal and satisfy or excluded each instance
 	for c in clause_database:
 		c.satisfy(l)
 
+print_database()
+while not finished():
+	#TO DO: add conflict, restart graph and clauses
+	decided = []
+	while not conflict():
+		#Propogate: Decide any singular clauses, then repeat check one last time
+		new_decide = True
+		while new_decide:
+			new_decide = False 
+			for i in range(0, len(clause_database)):
+				c = clause_database[i]
+				if not c.satisfied:
+					if len(c.nonExcludedLiterals()) == 1:
+						l = c.nonExcludedLiterals()
+						decide(level, l[0].literal, i+1)
+						decided.append(l[0].literal)
+						new_decide = True
 
-#Propogate: Check for singular clauses
-for c in clause_database:
-	if len(c.nonExcludedLiterals()) == 1:
-		l = c.nonExcludedLiterals()
-		decide(l)
+		#is there a conflict?
+		if conflict():
+			print("Conflict")
+			break;
+		if finished():
+			break;
 
+		#if nothing left to do, let user decide the next node
+		num = int(input("Enter the number of a node"))
+		sign = input("Enter F to negate the literal, T if not")
+		if sign == "T":
+			sign = True
+		else:
+			sign = False
+		level += 1
+		l = Literal(num, sign)
+		decided.append(l)
+		print(str(g))
+		decide(level, l)
+
+#Solution exists
+print("You solved it!")
+print_decided()
+exit()
 
 
