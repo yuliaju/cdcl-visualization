@@ -26,7 +26,7 @@ class Clause:
 			self.excluded = False
 
 		def __str__(self):
-			s = str(self.literal)
+			s = "cl: " + str(self.literal)
 			if self.satisfied:
 				s += " sat"
 			if self.excluded:
@@ -111,6 +111,12 @@ class Graph:
 				if self.clause is not None:
 					s += ": C" + str(self.clause)
 			return s
+		# def __eq__(self, other):
+		# 	if self.conflict == True:
+		# 		return other.conflict
+		# 	if other.conflict == True:
+		# 		return self.conflict
+		# 	return self.literal == other.literal
 
 	#initialize graph
 	def __init__(self):
@@ -129,32 +135,40 @@ class Graph:
 			s += "\n"
 		return s
 
-	def allNodes(self):
-		nodes = []
-		for i in self.edges:
-			nodes.append(i)
-		return nodes
-
 	#add node to graph
 	def addNode(self, node):
 		self.edges[node] = []
 		self.size += 1
 		return self
 
+	def allNodes(self):
+		nodes = []
+		for i in self.edges:
+			nodes.append(i)
+		return nodes
+
 	#return node corresponding to literal, if it exists. False if not.
 	def getNode(self, literal):
 		for i in self.allNodes():
-			if i.literal == literal:
+			if i.literal.index == literal.index:
+				return i
+		return False
+
+	def getConflict(self):
+		for i in self.allNodes():
+			if i.conflict:
+				return i
+		return False
+
+	def recentDecision(self, level):
+		for i in self.allNodes():
+			if i.level == level and i.clause is None:
 				return i
 		return False
 
 	#add edge from node1 to node2
 	def addEdge(self, node1, node2):
-		if node1 not in self.edges:
-			self.edges[node1] = node2
-		else:
-			self.edges[node1].append(node2)
-		return self
+		return self.edges[node1].append(node2)
 
 	#Does node 1 point to node 2?
 	def is_connected(self, node1, node2):
@@ -202,21 +216,27 @@ level = 0
 def print_database():
 	print("Clause Database:")
 	for c in clause_database:
-		s = ""
-		for l in (c.literals):
-			s += str(l.literal)
-			s += " or "
-		print(s[0:len(s)-4])
-	print()
+		print(str(c))
 
 def print_decided():
 	print("Solution:")
 	for i in decided:
 		print(str(i))
 
+def edges(newnode, clause, l):
+	lits = clause_database[clause-1].literals
+	#for all other literals in the clause
+	for m in lits:
+		#no self edges
+		if m.literal is not l:
+			n = g.getNode(m.literal)
+			if n:
+				g.addEdge(n, newnode)
+			else:
+				print("problem")
+
 #if conflict, return clause number. Else return False
 def conflict():
-	print("conflict?")
 	for i in range(len(clause_database)):
 		c = clause_database[i]
 		if (not c.satisfied) and (len(c.nonExcludedLiterals()) == 0):
@@ -224,7 +244,12 @@ def conflict():
 	return False
 
 def solve_conflict(clause):
-	g.addNode(Graph.Node(None, None, 2, True))
+	print_database()
+	g.addNode(Graph.Node(None, None, clause, True))
+	newnode = g.getConflict()
+	edges(newnode, clause, None)
+	print(level)
+	print(g.recentDecision(level))
 
 def finished():
 	finished = True
@@ -235,16 +260,15 @@ def finished():
 
 
 
+
 #decide literal l
 def decide(level, l, clause=None):
 	g.addNode(Graph.Node(l, level, clause))
 	newnode = g.getNode(l)
 	#add edges
 	if clause is not None:
-		for l in clause_database[clause-1].literals:
-			n = g.getNode(l.literal)
-			g.addEdge(n, newnode)
-	#find literal and satisfy or excluded each instance
+		edges(newnode, clause, l)	
+	#find literal in all clauses and satisfy or excluded each instance
 	for c in clause_database:
 		c.satisfy(l)
 
@@ -277,6 +301,7 @@ while not finished():
 		if finished():
 			break;
 
+		print_database()
 		print(str(g))
 		#if nothing left to do, let user decide the next node
 		num = int(input("Enter the number of a node"))
