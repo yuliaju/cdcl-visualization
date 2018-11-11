@@ -174,12 +174,17 @@ class Graph:
 	def is_connected(self, node1, node2):
 		return node2 in self.edges[node1]
 
-	def points_to_conflict():
-		nodes = []
-		for i in edges:
-			for j in edges[i]:
-				if j.conflict:
-					nodes.append(i)
+	def paths_to_conflict(self, node):
+		paths = []
+		for i in edges[node]:
+			paths.append(rec_path([i]))
+
+	def rec_path(self, path):
+		curr = path[len(path)-1]
+		for i in edges[curr]:
+			if i.conflict == True:
+				return path
+			rec_path(path.append(i))
 
 #TESTING
 # g = Graph()
