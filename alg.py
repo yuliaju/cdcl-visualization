@@ -25,6 +25,14 @@ class Clause:
 			self.satisfied = False
 			self.excluded = False
 
+		def __str__(self):
+			s = str(self.literal)
+			if self.satisfied:
+				s += " sat"
+			if self.excluded:
+				s += " ex"
+			return s
+
 	def __init__(self):
 		self.literals = []
 		self.size = 0
@@ -33,6 +41,17 @@ class Clause:
 	#number of literals in clause
 	def __iter__(self):
 		return self
+
+	def __str__(self):
+		s = ""
+		for i in self.literals:
+			s += str(i)
+			s += (" or ")
+		s = s[0:len(s)-4]
+		if self.satisfied:
+			s += " SAT!!"
+		return s
+
 
 	#add literal to clause
 	def addLiteral(self, literal):
@@ -70,7 +89,7 @@ class Clause:
 # TESTING
 # c1 = Clause()
 # c1.addLiterals([Literal(0, False), Literal(1, True)])
-# print(c1.c_size())
+# print(c1.size)
 # print(c1.satisfied)
 # c1.satisfy(Literal(0, False))
 # print(c1.satisfied)
@@ -83,14 +102,14 @@ class Graph:
 			self.level = level
 			self.literal = literal
 			self.clause = clause
-			self.conflict = True
+			self.conflict = conflict
 		def __str__(self):
 			if self.conflict:
-				s = "K: C" + self.clause
+				s = "K: C" + str(self.clause)
 			else:
-				s = str(self.literal) + "@" + self.level
-				if clause != None:
-					s += ": C" + self.clause 
+				s = str(self.literal) + "@" + str(self.level)
+				if self.clause is not None:
+					s += ": C" + str(self.clause)
 			return s
 
 	#initialize graph
@@ -100,13 +119,15 @@ class Graph:
 
 	def __str__(self):
 		s = ""
+		if self.size == 0:
+			return "empty"
 		for i in self.edges:
 			s += str(i) + " : "
 			for j in self.edges[i]:
 				s += str(j)
 				s += "; "
 			s += "\n"
-
+		return s
 
 	def allNodes(self):
 		nodes = []
@@ -129,7 +150,10 @@ class Graph:
 
 	#add edge from node1 to node2
 	def addEdge(self, node1, node2):
-		self.edges[node1].append(node2)
+		if node1 not in self.edges:
+			self.edges[node1] = node2
+		else:
+			self.edges[node1].append(node2)
 		return self
 
 	#Does node 1 point to node 2?
@@ -172,10 +196,7 @@ c5 = Clause().addLiterals([Literal(5, False), Literal(7)])
 c6 = Clause().addLiterals([Literal(6, False), Literal(7), Literal(8, False)])
 original_clause_database.extend((c1, c2, c3, c4, c5, c6))
 clause_database = copy.deepcopy(original_clause_database)
-level = 1
-# c1 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(4, False)])
-# c2 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(3, False)])
-# c3 = Clause().addLiterals([Literal(3, False), Literal(4, False)])
+level = 0
 
 
 def print_database():
@@ -193,17 +214,17 @@ def print_decided():
 	for i in decided:
 		print(str(i))
 
+#if conflict, return clause number. Else return False
 def conflict():
-	for i in clause_database:
-		if conflict_check(i):
-			#TO DO: create conflict!
-			return False
+	print("conflict?")
+	for i in range(len(clause_database)):
+		c = clause_database[i]
+		if (not c.satisfied) and (len(c.nonExcludedLiterals()) == 0):
+			return i + 1
+	return False
 
-def conflict_check(clause):
-	if not clause.satisfied and clause.nonExcludedLiterals() == 0:
-		return False
-	else:
-		return True
+def solve_conflict(clause):
+	g.addNode(Graph.Node(None, None, 2, True))
 
 def finished():
 	finished = True
@@ -216,12 +237,17 @@ def finished():
 
 #decide literal l
 def decide(level, l, clause=None):
-	print("in decide")
-	print(str(l))
 	g.addNode(Graph.Node(l, level, clause))
+	newnode = g.getNode(l)
+	#add edges
+	if clause is not None:
+		for l in clause_database[clause-1].literals:
+			n = g.getNode(l.literal)
+			g.addEdge(n, newnode)
 	#find literal and satisfy or excluded each instance
 	for c in clause_database:
 		c.satisfy(l)
+
 
 print_database()
 while not finished():
@@ -232,7 +258,7 @@ while not finished():
 		new_decide = True
 		while new_decide:
 			new_decide = False 
-			for i in range(0, len(clause_database)):
+			for i in range(len(clause_database)):
 				c = clause_database[i]
 				if not c.satisfied:
 					if len(c.nonExcludedLiterals()) == 1:
@@ -242,12 +268,16 @@ while not finished():
 						new_decide = True
 
 		#is there a conflict?
-		if conflict():
+		a = conflict()
+		if a is not False:
 			print("Conflict")
-			break;
+			solve_conflict(a);
+			print(str(g))
+			exit(0);
 		if finished():
 			break;
 
+		print(str(g))
 		#if nothing left to do, let user decide the next node
 		num = int(input("Enter the number of a node"))
 		sign = input("Enter F to negate the literal, T if not")
@@ -258,7 +288,6 @@ while not finished():
 		level += 1
 		l = Literal(num, sign)
 		decided.append(l)
-		print(str(g))
 		decide(level, l)
 
 #Solution exists
