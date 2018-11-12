@@ -1,90 +1,7 @@
 import copy
-
-class Literal:
-	def __init__(self, index, sign=True):
-		self.index = index
-		self.sign = sign
-
-	def __str__(self):
-		s = ""
-		if not self.sign:
-			s += "neg "
-		return s + str(self.index)
-
-	def __eq__(self, other):
-		if self.index == other.index and self.sign==other.sign:
-			return True
-		else:
-			return False
-
-class Clause:
-	#literal within a clause
-	class ClauseLiteral:
-		def __init__(self, literal):
-			self.literal = literal
-			self.satisfied = False
-			self.excluded = False
-
-		def __str__(self):
-			s = "cl: " + str(self.literal)
-			if self.satisfied:
-				s += " sat"
-			if self.excluded:
-				s += " ex"
-			return s
-
-	def __init__(self):
-		self.literals = []
-		self.size = 0
-		self.satisfied = False
-
-	#number of literals in clause
-	def __iter__(self):
-		return self
-
-	def __str__(self):
-		s = ""
-		for i in self.literals:
-			s += str(i)
-			s += (" or ")
-		s = s[0:len(s)-4]
-		if self.satisfied:
-			s += " SAT!!"
-		return s
-
-
-	#add literal to clause
-	def addLiteral(self, literal):
-		l = Clause.ClauseLiteral(literal)
-		self.literals.append(l)
-		self.size += 1
-		return self
-
-	def addLiterals(self, literals):
-		for i in literals:
-			l = Clause.ClauseLiteral(i)
-			self.literals.append(l)
-			self.size += 1
-		return self
-
-	#return all literals in the clause that have not been excluded
-	def nonExcludedLiterals(self):
-		ls = []
-		for l in self.literals:
-			if l.excluded == False:
-				ls.append(l)
-		return ls
-
-	#satisfy literal in clause if it exists
-	def satisfy(self, literal):
-		for l in self.nonExcludedLiterals():
-			if l.literal.index == literal.index:
-				if l.literal.sign == literal.sign:
-					l.satisfied = True
-					self.satisfied = True
-				else:
-					l.excluded = True
-		return self
+import node_graph
+import clause
+import uip
 
 # TESTING
 # c1 = Clause()
@@ -96,95 +13,6 @@ class Clause:
 # print(Literal(0, False) == Literal(0, True))
 
 
-class Graph:
-	class Node:
-		def __init__(self, literal=None, level=None, clause=None, conflict=False):
-			self.level = level
-			self.literal = literal
-			self.clause = clause
-			self.conflict = conflict
-		def __str__(self):
-			if self.conflict:
-				s = "K: C" + str(self.clause)
-			else:
-				s = str(self.literal) + "@" + str(self.level)
-				if self.clause is not None:
-					s += ": C" + str(self.clause)
-			return s
-		# def __eq__(self, other):
-		# 	if self.conflict == True:
-		# 		return other.conflict
-		# 	if other.conflict == True:
-		# 		return self.conflict
-		# 	return self.literal == other.literal
-
-	#initialize graph
-	def __init__(self):
-		self.size = 0
-		self.edges = {}
-
-	def __str__(self):
-		s = ""
-		if self.size == 0:
-			return "empty"
-		for i in self.edges:
-			s += str(i) + " : "
-			for j in self.edges[i]:
-				s += str(j)
-				s += "; "
-			s += "\n"
-		return s
-
-	#add node to graph
-	def addNode(self, node):
-		self.edges[node] = []
-		self.size += 1
-		return self
-
-	def allNodes(self):
-		nodes = []
-		for i in self.edges:
-			nodes.append(i)
-		return nodes
-
-	#return node corresponding to literal, if it exists. False if not.
-	def getNode(self, literal):
-		for i in self.allNodes():
-			if i.literal.index == literal.index:
-				return i
-		return False
-
-	def getConflict(self):
-		for i in self.allNodes():
-			if i.conflict:
-				return i
-		return False
-
-	def recentDecision(self, level):
-		for i in self.allNodes():
-			if i.level == level and i.clause is None:
-				return i
-		return False
-
-	#add edge from node1 to node2
-	def addEdge(self, node1, node2):
-		return self.edges[node1].append(node2)
-
-	#Does node 1 point to node 2?
-	def is_connected(self, node1, node2):
-		return node2 in self.edges[node1]
-
-	def paths_to_conflict(self, node):
-		paths = []
-		for i in edges[node]:
-			paths.append(rec_path([i]))
-
-	def rec_path(self, path):
-		curr = path[len(path)-1]
-		for i in edges[curr]:
-			if i.conflict == True:
-				return path
-			rec_path(path.append(i))
 
 #TESTING
 # g = Graph()
@@ -203,16 +31,16 @@ class Graph:
 original_clause_database = []
 clause_database = []
 unsatisfied_clauses = []
-g = Graph()
+g = node_graph.Graph()
 
 #Generate Database
 num_literals = 8
-c1 = Clause().addLiterals([Literal(1, False), Literal(2, False), Literal(4, False)])
-c2 = Clause().addLiterals([Literal(1, False), Literal(2), Literal(3, False)])
-c3 = Clause().addLiterals([Literal(3), Literal(4, False)])
-c4 = Clause().addLiterals([Literal(4), Literal(5), Literal(6)])
-c5 = Clause().addLiterals([Literal(5, False), Literal(7)])
-c6 = Clause().addLiterals([Literal(6, False), Literal(7), Literal(8, False)])
+c1 = clause.Clause().addLiterals([clause.Literal(1, False), clause.Literal(2, False), clause.Literal(4, False)])
+c2 = clause.Clause().addLiterals([clause.Literal(1, False), clause.Literal(2), clause.Literal(3, False)])
+c3 = clause.Clause().addLiterals([clause.Literal(3), clause.Literal(4, False)])
+c4 = clause.Clause().addLiterals([clause.Literal(4), clause.Literal(5), clause.Literal(6)])
+c5 = clause.Clause().addLiterals([clause.Literal(5, False), clause.Literal(7)])
+c6 = clause.Clause().addLiterals([clause.Literal(6, False), clause.Literal(7), clause.Literal(8, False)])
 original_clause_database.extend((c1, c2, c3, c4, c5, c6))
 clause_database = copy.deepcopy(original_clause_database)
 level = 0
@@ -250,11 +78,18 @@ def conflict():
 
 def solve_conflict(clause):
 	print_database()
-	g.addNode(Graph.Node(None, None, clause, True))
+	g.addNode(node_graph.Graph.Node(None, None, clause, True))
 	newnode = g.getConflict()
 	edges(newnode, clause, None)
+	recentDecision = g.recentDecision(level)
 	print(level)
 	print(g.recentDecision(level))
+	if recentDecision == False:
+		print("Problem! No recent decision")
+	else:
+		uips = g.uips(recentDecision)
+		for uip in uips:
+			print(str(uip))
 
 def finished():
 	finished = True
@@ -268,7 +103,7 @@ def finished():
 
 #decide literal l
 def decide(level, l, clause=None):
-	g.addNode(Graph.Node(l, level, clause))
+	g.addNode(node_graph.Graph.Node(l, level, clause))
 	newnode = g.getNode(l)
 	#add edges
 	if clause is not None:
@@ -316,7 +151,7 @@ while not finished():
 		else:
 			sign = False
 		level += 1
-		l = Literal(num, sign)
+		l = clause.Literal(num, sign)
 		decided.append(l)
 		decide(level, l)
 
