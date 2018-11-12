@@ -76,6 +76,29 @@ class Graph:
 	def is_connected(self, node1, node2):
 		return node2 in self.edges[node1]
 
+	#Distance from node to concflit
+	def dist_to_conflict(self, node):
+		return self.dist([node], 0)
+
+	def dist(self, nodes, level):
+		new_nodes = []
+		for node in nodes:
+			if node.conflict == True:
+				return level
+			for adj in self.edges[node]:
+				new_nodes.append(adj)
+		return self.dist(new_nodes, level+1)
+
+	# Find closest node closest to the conflict
+	def closest(self, nodes):
+		closest = nodes[0]
+		closest_dist = self.dist_to_conflict(nodes[0])
+		for i in range(1, len(nodes)):
+			if self.dist_to_conflict(nodes[i]) < closest_dist:
+				closest_dist = self.dist_to_conflict(nodes[i])
+				closest = nodes[i]
+		return closest
+
 	# Return list of lists of paths from node to conflict
 	def rec_path(self, paths):
 		#for all (possibly incomplete) paths in the array
@@ -104,6 +127,11 @@ class Graph:
 		for path in paths:
 			nodes = [x for x in nodes if x in path and x in nodes and x.conflict == False]
 		return nodes
+
+	#Finds closest uip
+	def uip(self, node):
+		uips = self.uips(node)
+		return self.closest(uips)
 
 
 

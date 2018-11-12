@@ -1,6 +1,7 @@
 import copy
 import graph
 import clause
+import util
 
 
 original_clause_database = []
@@ -20,17 +21,7 @@ original_clause_database.extend((c1, c2, c3, c4, c5, c6))
 clause_database = copy.deepcopy(original_clause_database)
 level = 0
 
-
-def print_database():
-	print("Clause Database:")
-	for c in clause_database:
-		print(str(c))
-
-def print_decided():
-	print("Solution:")
-	for i in decided:
-		print(str(i))
-
+# Update edges based on new decision
 def edges(newnode, clause, l):
 	lits = clause_database[clause-1].literals
 	#for all other literals in the clause
@@ -43,39 +34,6 @@ def edges(newnode, clause, l):
 			else:
 				print("problem")
 
-#if conflict, return clause number. Else return False
-def conflict():
-	for i in range(len(clause_database)):
-		c = clause_database[i]
-		if (not c.satisfied) and (len(c.nonExcludedLiterals()) == 0):
-			return i + 1
-	return False
-
-def solve_conflict(clause):
-	print_database()
-	g.addNode(graph.Graph.Node(None, None, clause, True))
-	newnode = g.getConflict()
-	edges(newnode, clause, None)
-	recentDecision = g.recentDecision(level)
-	print(level)
-	print(g.recentDecision(level))
-	if recentDecision == False:
-		print("Problem! No recent decision")
-	else:
-		uips = g.uips(recentDecision)
-		for uip in uips:
-			print(str(uip))
-
-def finished():
-	finished = True
-	for i in clause_database:
-		if not i.satisfied:
-			finished = False
-	return finished
-
-
-
-
 #decide literal l
 def decide(level, l, clause=None):
 	g.addNode(graph.Graph.Node(l, level, clause))
@@ -87,8 +45,42 @@ def decide(level, l, clause=None):
 	for c in clause_database:
 		c.satisfy(l)
 
+#if conflict, return clause number. Else return False
+def conflict():
+	for i in range(len(clause_database)):
+		c = clause_database[i]
+		if (not c.satisfied) and (len(c.nonExcludedLiterals()) == 0):
+			return i + 1
+	return False
 
-print_database()
+def solve_conflict(clause):
+	util.print_database(clause_database)
+	g.addNode(graph.Graph.Node(None, None, clause, True))
+	newnode = g.getConflict()
+	edges(newnode, clause, None)
+	recentDecision = g.recentDecision(level)
+	print(level)
+	print(g.recentDecision(level))
+	if recentDecision == False:
+		print("Problem! No recent decision")
+	else:
+		uips = g.uips(recentDecision)
+		print("UIPs:")
+		for uip in uips:
+			print(str(uip))
+		uip = g.uip(recentDecision)
+		print("UIP: " + str(uip))
+
+#return true if all clauses in database are satisfied, false if not
+def finished():
+	finished = True
+	for i in clause_database:
+		if not i.satisfied:
+			finished = False
+	return finished
+
+
+util.print_database(clause_database)
 while not finished():
 	#TO DO: add conflict, restart graph and clauses
 	decided = []
@@ -113,11 +105,12 @@ while not finished():
 			solve_conflict(a);
 			print(str(g))
 			exit(0);
+
+		#are all clauses satisfied?
 		if finished():
 			break;
 
-		print_database()
-		print(str(g))
+		util.print_database(clause_database)
 		#if nothing left to do, let user decide the next node
 		num = int(input("Enter the number of a node"))
 		sign = input("Enter F to negate the literal, T if not")
@@ -132,7 +125,7 @@ while not finished():
 
 #Solution exists
 print("You solved it!")
-print_decided()
+util.print_decided(decided)
 exit()
 
 
