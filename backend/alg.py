@@ -1,37 +1,12 @@
 import copy
-import node_graph
+import graph
 import clause
-import uip
-
-# TESTING
-# c1 = Clause()
-# c1.addLiterals([Literal(0, False), Literal(1, True)])
-# print(c1.size)
-# print(c1.satisfied)
-# c1.satisfy(Literal(0, False))
-# print(c1.satisfied)
-# print(Literal(0, False) == Literal(0, True))
-
-
-
-#TESTING
-# g = Graph()
-# print(g.allNodes())
-# node1 = Graph.Node(Literal(1,True), 2)
-# g.addNode(node1)
-# print(g.allNodes())
-# test = g.getNode(Literal(1,True))
-# node2 = Graph.Node(Literal(2), 2)
-# g.addNode(node2)
-# g.addEdge(node1, node2)
-# print(g.is_connected(node1, node2))
-# print(g.is_connected(node2, node1))
 
 
 original_clause_database = []
 clause_database = []
 unsatisfied_clauses = []
-g = node_graph.Graph()
+g = graph.Graph()
 
 #Generate Database
 num_literals = 8
@@ -78,7 +53,7 @@ def conflict():
 
 def solve_conflict(clause):
 	print_database()
-	g.addNode(node_graph.Graph.Node(None, None, clause, True))
+	g.addNode(graph.Graph.Node(None, None, clause, True))
 	newnode = g.getConflict()
 	edges(newnode, clause, None)
 	recentDecision = g.recentDecision(level)
@@ -103,7 +78,7 @@ def finished():
 
 #decide literal l
 def decide(level, l, clause=None):
-	g.addNode(node_graph.Graph.Node(l, level, clause))
+	g.addNode(graph.Graph.Node(l, level, clause))
 	newnode = g.getNode(l)
 	#add edges
 	if clause is not None:
