@@ -7,7 +7,7 @@ class Clause_db:
 		self.clauses = []
 		self.len = 0
 		# should implement this
-		# num_literals = 0
+		self.num_literals = 8
 
 	def __str__(self):
 		s = "Clause Database:"

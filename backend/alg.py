@@ -24,7 +24,6 @@ def solve_conflict(cl):
 	print(clause_db.getClause(cl))
 	g.addNode(graph.Graph.Node(None, None, clause_db.getClause(cl), cl, True))
 	newnode = g.getConflict()
-	# IS THIS RIGHT???
 	g.new_edges(newnode, clause_db.getClause(cl), None)
 	print(str(g))
 	recentDecision = g.recentDecision(level)
@@ -58,7 +57,7 @@ while not finished:
 	clause_db = copy.deepcopy(original_clause_db)
 	level = 0
 
-	while not conflict:
+	while not conflict and not finished:
 		conflict = False
 		#Propogate: Decide any singular clauses, then repeat check one last time
 		new_decide = True
@@ -87,13 +86,31 @@ while not finished:
 			solve_conflict(clause_db.is_conflict())
 
 		#if not finished and not conflict, let user decide the next decision node
+		#TO DO: can't accept decided literal!!
 		else:
-			num = int(input("Enter the number of a node"))
-			sign = input("Enter F to negate the literal, T if not")
-			if sign == "T":
-				sign = True
-			else:
-				sign = False
+			ok = False
+			while not ok:
+				ok=True
+				num = int(input("Enter the number of a node"))
+				#check number:
+				for d in decided:
+					if d.index == num:
+						print("This node has already been decided. Please pick another.")
+						ok = False
+				if num > clause_db.num_literals or num <= 0:
+					print("No literal of this number exists. Please pick another.")
+					ok = False
+				if ok:
+					sign = input("Enter F to negate the literal, T if not")
+					#check sign
+					if sign == "T":
+						sign = True
+					elif sign == "F":
+						sign = False
+					else:
+						print("Not a valid sign. Please try again.")
+						ok = False
+
 			level += 1
 			l = clause.Literal(num, sign)
 			decided.append(l)
