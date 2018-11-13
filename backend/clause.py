@@ -91,12 +91,3 @@ class Clause:
 				else:
 					l.excluded = True
 		return self
-
-# TESTING
-# c1 = Clause()
-# c1.addLiterals([Literal(0, False), Literal(1, True)])
-# print(c1.size)
-# print(c1.satisfied)
-# c1.satisfy(Literal(0, False))
-# print(c1.satisfied)
-# print(Literal(0, False) == Literal(0, True))

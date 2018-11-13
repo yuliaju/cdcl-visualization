@@ -5,9 +5,6 @@ import util
 import clause_db
 
 
-
-
-
 #Generate Database
 c1 = clause.Clause().addLiterals([clause.Literal(1, False), clause.Literal(2, False), clause.Literal(4, False)])
 c2 = clause.Clause().addLiterals([clause.Literal(1, False), clause.Literal(2), clause.Literal(3, False)])
@@ -32,8 +29,12 @@ def solve_conflict(cl):
 	else:
 		uips = g.uips(recentDecision)
 		uip = g.uip(recentDecision)
+		# cuts[0] is conflict side, cuts[1] is other side
 		cuts = g.cut(uip)
 		conflict_clause = clause.Clause().addLiterals(g.conflict_clause(cuts[0]))
+		# print(str(conflict_clause))
+		# print(type(conflict_clause))
+		backtrack_level = g.backtrack_level(conflict_clause)
 		print("UIPs:")
 		for uip in uips:
 			print(str(uip))	
@@ -42,21 +43,23 @@ def solve_conflict(cl):
 		for node in cuts[0]:
 			print(str(node))
 		print("Conflict Clause: " + str(conflict_clause))
+		print("Backtrack Level: " + str(backtrack_level))
 		original_clause_db.addClause(conflict_clause)
+		g.removeNodes(backtrack_level)
+		return g
 
 
 
-#TO DO: test copying
-print(str(original_clause_db))
 finished = False
+g = graph.Graph()
 while not finished:
 	conflict = False
 	#reset clause_db, g, decided, and level
-	g = graph.Graph()
-	decided = []
 	clause_db = copy.deepcopy(original_clause_db)
 	level = 0
-
+	# print(str(g.decided))
+	print(str(original_clause_db))
+	print(str(g))
 	while not conflict and not finished:
 		conflict = False
 		#Propogate: Decide any singular clauses, then repeat check one last time
@@ -71,7 +74,7 @@ while not finished:
 						l = c.nonExcludedLiterals()[0].literal
 						clause_db.decide_clauses(l)
 						g.decide_graph(level, l, i, clause_db.getClause(i))
-						decided.append(l)
+						g.decided.append(l)
 						new_decide = True
 
 		#are all clauses satisfied?
@@ -83,7 +86,7 @@ while not finished:
 			conflict = True
 			print("Graph: \n" + str(g))
 			print("Conflict")
-			solve_conflict(clause_db.is_conflict())
+			g = solve_conflict(clause_db.is_conflict())
 
 		#if not finished and not conflict, let user decide the next decision node
 		#TO DO: can't accept decided literal!!
@@ -98,7 +101,7 @@ while not finished:
 					if num > clause_db.num_literals or num <= 0:
 						print("No literal of this number exists. Please pick another.")
 						ok = False
-					for d in decided:
+					for d in g.decided:
 						if d.index == num:
 							print("This node has already been decided. Please pick another.")
 							ok = False
@@ -118,14 +121,14 @@ while not finished:
 
 			level += 1
 			l = clause.Literal(num, sign)
-			decided.append(l)
+			g.decided.append(l)
 			clause_db.decide_clauses(l)
 			g.decide_graph(level, l)
 			print(str(g))
 
 #Solution exists
 print("You solved it!")
-util.print_decided(decided)
+util.print_decided(g.decided)
 exit()
 
 

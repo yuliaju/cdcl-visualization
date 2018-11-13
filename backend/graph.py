@@ -1,4 +1,5 @@
 import clause
+import copy
 
 class Graph:
 	class Node:
@@ -27,6 +28,7 @@ class Graph:
 	def __init__(self):
 		self.size = 0
 		self.edges = {}
+		self.decided = []
 
 	def __str__(self):
 		s = "Graph: "
@@ -38,6 +40,10 @@ class Graph:
 				s += str(j)
 				s += "; "
 			s += "\n"
+		s += "Decided: "
+		for d in self.decided:
+			s += str(d) + ", "
+		s += "\n"
 		return s
 
 	#add node to graph
@@ -58,6 +64,33 @@ class Graph:
 			if i.literal.index == literal.index:
 				return i
 		return False
+
+	#remove all nodes above level
+	def removeNodes(self, level):
+		print(str(self))
+		dels = []
+		self.decided = []
+		con = self.getConflict()
+		if con is not False:
+			del self.edges[con]
+		#find nodes above level
+		for i in self.allNodes():
+			if i.level > level:
+				dels.append(i)
+			else:
+				print("here!")
+		#delete nodes from graph
+		for d in dels:
+			del self.edges[d]
+		#remove edges pointing towards them
+		for i in self.allNodes():
+			for d in dels:
+				if d in self.edges[i]:
+					self.edges[i].remove(d)
+		for i in self.allNodes():
+			self.decided.append(i.literal)
+		return self
+
 
 	def getConflict(self):
 		for i in self.allNodes():
@@ -155,13 +188,31 @@ class Graph:
 		for node in self.edges:
 			for adj in self.edges[node]:
 				if adj in conflict_cut and node not in conflict_cut and node.literal not in clause:
-					l = node.literal
+					l = copy.deepcopy(node.literal)
 					if l.sign:
 						l.sign = False
 					else:
 						l.sign = True
 					clause.append(l)
 		return clause
+
+	def backtrack_level(self, conflict_clause):
+		lowest = float("inf")
+		nodes = []
+		# print(type(conflict_clause.literals))
+		# print("beedo")
+		for lit in conflict_clause.literals:
+			# print(type(lit))
+			# print(type(lit.literal))
+			# print(type(self.getNode(lit.literal)))
+			if self.getNode(lit.literal) == False:
+				print("ehehehehe")
+			nodes.append(self.getNode(lit.literal))
+		for node in nodes:
+			if node.level < lowest:
+				lowest = node.level
+		return lowest
+
 
 	# Update edges based on new decision
 	def new_edges(self, newnode, clause, l):
@@ -185,19 +236,3 @@ class Graph:
 		if clause is not None:
 			self.new_edges(newnode, clause, l)	
 		return self
-
-
-
-
-#TESTING
-# g = Graph()
-# print(g.allNodes())
-# node1 = Graph.Node(Literal(1,True), 2)
-# g.addNode(node1)
-# print(g.allNodes())
-# test = g.getNode(Literal(1,True))
-# node2 = Graph.Node(Literal(2), 2)
-# g.addNode(node2)
-# g.addEdge(node1, node2)
-# print(g.is_connected(node1, node2))
-# print(g.is_connected(node2, node1))
