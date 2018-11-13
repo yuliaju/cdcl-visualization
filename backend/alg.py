@@ -91,14 +91,19 @@ while not finished:
 			ok = False
 			while not ok:
 				ok=True
-				num = int(input("Enter the number of a node"))
+				num = input("Enter the number of a node")
 				#check number:
-				for d in decided:
-					if d.index == num:
-						print("This node has already been decided. Please pick another.")
+				try:
+					num = int(num)
+					if num > clause_db.num_literals or num <= 0:
+						print("No literal of this number exists. Please pick another.")
 						ok = False
-				if num > clause_db.num_literals or num <= 0:
-					print("No literal of this number exists. Please pick another.")
+					for d in decided:
+						if d.index == num:
+							print("This node has already been decided. Please pick another.")
+							ok = False
+				except ValueError:
+					print("Please enter a number")
 					ok = False
 				if ok:
 					sign = input("Enter F to negate the literal, T if not")
