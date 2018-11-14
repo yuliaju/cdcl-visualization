@@ -1,0 +1,11 @@
+alg.py compute algorithm
+
+
+
+main.py flask file running webapp
+
+	-render (.html, graph = blah)
+
+main.js communicate with main.py
+
+.html 
