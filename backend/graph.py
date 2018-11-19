@@ -1,17 +1,21 @@
+import clause
+import copy
+
 class Graph:
 	class Node:
-		def __init__(self, literal=None, level=None, clause=None, conflict=False):
+		def __init__(self, literal=None, level=None, clause=None, clausenum=None, conflict=False):
 			self.level = level
 			self.literal = literal
 			self.clause = clause
+			self.clausenum = clausenum
 			self.conflict = conflict
 		def __str__(self):
 			if self.conflict:
-				s = "K: C" + str(self.clause)
+				s = "K: C" + str(self.clausenum)
 			else:
 				s = str(self.literal) + "@" + str(self.level)
 				if self.clause is not None:
-					s += ": C" + str(self.clause)
+					s += ": C" + str(self.clausenum)
 			return s
 		# def __eq__(self, other):
 		# 	if self.conflict == True:
@@ -24,9 +28,10 @@ class Graph:
 	def __init__(self):
 		self.size = 0
 		self.edges = {}
+		self.decided = []
 
 	def __str__(self):
-		s = ""
+		s = "Graph: "
 		if self.size == 0:
 			return "empty"
 		for i in self.edges:
@@ -35,6 +40,10 @@ class Graph:
 				s += str(j)
 				s += "; "
 			s += "\n"
+		s += "Decided: "
+		for d in self.decided:
+			s += str(d) + ", "
+		s += "\n"
 		return s
 
 	#add node to graph
@@ -55,6 +64,33 @@ class Graph:
 			if i.literal.index == literal.index:
 				return i
 		return False
+
+	#remove all nodes above level
+	def removeNodes(self, level):
+		print(str(self))
+		dels = []
+		self.decided = []
+		con = self.getConflict()
+		if con is not False:
+			del self.edges[con]
+		#find nodes above level
+		for i in self.allNodes():
+			if i.level > level:
+				dels.append(i)
+			else:
+				print("here!")
+		#delete nodes from graph
+		for d in dels:
+			del self.edges[d]
+		#remove edges pointing towards them
+		for i in self.allNodes():
+			for d in dels:
+				if d in self.edges[i]:
+					self.edges[i].remove(d)
+		for i in self.allNodes():
+			self.decided.append(i.literal)
+		return self
+
 
 	def getConflict(self):
 		for i in self.allNodes():
@@ -133,17 +169,70 @@ class Graph:
 		uips = self.uips(node)
 		return self.closest(uips)
 
+	#given the uip, return [conflict_side, other_side]
+	def cut(self, uip):
+		conflict_side = []
+		other_side = []
+		con = self.rec_path([[uip]])
+		for path in con:
+			for node in path:
+				if node not in conflict_side and node.conflict is False and node is not uip:
+					conflict_side.append(node)
+		for node in self.allNodes():
+			if node not in conflict_side:
+				other_side.append(node)
+		return [conflict_side, other_side]
+
+	def conflict_clause(self, conflict_cut):
+		clause = []
+		for node in self.edges:
+			for adj in self.edges[node]:
+				if adj in conflict_cut and node not in conflict_cut and node.literal not in clause:
+					l = copy.deepcopy(node.literal)
+					if l.sign:
+						l.sign = False
+					else:
+						l.sign = True
+					clause.append(l)
+		return clause
+
+	def backtrack_level(self, conflict_clause):
+		lowest = float("inf")
+		nodes = []
+		# print(type(conflict_clause.literals))
+		# print("beedo")
+		for lit in conflict_clause.literals:
+			# print(type(lit))
+			# print(type(lit.literal))
+			# print(type(self.getNode(lit.literal)))
+			if self.getNode(lit.literal) == False:
+				print("ehehehehe")
+			nodes.append(self.getNode(lit.literal))
+		for node in nodes:
+			if node.level < lowest:
+				lowest = node.level
+		return lowest
 
 
-#TESTING
-# g = Graph()
-# print(g.allNodes())
-# node1 = Graph.Node(Literal(1,True), 2)
-# g.addNode(node1)
-# print(g.allNodes())
-# test = g.getNode(Literal(1,True))
-# node2 = Graph.Node(Literal(2), 2)
-# g.addNode(node2)
-# g.addEdge(node1, node2)
-# print(g.is_connected(node1, node2))
-# print(g.is_connected(node2, node1))
+	# Update edges based on new decision
+	def new_edges(self, newnode, clause, l):
+		lits = clause.literals
+		#for all other literals in the clause
+		for m in lits:
+			#no self edges
+			if m.literal is not l:
+				n = self.getNode(m.literal)
+				if n:
+					self.addEdge(n, newnode)
+				else:
+					print("problem")
+		return self
+
+	#update graph given literal l
+	def decide_graph(self, level, l, clause_num=None, clause=None):
+		self.addNode(self.Node(l, level, clause, clause_num))
+		newnode = self.getNode(l)
+		#add edges
+		if clause is not None:
+			self.new_edges(newnode, clause, l)	
+		return self

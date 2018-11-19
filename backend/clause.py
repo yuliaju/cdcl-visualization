@@ -14,6 +14,8 @@ class Literal:
 			return True
 		else:
 			return False
+	# def __deepcopy__(self):
+	# 	return Literal(copy.deepcopy(self.index, self.sign))
 
 class Clause:
 	#literal within a clause
@@ -24,12 +26,14 @@ class Clause:
 			self.excluded = False
 
 		def __str__(self):
-			s = "cl: " + str(self.literal)
+			s = str(self.literal)
 			if self.satisfied:
 				s += " sat"
 			if self.excluded:
 				s += " ex"
 			return s
+		# def __deepcopy__(self):
+		# 	return ClauseLiteral(copy.deepcopy(self.literal, self.satisfied, self.excluded))
 
 	def __init__(self):
 		self.literals = []
@@ -48,7 +52,12 @@ class Clause:
 		s = s[0:len(s)-4]
 		if self.satisfied:
 			s += " SAT!!"
+		else:
+			s += "not sat"
 		return s
+
+	# def __deepcopy__(self):
+	# 	return Clause(copy.deepcopy(self.literals, self.size, self.satisfied))
 
 	#add literal to clause
 	def addLiteral(self, literal):
@@ -82,12 +91,3 @@ class Clause:
 				else:
 					l.excluded = True
 		return self
-
-# TESTING
-# c1 = Clause()
-# c1.addLiterals([Literal(0, False), Literal(1, True)])
-# print(c1.size)
-# print(c1.satisfied)
-# c1.satisfy(Literal(0, False))
-# print(c1.satisfied)
-# print(Literal(0, False) == Literal(0, True))
