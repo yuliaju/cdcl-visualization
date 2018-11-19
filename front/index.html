@@ -4,6 +4,7 @@
     <script src="sigma.js/build/sigma.min.js"></script>
     <script src="sigma.js/plugins/sigma.parsers.json/sigma.parsers.json.js"></script>
 
+    <script type="text/javascript" src="main.js"></script>
     <link rel="stylesheet" href="main.css">
   </head>
   <body class="container">
@@ -14,37 +15,50 @@
     </div>
 
     <div class="row flex-row">
-      <div class="graph" id="graph" style="width: 40%;">
+      <div class="graph" id="sigma-container" style="width: 40%;">
 
       </div>
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
-          <textarea rows="14" cols="50">Type in clause database here.</textarea>
+          <!-- todo: make font less ugly -->
+          <textarea id="clauseLibrary" rows="14" cols="50">Type in clause database here.</textarea>
           <br />
-          <button>Generate</button>
+          <button onclick="sendClauseLibrary(getElementById('clauseLibrary').value)">
+            Generate
+          </button>
         </div>
+
         <div class="dropdown">
-          <select>
+          <select id="varDropdown" onchange="updateSelectedVar();">
             <option value="volvo">Volvo</option>
             <option value="saab">Saab</option>
             <option value="mercedes">Mercedes</option>
             <option value="audi">Audi</option>
           </select>
         </div>
+
+        <button id="decideVar" onclick="sendDecision(true)" style="display:none"></button>
+        <button id="decideNotVar" onclick="sendDecision(false)" style="display:none"></button>
         <div class="info">
           May be where the updated clause database and/or explanations is displayed
         </div>
       </div>
 
+      <script>
+        // Initialize sigma:
+        s = new sigma(
+          {
+             renderer: {
+               container: document.getElementById('sigma-container'),
+               type: 'canvas'
+             },
+             settings: {
+               defaultNodeColor: '#ec5148'
+             }
+           }
+         );
+      </script>
+
     </div>
   </body>
-
-  <script>
-    sigma.parsers.json('data.json', {
-      container: 'graph',
-      settings: {
-        defaultNodeColor: '#ec5148'
-      }
-    });
-  </script>
 </html>

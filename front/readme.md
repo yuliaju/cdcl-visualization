@@ -4,3 +4,6 @@ $ npm run build
 
 to run
 $ python -m SimpleHTTPServer
+
+or for Python 3
+$ python -m http.server
