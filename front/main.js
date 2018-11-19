@@ -51,11 +51,13 @@ function sendDecision(b) {
     // to-do change using global var and b
     // send to backend showVariable(v);
     // update graph depending on what we get back from backend
-    s.graph.addNode({ id: '0' });
-    s.graph.addNode({ id: '1' });
-    s.graph.addEdge({ id: '01', source: '0', target: '1' });
-    // re render graph
-    s.graph.refresh();
+    console.log(s);
+    s.graph.addNode({ id: '0', label: "p0", x: 0, y: 0, size: 5 });
+    s.graph.addNode({ id: '1', label: "p1", x: 1, y: 1, size: 5 });
+    s.graph.addEdge({ id: '01', source: '0', target: '1', size: 1, type: "arrow" });
+    console.log(s);
+    // to-do re render graph
+    s.refresh();
 }
 // function to get UIPs and display
 function getUIPs(uips) {
