@@ -9,3 +9,13 @@ main.py flask file running webapp
 main.js communicate with main.py
 
 .html 
+
+
+edges (dict)
+
+
+
+<ul>
+{% for edge in edges %}
+<li>{{edge}}</li>
+{% endfor %}

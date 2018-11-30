@@ -1,5 +1,5 @@
-import clause
 import copy
+from app.clause import *
 
 class Graph:
 	class Node:
@@ -57,6 +57,21 @@ class Graph:
 		for i in self.edges:
 			nodes.append(i)
 		return nodes
+
+	def edges_front(self):
+		l = {}
+		for v in self.edges:
+			temp = []
+			for e in v:
+				temp.append(e.literal.index)
+			l[v.literal.index] = temp
+		return l
+
+	def decided_front(self):
+		l = []
+		for d in self.decided:
+			l.append(str(d))
+		return l
 
 	#return node corresponding to literal, if it exists. False if not.
 	def getNode(self, literal):
@@ -235,4 +250,4 @@ class Graph:
 		#add edges
 		if clause is not None:
 			self.new_edges(newnode, clause, l)	
-		return self
+		return str(newnode)
