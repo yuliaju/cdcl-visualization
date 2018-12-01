@@ -1,5 +1,5 @@
 import copy
-from .models.graph import *
+from .graph import *
 from .clause import *
 from .util import *
 from .clause_db import *
@@ -95,11 +95,17 @@ class Solution:
 
 				data["new_nodes"] = new_nodes
 				data["finished"] = self.finished
-				data["graph"] = self.g
+				data["level"] = self.level
 				data["conflict"] = self.conflict
 				data["edges"] = self.g.edges_front()
 				data["decided"] = self.g.decided_front()
 				return data
+
+
+# --if finished is False: data["options"] = [index, index, index]
+# --if conflict is true: data["conflict_info"] = ["all_uips": [index, index], "right_uip": index, "conflict clause": str, "cut_conflict": [index, index], "cut_other": [index, index]]
+	
+
 
 
 	def new_input(data):
