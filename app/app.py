@@ -14,7 +14,7 @@ solution = ""
 def index():
 	data = {}
 	print("hi")
-	return render_template("index.html")
+	return render_template("index.html", data.level = 2)
 
 @app.route("/data")
 def send_data():

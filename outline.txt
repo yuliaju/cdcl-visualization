@@ -25,34 +25,12 @@ If you attempt to go above decision level 0 -> no solution
 
 
 BACK TO FRONT
-
-data["newnodes"] = [index:"label", index:"label",...]
-data["conflict"] = True/False
 data["finished"] = True/False
-data["graph"] = graph
+--if finished is False: data["options"] = [index, index, index]
+data["level"] = int
+data["newnodes"] = [index:"label", index:"label",...]
 data["edges"] = {1:[2,3], 2:[4], 3:[], 4:[]}
 data["decided"] = ["neg 1", "2", "neg 3"]
-
-Propogations:
-
-
-Conflict:
--all UIPs
-	-list of indices
--closest UIP
-	-index
--conflict side of cut
-	-list of indices
--other side of cut
-	-list indices
--conflict clause
-	-str
--new graph
-	-{node_index:label, node_index:label}
-	-edges {1:[]}
+data["conflict"] = True/False
+--if conflict is true: data["conflict_info"] = ["all_uips": [index, index], "right_uip": index, "conflict clause": str, "cut_conflict": [index, index], "cut_other": [index, index]]
 	
-
-Decision (wait for user input):
--list of nodes user can choose
-	-list of indices
-	-level
