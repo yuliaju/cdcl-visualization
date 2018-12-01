@@ -11,6 +11,7 @@ solution = ""
 @app.route("/")
 def index():
 	data = {}
+	print("hi")
 	return render_template("index.html")
 
 @app.route("/data")
