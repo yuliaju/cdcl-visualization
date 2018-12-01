@@ -1,5 +1,5 @@
 import copy
-from app.clause import *
+from .clause import *
 
 class Graph:
 	class Node:

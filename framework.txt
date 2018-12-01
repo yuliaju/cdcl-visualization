@@ -19,3 +19,17 @@ edges (dict)
 {% for edge in edges %}
 <li>{{edge}}</li>
 {% endfor %}
+
+
+
+
+
+function sendClauseLibrary(clauseLibrary) {
+    $.post('/clause_db', {
+        clauses: clauseLibrary
+    }).done(function(response) {
+        
+    }).fail(function() {
+        $(destElem).text("{{ _('Error: Could not contact server.') }}");
+    });
+}

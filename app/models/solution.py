@@ -1,5 +1,5 @@
 import copy
-from .models.graph import *
+from .graph import *
 from .clause import *
 from .util import *
 from .clause_db import *
@@ -34,18 +34,20 @@ class Solution:
 			# print(str(conflict_clause))
 			# print(type(conflict_clause))
 			backtrack_level = self.g.backtrack_level(conflict_clause)
-			print("UIPs:")
-			for uip in uips:
-				print(str(uip))
-			print("UIP: " + str(uip))
-			print("Conflict side of cut:")
-			for node in cuts[0]:
-				print(str(node))
-			print("Conflict Clause: " + str(conflict_clause))
-			print("Backtrack Level: " + str(backtrack_level))
+			info = {"all_uips": (str(u) for u in uips), "right_uip": uip, "conflict_clause": str(conflict_clause), "cut_conflict": (c.literal.index for c in cuts[0]), 
+				"cut_other": (c.literal.index for c in cuts[1]), "backtrack_level": backtrack_level}
+			# print("UIPs:")
+			# for u in uips:
+			# 	uips.append(str(u))
+			# print("UIP: " + str(uip))
+			# print("Conflict side of cut:")
+			# for node in cuts[0]:
+			# 	print(str(node))
+			# print("Conflict Clause: " + str(conflict_clause))
+			# print("Backtrack Level: " + str(backtrack_level))
 			self.original_clause_db.addClause(conflict_clause)
 			self.g.removeNodes(backtrack_level)
-			# return g
+			return info
 
 
 	def run_alg():
@@ -84,6 +86,12 @@ class Solution:
 				#are all clauses satisfied?
 				if self.clause_db.is_finished():
 					self.finished = True
+					options = []
+					for i in range(self.clause_db.num_literals):
+						decided_indices = (l.index for l in self.g.decided)
+						if i not in decided_indices:
+							options.append(i)
+					data["options"] = options
 
 
 				#is there a conflict?
@@ -91,20 +99,24 @@ class Solution:
 					self.conflict = True
 					print("Graph: \n" + str(self.g))
 					print("Conflict")
-					self.solve_conflict(self.clause_db.is_conflict())
+					info = self.solve_conflict(self.clause_db.is_conflict())
+					self.level = info["backtrack_level"]
+					del info["backtrack_level"]
+					data["conflict_info"] = info
 
 				data["new_nodes"] = new_nodes
 				data["finished"] = self.finished
-				data["graph"] = self.g
+				data["level"] = self.level
 				data["conflict"] = self.conflict
 				data["edges"] = self.g.edges_front()
-				data["decided"] = self.g.decided_front()
+				data["decided"] = self.g.f_front()
+
 				return data
+	
 
 
-	def new_input(data):
-		num = data["num"]
-		sign = data["sign"]
+
+	def new_input(num, sign):
 		self.level += 1
 		l = clause.Literal(num, sign)
 		self.g.decided.append(l)

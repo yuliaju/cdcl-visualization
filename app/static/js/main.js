@@ -31,6 +31,18 @@ function sendClauseLibrary(cl) {
     // to-do: this probably won't actually return anything eventually
     return cl;
 }
+
+
+function sendClauseLibrary(cl) {
+    $.post('/clause_db', {
+        clauses: $(cl).text(),
+    }).done(function(response) {
+        $(destElem).text(response['text'])
+    }).fail(function() {
+        $(destElem).text("{{ _('Error: Could not contact server.') }}");
+    });
+}
+
 function updateSelectedVar() {
     var dropdown = document.getElementById("varDropdown");
     var selectedValue = Number(dropdown.options[dropdown.selectedIndex].value);
