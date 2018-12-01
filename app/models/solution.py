@@ -111,18 +111,18 @@ class Solution:
 				data["edges"] = self.g.edges_front()
 				data["decided"] = self.g.f_front()
 
+				self.level += 1
+
 				return data
 	
 
 
 
 	def new_input(num, sign):
-		self.level += 1
 		l = clause.Literal(num, sign)
 		self.g.decided.append(l)
 		self.clause_db.decide_clauses(l)
 		self.g.decide_graph(self.level, l)
-		print(str(g))
 		return self.run_alg()
 
 

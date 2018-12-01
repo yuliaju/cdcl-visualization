@@ -34,3 +34,8 @@ data["decided"] = ["neg 1", "2", "neg 3"]
 data["conflict"] = True/False
 --if conflict is true: data["conflict_info"] = ["all_uips": [index, index], "right_uip": index, "conflict clause": str, "cut_conflict": [index, index], "cut_other": [index, index]]
 	
+
+
+
+	
+tsc main.ts
