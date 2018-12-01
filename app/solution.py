@@ -1,8 +1,9 @@
 import copy
-from app.models.graph import *
-from app.clause import *
-from app.util import *
-from app.clause_db import *
+# from app.models.graph import *
+from models.graph import *
+from clause import *
+from util import *
+from clause_db import *
 
 class Solution:
 	def __init__(self, original_clause_db):
@@ -36,8 +37,8 @@ class Solution:
 			backtrack_level = self.g.backtrack_level(conflict_clause)
 			print("UIPs:")
 			for uip in uips:
-				print(str(uip))	
-			print("UIP: " + str(uip))		
+				print(str(uip))
+			print("UIP: " + str(uip))
 			print("Conflict side of cut:")
 			for node in cuts[0]:
 				print(str(node))
@@ -50,15 +51,15 @@ class Solution:
 
 	def run_alg():
 		# only first time
-		
+
 		data = {}
 		while not self.finished:
-			
+
 			#reset clause_db, g, decided, and level
 			self.conflict = False
 			self.clause_db = copy.deepcopy(self.original_clause_db)
 			self.level = 0
-			
+
 			print(str(original_clause_db))
 			print(str(g))
 			while not self.conflict and not self.finished:
@@ -67,7 +68,7 @@ class Solution:
 				new_decide = True
 				new_nodes = {}
 				while new_decide:
-					new_decide = False 
+					new_decide = False
 					for i in range(1, self.clause_db.getLen()+1):
 						c = self.clause_db.getClause(i)
 						if not c.satisfied:
@@ -101,7 +102,7 @@ class Solution:
 				data["decided"] = self.g.decided_front()
 				return data
 
-			
+
 	def new_input(data):
 		num = data["num"]
 		sign = data["sign"]

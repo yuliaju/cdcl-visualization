@@ -1,5 +1,5 @@
 import copy
-from app.clause import *
+from clause import *
 
 class Clause_db:
 
@@ -58,7 +58,7 @@ class Clause_db:
 		return False
 
 	#decide literal l
-	def decide_clauses(self, l):	
+	def decide_clauses(self, l):
 		#find literal in all clauses and satisfy or excluded each instance
 		for c in self.clauses:
 			c.satisfy(l)

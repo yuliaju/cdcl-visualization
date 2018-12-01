@@ -1,9 +1,12 @@
+#!/usr/bin/python3
+
 import json
 from flask import Flask, render_template, jsonify
 import requests
-from app.solution import *
-from app.parse import *
-from app.clause import *
+# from app.solution import *
+from solution import *
+from parse import *
+from clause import *
 
 app = Flask(__name__)
 solution = ""
@@ -43,5 +46,3 @@ def user_decision():
 
 if __name__ == "__main__":
 	app.run(debug=True)
-
-
