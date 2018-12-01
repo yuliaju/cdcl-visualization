@@ -3,10 +3,9 @@
 import json
 from flask import Flask, render_template, jsonify
 import requests
-# from app.solution import *
-from solution import *
-from parse import *
-from clause import *
+from .solution import *
+from .parse import *
+from .clause import *
 
 app = Flask(__name__)
 solution = ""

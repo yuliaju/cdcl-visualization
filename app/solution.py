@@ -1,9 +1,8 @@
 import copy
-# from app.models.graph import *
-from models.graph import *
-from clause import *
-from util import *
-from clause_db import *
+from .models.graph import *
+from .clause import *
+from .util import *
+from .clause_db import *
 
 class Solution:
 	def __init__(self, original_clause_db):

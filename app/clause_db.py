@@ -1,5 +1,5 @@
 import copy
-from clause import *
+from .clause import *
 
 class Clause_db:
 
