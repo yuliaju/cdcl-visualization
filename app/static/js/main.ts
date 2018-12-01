@@ -1,3 +1,5 @@
+import * as $ from "jquery";
+
 let s;
 
 interface Not {
@@ -29,11 +31,26 @@ let available_variables: number[] = [1, 2];
 
 // function to send clause library to backend as a string
 function sendClauseLibrary(cl: string): string {
+  $.post('/clause_db', {
+      clauses: cl
+  }).done(function(response) {
+
+  }).fail(function() {
+      $("#destElem").text("{{ _('Error: Could not contact server.') }}");
+  });
+
   // update my_clause_library variable
   console.log(cl);
 
   // update available_variables dropdown
   updateDropdown();
+
+  // display variable selection dropdown
+  // let inputs = document.getElementById("inputs") as HTMLElement;
+  // inputs.style.display = "block";
+
+  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
+  dropdown.style.display = "block";
 
   // to-do: this probably won't actually return anything eventually
   return cl;
@@ -66,6 +83,7 @@ function updateDropdown() {
   let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
 
   // remove all options
+  // to-do: always add default, non-selectable select instruction
   dropdown.options.length = 0;
 
   available_variables.map(
@@ -86,15 +104,21 @@ function sendDecision(b: string) {
   // send to backend showVariable(v);
 
   // update graph depending on what we get back from backend
-  console.log(s);
 
-  s.graph.addNode({id: '0', label: "p0", x: 0, y: 0, size: 5});
-  s.graph.addNode({id: '1', label: "p1", x: 1, y: 1, size: 5});
+  s.graph.addNode({id: '0', label: "p0"});
+  s.graph.addNode({id: '1', label: "p1"});
+  s.graph.addNode({id: '2', label: "p2"});
+  s.graph.addNode({id: '3', label: "p3"});
   s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
-  console.log(s);
+  s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
 
+  s.graph.nodes().forEach(function(node, i, a) {
+    node.x = Math.cos(Math.PI * 2 * i / a.length);
+    node.y = Math.sin(Math.PI * 2 * i / a.length);
+    node.size=1;
+    node.color='#f00';
+  });
   s.refresh();
-
 }
 
 // function to get UIPs and display

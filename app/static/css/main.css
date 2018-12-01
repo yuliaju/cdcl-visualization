@@ -17,11 +17,12 @@
 
 .row {
   width: auto;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .header {
   text-align: center;
+  padding-top: 20px;
 }
 
 .flex-row {

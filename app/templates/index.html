@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="sigma.js/build/sigma.min.js"></script>
-    <script src="sigma.js/plugins/sigma.parsers.json/sigma.parsers.json.js"></script>
+    <script src="../static/sigma.js/build/sigma.min.js"></script>
+    <script src="../static/sigma.js/plugins/sigma.parsers.json/sigma.parsers.json.js"></script>
+    <script type="text/javascript" src="../static/js/main.js"></script>
 
-    <script type="text/javascript" src="main.js"></script>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"/>
+    <link rel="stylesheet" href="../static/css/main.css">
   </head>
   <body class="container">
     <div class="row">
-        <div class="header">
+        <div class="header f2 fw7 ttu tracked lh-title avenir pv4">
           CDCL Visualizer
         </div>
     </div>
@@ -20,27 +21,37 @@
       </div>
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
-          <!-- todo: make font less ugly -->
-          <textarea id="clauseLibrary" rows="14" cols="50">Type in clause database here.</textarea>
-          <br />
-          <button onclick="sendClauseLibrary(getElementById('clauseLibrary').value)">
-            Generate
-          </button>
+          <div class="row">
+            <label for="clauseLibrary" class="f6 b db mb1">Clause Database <span class="normal black-60"></span></label>
+            <small id="clauseLibrary-desc" class="f6 black-60">Add data input layout info here</small>
+            <textarea id="clauseLibrary" rows="8" cols="50" name="comment" class="db border-box hover-black w-100 ba b--black-20 pa2 br2 mt2 mb2" aria-describedby="clauseLibrary-desc"></textarea>
+          </div>
+
+          <div class="row" style="text-align:right">
+            <a class="f6 link dim br2 ba ph3 pv2 mb2 dib dark-gray" onclick="sendClauseLibrary(getElementById('clauseLibrary').value)">
+              Generate
+            </a>
+          </div>
+
         </div>
 
-        <div class="dropdown">
-          <select id="varDropdown" onchange="updateSelectedVar();">
-            <option value="volvo">Volvo</option>
-            <option value="saab">Saab</option>
-            <option value="mercedes">Mercedes</option>
-            <option value="audi">Audi</option>
-          </select>
+        <!-- todo: add border, align objects -->
+        <div class="row">
+          <button id="decideVar" onclick="sendDecision(true)" style="display:none"></button>
+          <button id="decideNotVar" onclick="sendDecision(false)" style="display:none"></button>
+
+          <div class="dropdown">
+            <select id="varDropdown" onchange="updateSelectedVar();" style="display:none" class="pv2 ph2">
+            </select>
+          </div>
         </div>
 
-        <button id="decideVar" onclick="sendDecision(true)" style="display:none"></button>
-        <button id="decideNotVar" onclick="sendDecision(false)" style="display:none"></button>
-        <div class="info">
-          May be where the updated clause database and/or explanations is displayed
+        <div class="row">
+          <div id="currentLevel"></div>
+          <div id="destElem"></div>
+          <!-- <div class="info">
+            May be where the updated clause database and/or explanations is displayed
+          </div> -->
         </div>
       </div>
 
