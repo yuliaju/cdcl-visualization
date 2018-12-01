@@ -3,11 +3,10 @@ from .clause import *
 
 class Clause_db:
 
-	def __init__(self):
+	def __init__(self, size, num_literals):
 		self.clauses = []
-		self.len = 0
-		# should implement this
-		self.num_literals = 8
+		self.len = size
+		self.num_literals = num_literals
 
 	def __str__(self):
 		s = "Clause Database:"

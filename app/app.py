@@ -12,27 +12,25 @@ solution = ""
 
 @app.route("/")
 def index():
-	data = {}
 	return render_template("index.html")
-
-# @app.route("/data")
-# def send_data():
-# 	data = {}
-# 	return jsonify(get_data())
 
 # get initial clause database
 @app.route('/clause_db', methods=['POST'])
 def clause_db():
+	global solution
 	data = request.form['clauseLibrary']
 	clause_db = parse_clauses(data)
 	solution = Solution(clause_db)
 	return_data = solution.run_alg()
+	return jsonify(return_data)
 
 # get num and sign of new deicision literal
 def user_decision():
-	r = requests.get(URL)
-	data = r.text
-	new_input(data)
+	global solution
+	num = request.form["num"]
+	sign = request.form["sign"]
+	return_data = solution.new_input(num, sign)
+	return jsonify(return_data)
 
 if __name__ == "__main__":
 	app.run(debug=True)
