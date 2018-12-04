@@ -27,15 +27,16 @@ If you attempt to go above decision level 0 -> no solution
 BACK TO FRONT
 data["finished"] = True/False
 --if finished is False: data["options"] = [index, index, index]
+data["available"] = [1, 2, 4]
 data["level"] = int
 data["newnodes"] = [index:"label", index:"label",...]
 data["edges"] = {1:[2,3], 2:[4], 3:[], 4:[]}
 data["decided"] = ["neg 1", "2", "neg 3"]
 data["conflict"] = True/False
 --if conflict is true: data["conflict_info"] = ["all_uips": [index, index], "right_uip": index, "conflict clause": str, "cut_conflict": [index, index], "cut_other": [index, index]]
-	
 
 
 
-	
+
+
 tsc main.ts
