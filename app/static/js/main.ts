@@ -24,7 +24,7 @@ type node = [label, id, outgoingEdges];
 let selected_var: number;
 
 // variables that have not yet been decided
-let available_variables: number[] = [1, 2];
+let available_variables: number[];
 
 /* graph stuff */
 // initialize instance vars
@@ -42,6 +42,9 @@ function sendClauseLibrary(cl: string): string {
 
   // update my_clause_library variable
   console.log(cl);
+  available_variables = [1, 2];
+  console.log(available_variables);
+  console.log("before calling updateDropdown")
 
   // update available_variables dropdown
   updateDropdown();
@@ -87,6 +90,7 @@ function updateDropdown() {
   // to-do: always add default, non-selectable select instruction
   dropdown.options.length = 0;
 
+  console.log(available_variables);
   available_variables.map(
     function(v: number) {
       let opt = document.createElement('option');

@@ -7,7 +7,7 @@ function isNot(maybeNot) {
 var my_clause_library = [];
 var selected_var;
 // variables that have not yet been decided
-var available_variables = [1, 2];
+var available_variables;
 /* graph stuff */
 // initialize instance vars
 // function to send clause library to backend as a string
@@ -22,6 +22,9 @@ function sendClauseLibrary(cl) {
     });
     // update my_clause_library variable
     console.log(cl);
+    available_variables = [1, 2];
+    console.log(available_variables);
+    console.log("before calling updateDropdown");
     // update available_variables dropdown
     updateDropdown();
     // display variable selection dropdown
@@ -54,6 +57,7 @@ function updateDropdown() {
     // remove all options
     // to-do: always add default, non-selectable select instruction
     dropdown.options.length = 0;
+    console.log(available_variables);
     available_variables.map(function (v) {
         var opt = document.createElement('option');
         opt.value = v.toString();
