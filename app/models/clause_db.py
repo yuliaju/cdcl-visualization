@@ -3,9 +3,9 @@ from .clause import *
 
 class Clause_db:
 
-	def __init__(self, size, num_literals):
+	def __init__(self, num_literals):
 		self.clauses = []
-		self.len = size
+		self.len = 0
 		self.num_literals = num_literals
 
 	def __str__(self):

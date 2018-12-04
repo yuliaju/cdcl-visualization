@@ -6,7 +6,7 @@ from .clause_db import *
 
 class Solution:
 	def __init__(self, original_clause_db):
-		self.graph = graph.Graph()
+		self.graph = Graph()
 		self.finished = False
 		self.conflict = False
 		self.level = 0
@@ -15,105 +15,82 @@ class Solution:
 	def __str__(self):
 		return ""
 
-	def solve_conflict(cl):
-		print(cl)
-		print(self.clause_db.getClause(cl))
-		self.g.addNode(graph.Graph.Node(None, None, self.clause_db.getClause(cl), cl, True))
-		newnode = self.g.getConflict()
-		self.g.new_edges(newnode, self.clause_db.getClause(cl), None)
-		print(str(g))
-		recentDecision = self.g.recentDecision(level)
-		if recentDecision == False:
-			print("Problem! No recent decision")
-		else:
+	
+
+
+	def run_alg(self):
+		data = {}
+		self.conflict = False
+		#Propogate: Decide any singular clauses, then repeat check one last time
+		new_decide = True
+		new_nodes = {}
+		while new_decide:
+			new_decide = False
+			for i in range(1, self.clause_db.getLen()+1):
+				c = self.clause_db.getClause(i)
+				if not c.satisfied:
+					if len(c.nonExcludedLiterals()) == 1:
+						# if clause not satisfied and of length one, decide that literal
+						l = c.nonExcludedLiterals()[0].literal
+						self.clause_db.decide_clauses(l)
+						self.g.decide_graph(self.level, l, i, self.clause_db.getClause(i))
+						label = self.g.decided.append(l)
+						new_nodes[l.index] = label
+						new_decide = True
+
+
+		#are all clauses satisfied?
+		if self.clause_db.is_finished():
+			self.finished = True
+			options = []
+			for i in range(self.clause_db.num_literals):
+				decided_indices = (l.index for l in self.g.decided)
+				if i not in decided_indices:
+					options.append(i)
+			data["options"] = options
+
+
+		#is there a conflict?
+		elif self.clause_db.is_conflict() is not False:
+			self.conflict = True
+
+			cl = self.clause_db.is_conflict()
+
+			self.g.addNode(graph.Graph.Node(None, None, self.clause_db.getClause(cl), cl, True))
+			newnode = self.g.getConflict()
+			self.g.new_edges(newnode, self.clause_db.getClause(cl), None)
+			recentDecision = self.g.recentDecision(level)
+			if recentDecision == False:
+				raise Exception("Problem! No recent decision")
 			uips = self.g.uips(recentDecision)
 			uip = self.g.uip(recentDecision)
-			# cuts[0] is conflict side, cuts[1] is other side
 			cuts = self.g.cut(uip)
 			conflict_clause = clause.Clause().addLiterals(g.conflict_clause(cuts[0]))
-			# print(str(conflict_clause))
-			# print(type(conflict_clause))
-			backtrack_level = self.g.backtrack_level(conflict_clause)
-			info = {"all_uips": (str(u) for u in uips), "right_uip": uip, "conflict_clause": str(conflict_clause), "cut_conflict": (c.literal.index for c in cuts[0]), 
-				"cut_other": (c.literal.index for c in cuts[1]), "backtrack_level": backtrack_level}
-			# print("UIPs:")
-			# for u in uips:
-			# 	uips.append(str(u))
-			# print("UIP: " + str(uip))
-			# print("Conflict side of cut:")
-			# for node in cuts[0]:
-			# 	print(str(node))
-			# print("Conflict Clause: " + str(conflict_clause))
-			# print("Backtrack Level: " + str(backtrack_level))
+			data["conflict_info"] = {"all_uips": (str(u) for u in uips), "right_uip": uip, "conflict_clause": str(conflict_clause), "cut_conflict": (c.literal.index for c in cuts[0]), 
+				"cut_other": (c.literal.index for c in cuts[1])}
 			self.original_clause_db.addClause(conflict_clause)
+
+			
+		#else just need user input
+		else
+			self.level += 1
+
+		# Create data array for frontend
+		data["new_nodes"] = new_nodes
+		data["finished"] = self.finished
+		data["level"] = copy.copy(self.level)
+		data["conflict"] = copy.copy(self.conflict)
+		data["edges"] = copy.copy(self.graph.edges_front(new_nodes))
+		data["decided"] = copy.copy(self.graph.decided_front())
+
+		if self.conflict:
+			#TO DO: reset database and decided!!!
+			# TO DO: send reset data
+			# data["reset"] = {"level": , "decided": , "edges": , "nodes": }
+			self.level = self.g.backtrack_level(conflict_clause)
 			self.g.removeNodes(backtrack_level)
-			return info
 
-
-	def run_alg():
-		# only first time
-
-		data = {}
-		while not self.finished:
-
-			#reset clause_db, g, decided, and level
-			self.conflict = False
-			self.clause_db = copy.deepcopy(self.original_clause_db)
-			self.level = 0
-
-			print(str(original_clause_db))
-			print(str(g))
-			while not self.conflict and not self.finished:
-				conflict = False
-				#Propogate: Decide any singular clauses, then repeat check one last time
-				new_decide = True
-				new_nodes = {}
-				while new_decide:
-					new_decide = False
-					for i in range(1, self.clause_db.getLen()+1):
-						c = self.clause_db.getClause(i)
-						if not c.satisfied:
-							if len(c.nonExcludedLiterals()) == 1:
-								# if clause not satisfied and of length one, decide that literal
-								l = c.nonExcludedLiterals()[0].literal
-								self.clause_db.decide_clauses(l)
-								self.g.decide_graph(self.level, l, i, self.clause_db.getClause(i))
-								label = self.g.decided.append(l)
-								new_nodes[l.index] = label
-								new_decide = True
-
-
-				#are all clauses satisfied?
-				if self.clause_db.is_finished():
-					self.finished = True
-					options = []
-					for i in range(self.clause_db.num_literals):
-						decided_indices = (l.index for l in self.g.decided)
-						if i not in decided_indices:
-							options.append(i)
-					data["options"] = options
-
-
-				#is there a conflict?
-				elif self.clause_db.is_conflict() is not False:
-					self.conflict = True
-					print("Graph: \n" + str(self.g))
-					print("Conflict")
-					info = self.solve_conflict(self.clause_db.is_conflict())
-					self.level = info["backtrack_level"]
-					del info["backtrack_level"]
-					data["conflict_info"] = info
-
-				data["new_nodes"] = new_nodes
-				data["finished"] = self.finished
-				data["level"] = self.level
-				data["conflict"] = self.conflict
-				data["edges"] = self.g.edges_front()
-				data["decided"] = self.g.f_front()
-
-				self.level += 1
-
-				return data
+		return data
 	
 
 

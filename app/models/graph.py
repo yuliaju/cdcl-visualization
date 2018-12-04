@@ -58,7 +58,8 @@ class Graph:
 			nodes.append(i)
 		return nodes
 
-	def edges_front(self):
+	#TO DO: only send edges associated with new_nodes
+	def edges_front(self, new_nodes):
 		l = {}
 		for v in self.edges:
 			temp = []
@@ -214,12 +215,7 @@ class Graph:
 	def backtrack_level(self, conflict_clause):
 		lowest = float("inf")
 		nodes = []
-		# print(type(conflict_clause.literals))
-		# print("beedo")
 		for lit in conflict_clause.literals:
-			# print(type(lit))
-			# print(type(lit.literal))
-			# print(type(self.getNode(lit.literal)))
 			if self.getNode(lit.literal) == False:
 				print("ehehehehe")
 			nodes.append(self.getNode(lit.literal))

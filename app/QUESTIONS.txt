@@ -1,0 +1,7 @@
+QUESTIONS/NOTES:
+1) right now I am sending you only new nodes and edges. This is more efficient (you don't have to regenerate the graph every time, just use the api to create the new nodes). But would you rather I send all?
+
+2) I realized that when there is a conflict, I need to send you {level, nodes, edges, db, decided} at the conflict AND once everything has been reset. I added 
+
+
+-Sally
