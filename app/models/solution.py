@@ -124,34 +124,3 @@ class Solution:
 		self.clause_db.decide_clauses(l)
 		self.g.decide_graph(self.level, l)
 		return self.run_alg()
-
-
-				#if not finished and not conflict, let user decide the next decision node
-				# else:
-				# 	ok = False
-				# 	while not ok:
-				# 		ok=True
-				# 		num = input("Enter the number of a node")
-				# 		#check number:
-				# 		try:
-				# 			num = int(num)
-				# 			if num > clause_db.num_literals or num <= 0:
-				# 				print("No literal of this number exists. Please pick another.")
-				# 				ok = False
-				# 			for d in g.decided:
-				# 				if d.index == num:
-				# 					print("This node has already been decided. Please pick another.")
-				# 					ok = False
-				# 		except ValueError:
-				# 			print("Please enter a number")
-				# 			ok = False
-				# 		if ok:
-				# 			sign = input("Enter F to negate the literal, T if not")
-				# 			#check sign
-				# 			if sign == "T":
-				# 				sign = True
-				# 			elif sign == "F":
-				# 				sign = False
-				# 			else:
-				# 				print("Not a valid sign. Please try again.")
-				# 				ok = False
