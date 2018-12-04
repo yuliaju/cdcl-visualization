@@ -72,7 +72,7 @@ class Solution:
 
 			
 		#else just need user input
-		else
+		else:
 			self.level += 1
 
 		# Create data array for frontend
