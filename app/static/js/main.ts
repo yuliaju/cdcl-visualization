@@ -31,13 +31,14 @@ let available_variables: number[] = [1, 2];
 
 // function to send clause library to backend as a string
 function sendClauseLibrary(cl: string): string {
-  $.post('/clause_db', {
+  (function($){
+    $.post('/clause_db', {
       clauses: cl
   }).done(function(response) {
 
   }).fail(function() {
       $("#destElem").text("{{ _('Error: Could not contact server.') }}");
-  });
+  })});
 
   // update my_clause_library variable
   console.log(cl);

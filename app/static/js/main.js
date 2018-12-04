@@ -1,11 +1,9 @@
 "use strict";
 exports.__esModule = true;
-var $ = require("jquery");
 var s;
 function isNot(maybeNot) {
     return maybeNot.num !== undefined;
 }
-jQuery.noConflict(false);
 var my_clause_library = [];
 var selected_var;
 // variables that have not yet been decided
@@ -14,11 +12,13 @@ var available_variables = [1, 2];
 // initialize instance vars
 // function to send clause library to backend as a string
 function sendClauseLibrary(cl) {
-    $.post('/clause_db', {
-        clauses: cl
-    }).done(function (response) {
-    }).fail(function () {
-        $("#destElem").text("{{ _('Error: Could not contact server.') }}");
+    (function ($) {
+        $.post('/clause_db', {
+            clauses: cl
+        }).done(function (response) {
+        }).fail(function () {
+            $("#destElem").text("{{ _('Error: Could not contact server.') }}");
+        });
     });
     // update my_clause_library variable
     console.log(cl);
