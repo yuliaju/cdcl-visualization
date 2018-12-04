@@ -24,7 +24,8 @@ def clause_db():
 	return_data = solution.run_alg()
 	return jsonify(return_data)
 
-# get num and sign of new deicision literal
+# get num and sign of new decision literal
+@app.route('/decision', methods=['POST'])
 def user_decision():
 	global solution
 	num = request.form["num"]

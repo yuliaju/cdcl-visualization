@@ -35,20 +35,26 @@
 
         </div>
 
-        <!-- todo: add border, align objects -->
-        <div class="row">
-          <button id="decideVar" onclick="sendDecision(true)" style="display:none"></button>
-          <button id="decideNotVar" onclick="sendDecision(false)" style="display:none"></button>
-
-          <div class="dropdown">
-            <select id="varDropdown" onchange="updateSelectedVar();" style="display:none" class="pv2 ph2">
+        <div id="selectionSection" class="row flex-row f6 br2 ba ph3 pv2 mb2 moon-gray" style="width:100%; display:none">
+          <div class="dropdown flex-col" style="width: 40%; align-items: flex-start">
+            <select id="varDropdown" onchange="updateSelectedVar();" style="display:none">
+              <option value="" disabled selected>Select a proposition</option>
             </select>
+          </div>
+
+          <div class="flex-col" style="width: 30%; align-items: center">
+            <a id="decideVar" onclick="sendDecision(true)" class="f6 link dim ph3 pv2 mb2 white bg-dark-green br2" style="display:none">Decide p1</a>
+          </div>
+
+          <div class="flex-col" style="width: 30%; align-items: flex-end">
+            <a id="decideNotVar" onclick="sendDecision(false)" class="f6 link dim ph3 pv2 mb2 white bg-dark-pink br2" style="display:none">Decide not p1</a>
           </div>
         </div>
 
         <div class="row">
+          <!-- TODO: add level display functionality and change location -->
           <div id="currentLevel"></div>
-          <div id="destElem"></div>
+          <div id="errorMsg"></div>
           <!-- <div class="info">
             May be where the updated clause database and/or explanations is displayed
           </div> -->
@@ -64,7 +70,7 @@
                type: 'canvas'
              },
              settings: {
-               defaultNodeColor: '#ec5148'
+               defaultNodeColor: '#357EDD'
              }
            }
          );

@@ -4,36 +4,42 @@ var s;
 function isNot(maybeNot) {
     return maybeNot.num !== undefined;
 }
-var my_clause_library = [];
 var selected_var;
-// variables that have not yet been decided
+// Variables that have not yet been decided
 var available_variables;
-/* graph stuff */
-// initialize instance vars
-// function to send clause library to backend as a string
+/*************************************************************/
 function sendClauseLibrary(cl) {
     (function ($) {
         $.post('/clause_db', {
             clauses: cl
         }).done(function (response) {
+            // available_variables = response.available;
+            // sort available_variables in ascending order?
         }).fail(function () {
-            $("#destElem").text("{{ _('Error: Could not contact server.') }}");
+            $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
         });
     });
-    // update my_clause_library variable
-    console.log(cl);
     available_variables = [1, 2];
-    console.log(available_variables);
-    console.log("before calling updateDropdown");
-    // update available_variables dropdown
     updateDropdown();
-    // display variable selection dropdown
-    // let inputs = document.getElementById("inputs") as HTMLElement;
-    // inputs.style.display = "block";
+    // Display the dropdown and the box (only need to do this the first time)
     var dropdown = document.getElementById("varDropdown");
-    dropdown.style.display = "block";
-    // to-do: this probably won't actually return anything eventually
-    return cl;
+    dropdown.style.display = "inline-flex";
+    var selectionSection = document.getElementById("selectionSection");
+    selectionSection.style.display = "flex";
+}
+function updateDropdown() {
+    var dropdown = document.getElementById("varDropdown");
+    // Remove all options but the placeholder
+    var length = dropdown.options.length;
+    for (var i = 1; i < length; i++) {
+        dropdown.options[i] = null;
+    }
+    available_variables.map(function (v) {
+        var opt = document.createElement('option');
+        opt.value = v.toString();
+        opt.innerHTML = 'p' + v.toString();
+        dropdown.appendChild(opt);
+    });
 }
 function updateSelectedVar() {
     var dropdown = document.getElementById("varDropdown");
@@ -42,48 +48,50 @@ function updateSelectedVar() {
     updateButtons();
 }
 function updateButtons() {
-    // update buttons
     var varButton = document.getElementById("decideVar");
     var notVarButton = document.getElementById("decideNotVar");
-    // update text on buttons
+    // Update text on buttons
     varButton.textContent = "p" + selected_var.toString() + " is true";
     notVarButton.textContent = "p" + selected_var.toString() + " is false";
-    // show buttons (not shown initially)
-    varButton.style.display = "block";
-    notVarButton.style.display = "block";
+    // Display buttons
+    varButton.style.display = "inline-flex";
+    notVarButton.style.display = "inline-flex";
 }
-function updateDropdown() {
-    var dropdown = document.getElementById("varDropdown");
-    // remove all options
-    // to-do: always add default, non-selectable select instruction
-    dropdown.options.length = 0;
-    console.log(available_variables);
-    available_variables.map(function (v) {
-        var opt = document.createElement('option');
-        opt.value = v.toString();
-        opt.innerHTML = 'p' + v.toString();
-        dropdown.appendChild(opt);
-    });
-}
-// send decision at each level
+// On button click
 function sendDecision(b) {
     var decision = (b == 'true');
+    // Hide buttons
+    var varButton = document.getElementById("decideVar");
+    var notVarButton = document.getElementById("decideNotVar");
+    varButton.style.display = "none";
+    notVarButton.style.display = "none";
     // to-do change using global var and b
     // send to backend showVariable(v);
-    // update graph depending on what we get back from backend
-    s.graph.addNode({ id: '0', label: "p0" });
-    s.graph.addNode({ id: '1', label: "p1" });
-    s.graph.addNode({ id: '2', label: "p2" });
-    s.graph.addNode({ id: '3', label: "p3" });
-    s.graph.addEdge({ id: '01', source: '0', target: '1', size: 1, type: "arrow" });
-    s.graph.addEdge({ id: '02', source: '0', target: '2', size: 1, type: "arrow" });
-    s.graph.nodes().forEach(function (node, i, a) {
-        node.x = Math.cos(Math.PI * 2 * i / a.length);
-        node.y = Math.sin(Math.PI * 2 * i / a.length);
-        node.size = 1;
-        node.color = '#f00';
+    (function ($) {
+        $.post('/decision', {
+            num: selected_var,
+            sign: decision
+        }).done(function (response) {
+            if (response.finished) {
+            }
+            else {
+                // update graph depending on what we get back from backend
+                addNodes(response.newnodes);
+                addEdges(response.edges);
+                s.refresh();
+                if (response.conflict) {
+                    // todo: hide everything in selectionSection, add step-through buttons
+                }
+                else {
+                    // sort available_variables in ascending order?
+                    available_variables = response.available;
+                    updateDropdown();
+                }
+            }
+        }).fail(function () {
+            $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
+        });
     });
-    s.refresh();
 }
 // function to get UIPs and display
 function getUIPs(uips) {
@@ -92,47 +100,38 @@ function getUIPs(uips) {
 function getConflict(conflictClause) {
 }
 // receive generated nodes at each level
-function getGeneratedNodes(nodes) {
-    var node_list = parseNodes(nodes);
-    // to-do add nodes to sigma graph / return commands?
-}
-// receive list of possible variables at each level
-function getPossibleVariables(vars) {
-    available_variables = parseVars(vars).map(function (x) { return (isNot(x)) ? x.num : x; });
-}
-// helper functions
-function parseNodes(nodes) {
-    var _a;
-    var l, id, edges;
-    var result = [];
-    var ns = nodes.split(';');
-    for (var n in ns) {
-        _a = n.split(','), l = _a[0], id = _a[1], edges = _a[2];
-        result.push();
+function addNodes(nodes) {
+    // s.graph.addNode({id: '0', label: "p0"});
+    // s.graph.addNode({id: '1', label: "p1"});
+    // s.graph.addNode({id: '2', label: "p2"});
+    for (var index in nodes) {
+        if (nodes.hasOwnProperty(index)) {
+            s.graph.addNode({ id: index, label: nodes[index] });
+        }
     }
-    return result;
-}
-function parseVars(vars) {
-    return [];
-}
-// this function may be unnecessary
-function clauseLibraryToString(db) {
-    var result = "";
-    // refactor using reduce
-    db.forEach(function (c) {
-        result += '[';
-        c.forEach(function (v) {
-            result += showVariable(v) + ',';
-        });
-        // chop off the extra comma
-        result = result.substring(0, result.length - 1);
-        result += '],';
+    // Reposition all nodes
+    s.graph.nodes().forEach(function (node, i, a) {
+        node.x = Math.cos(Math.PI * 2 * i / a.length);
+        node.y = Math.sin(Math.PI * 2 * i / a.length);
+        node.size = 1;
     });
-    // chop off the extra comma
-    result = result.substring(0, result.length - 1);
-    return result;
 }
-// todo: make into a class method-type thing
+function addEdges(edges) {
+    // s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
+    // s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
+    for (var key in edges) {
+        if (edges.hasOwnProperty(key)) {
+            s.graph.addEdge({
+                id: key,
+                source: edges[key][0].toString(),
+                target: edges[key][1].toString,
+                size: 3,
+                type: "arrow"
+            });
+        }
+    }
+}
+// todo: may be unnecessary make into a class method-type thing
 function showVariable(v) {
     var result;
     if (isNot(v)) {

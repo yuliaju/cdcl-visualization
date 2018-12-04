@@ -11,53 +11,58 @@ function isNot(maybeNot: Not | number): maybeNot is Not {
 }
 
 type variable = number | Not;
-
 type clause = variable[];
 type clause_library = clause[];
-let my_clause_library: clause_library = [];
-
 type label = string;
 type id = number;
 type outgoingEdges = number;
-type node = [label, id, outgoingEdges];
 
 let selected_var: number;
 
-// variables that have not yet been decided
+// Variables that have not yet been decided
 let available_variables: number[];
 
-/* graph stuff */
-// initialize instance vars
+/*************************************************************/
 
-// function to send clause library to backend as a string
-function sendClauseLibrary(cl: string): string {
+function sendClauseLibrary(cl: string) {
   (function($){
     $.post('/clause_db', {
       clauses: cl
   }).done(function(response) {
-
+      // available_variables = response.available;
+      // sort available_variables in ascending order?
   }).fail(function() {
-      $("#destElem").text("{{ _('Error: Could not contact server.') }}");
+      $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
   })});
 
-  // update my_clause_library variable
-  console.log(cl);
-  available_variables = [1, 2];
-  console.log(available_variables);
-  console.log("before calling updateDropdown")
-
-  // update available_variables dropdown
+  available_variables=[1,2];
   updateDropdown();
 
-  // display variable selection dropdown
-  // let inputs = document.getElementById("inputs") as HTMLElement;
-  // inputs.style.display = "block";
-
+  // Display the dropdown and the box (only need to do this the first time)
   let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
-  dropdown.style.display = "block";
+  dropdown.style.display = "inline-flex";
 
-  // to-do: this probably won't actually return anything eventually
-  return cl;
+  let selectionSection = document.getElementById("selectionSection") as HTMLElement;
+  selectionSection.style.display = "flex";
+}
+
+function updateDropdown() {
+  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
+
+  // Remove all options but the placeholder
+  let length = dropdown.options.length;
+  for (let i = 1; i < length; i++) {
+    dropdown.options[i] = null;
+  }
+
+  available_variables.map(
+    function(v: number) {
+      let opt = document.createElement('option');
+      opt.value = v.toString();
+      opt.innerHTML = 'p' + v.toString();
+      dropdown.appendChild(opt);
+    }
+  );
 }
 
 function updateSelectedVar() {
@@ -70,60 +75,56 @@ function updateSelectedVar() {
 }
 
 function updateButtons() {
-  // update buttons
-  let varButton = document.getElementById("decideVar") as HTMLButtonElement;
-  let notVarButton = document.getElementById("decideNotVar") as HTMLButtonElement;
+  let varButton = document.getElementById("decideVar") as HTMLElement;
+  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
 
-  // update text on buttons
+  // Update text on buttons
   varButton.textContent= "p" + selected_var.toString() + " is true";
   notVarButton.textContent= "p" + selected_var.toString() + " is false";
 
-  // show buttons (not shown initially)
-  varButton.style.display = "block";
-  notVarButton.style.display = "block";
+  // Display buttons
+  varButton.style.display = "inline-flex";
+  notVarButton.style.display = "inline-flex";
 }
 
-function updateDropdown() {
-  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
-
-  // remove all options
-  // to-do: always add default, non-selectable select instruction
-  dropdown.options.length = 0;
-
-  console.log(available_variables);
-  available_variables.map(
-    function(v: number) {
-      let opt = document.createElement('option');
-      opt.value = v.toString();
-      opt.innerHTML = 'p' + v.toString();
-      dropdown.appendChild(opt);
-    }
-  );
-}
-
-// send decision at each level
+// On button click
 function sendDecision(b: string) {
   let decision: boolean = (b == 'true');
 
+  // Hide buttons
+  let varButton = document.getElementById("decideVar") as HTMLElement;
+  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
+
+  varButton.style.display = "none";
+  notVarButton.style.display = "none";
+
   // to-do change using global var and b
   // send to backend showVariable(v);
+  (function($){
+    $.post('/decision', {
+      num: selected_var,
+      sign: decision
+  }).done(function(response) {
+      if (response.finished) {
 
-  // update graph depending on what we get back from backend
+      } else {
+        // update graph depending on what we get back from backend
+        addNodes(response.newnodes);
+        addEdges(response.edges);
+        s.refresh();
 
-  s.graph.addNode({id: '0', label: "p0"});
-  s.graph.addNode({id: '1', label: "p1"});
-  s.graph.addNode({id: '2', label: "p2"});
-  s.graph.addNode({id: '3', label: "p3"});
-  s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
-  s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
+        if (response.conflict) {
+          // todo: hide everything in selectionSection, add step-through buttons
 
-  s.graph.nodes().forEach(function(node, i, a) {
-    node.x = Math.cos(Math.PI * 2 * i / a.length);
-    node.y = Math.sin(Math.PI * 2 * i / a.length);
-    node.size=1;
-    node.color='#f00';
-  });
-  s.refresh();
+        } else {
+          // sort available_variables in ascending order?
+          available_variables = response.available;
+          updateDropdown();
+        }
+      }
+  }).fail(function() {
+      $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
+  })});
 }
 
 // function to get UIPs and display
@@ -137,60 +138,42 @@ function getConflict(conflictClause: string) {
 }
 
 // receive generated nodes at each level
-function getGeneratedNodes(nodes: string) {
-  let node_list: node[] = parseNodes(nodes);
-
-  // to-do add nodes to sigma graph / return commands?
-}
-
-// receive list of possible variables at each level
-function getPossibleVariables(vars: string) {
-  available_variables = parseVars(vars).map(x => (isNot(x)) ? x.num : x);
-}
-
-// helper functions
-function parseNodes(nodes: string): node[] {
-  let l, id, edges;
-  let result: node[] = []
-  let ns = nodes.split(';');
-
-  for (let n in ns) {
-    [l, id, edges] = n.split(',');
-
-    result.push();
+function addNodes(nodes: object) {
+  // s.graph.addNode({id: '0', label: "p0"});
+  // s.graph.addNode({id: '1', label: "p1"});
+  // s.graph.addNode({id: '2', label: "p2"});
+  for (let index in nodes) {
+    if (nodes.hasOwnProperty(index)) {
+      s.graph.addNode({id: index, label: nodes[index]})
+    }
   }
 
-  return result;
+  // Reposition all nodes
+  s.graph.nodes().forEach(function(node, i, a) {
+    node.x = Math.cos(Math.PI * 2 * i / a.length);
+    node.y = Math.sin(Math.PI * 2 * i / a.length);
+    node.size=1;
+  });
 }
 
-function parseVars(vars: string): variable[] {
-  return [];
-
+function addEdges(edges: object) {
+  // s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
+  // s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
+  for (let key in edges) {
+    if (edges.hasOwnProperty(key)) {
+      s.graph.addEdge({
+                        id: key,
+                        source: edges[key][0].toString(),
+                        target: edges[key][1].toString,
+                        size: 3,
+                        type: "arrow"
+                      })
+    }
+  }
 }
 
-// this function may be unnecessary
-function clauseLibraryToString(db: clause_library): string {
-  let result: string = "";
 
-  // refactor using reduce
-  db.forEach(function (c: clause) {
-    result += '[';
-
-    c.forEach(function(v: variable) {
-      result += showVariable(v) + ',';
-    })
-
-    // chop off the extra comma
-    result = result.substring(0, result.length - 1);
-    result += '],';
-  })
-
-  // chop off the extra comma
-  result = result.substring(0, result.length - 1);
-  return result;
-}
-
-// todo: make into a class method-type thing
+// todo: may be unnecessary make into a class method-type thing
 function showVariable(v: variable): string {
   let result: string;
 
