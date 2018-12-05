@@ -16,11 +16,10 @@ def index():
 	return render_template("index.html")
 
 # get initial clause database
-@app.route('/clause_db', methods=['POST'])
+@app.route('/clause_db', methods=['GET', 'POST'])
 def clause_db():
 	global solution
-	print("here3")
-	# data = request.form['clauseLibrary']
+	data = json.loads(request.data)
 	clause_db = parse_clauses("")
 	print(clause_db)
 	solution = Solution(clause_db)
