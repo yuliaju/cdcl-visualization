@@ -80,7 +80,8 @@ class Solution:
 		data["finished"] = self.finished
 		data["level"] = copy.copy(self.level)
 		data["conflict"] = copy.copy(self.conflict)
-		data["edges"] = copy.copy(self.graph.new_edges_front(new_nodes))
+		# CHANGE THIS TO DO
+		data["edges"] = copy.copy(self.graph.edges_front())
 		data["decided"] = copy.copy(self.graph.decided_front())
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
@@ -97,9 +98,9 @@ class Solution:
 
 
 
-	def new_input(num, sign):
-		l = clause.Literal(num, sign)
-		self.g.decided.append(l)
+	def new_input(self, num, sign):
+		l = Literal(num, sign)
+		self.graph.decided.append(l)
 		self.clause_db.decide_clauses(l)
-		self.g.decide_graph(self.level, l)
+		self.graph.decide_graph(self.level, l)
 		return self.run_alg()

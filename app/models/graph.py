@@ -67,12 +67,12 @@ class Graph:
 		l = {}
 		for v in self.edges:
 			temp = []
-			for e in v:
+			for e in self.edges[v]:
 				temp.append(e.literal.index)
 			l[v.literal.index] = temp
 		return l
 
-	def new_edges_front(self, new_nodes):
+	# def new_edges_front(self, new_nodes):
 
 
 	def decided_front(self):
