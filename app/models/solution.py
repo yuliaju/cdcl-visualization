@@ -33,8 +33,8 @@ class Solution:
 						l = c.nonExcludedLiterals()[0].literal
 						self.clause_db.decide_clauses(l)
 						self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
-						label = self.graph.decided.append(l)
-						new_nodes[l.index] = label
+						self.graph.decided.append(l)
+						new_nodes[l.index] = str(self.graph.getNode(l))
 						new_decide = True
 
 
@@ -43,7 +43,7 @@ class Solution:
 			self.finished = True
 			options = []
 			for i in range(self.clause_db.num_literals):
-				decided_indices = (l.index for l in self.g.decided)
+				decided_indices = [l.index for l in self.graph.decided]
 				if i not in decided_indices:
 					options.append(i)
 			data["options"] = options
@@ -55,16 +55,16 @@ class Solution:
 
 			cl = self.clause_db.is_conflict()
 
-			self.g.addNode(graph.Graph.Node(None, None, self.clause_db.getClause(cl), cl, True))
-			newnode = self.g.getConflict()
-			self.g.new_edges(newnode, self.clause_db.getClause(cl), None)
-			recentDecision = self.g.recentDecision(level)
+			self.graph.addNode(Graph.Node(None, None, self.clause_db.getClause(cl), cl, True))
+			newnode = self.graph.getConflict()
+			self.graph.new_edges(newnode, self.clause_db.getClause(cl), None)
+			recentDecision = self.graph.recentDecision(self.level)
 			if recentDecision == False:
 				raise Exception("Problem! No recent decision")
-			uips = self.g.uips(recentDecision)
-			uip = self.g.uip(recentDecision)
-			cuts = self.g.cut(uip)
-			conflict_clause = clause.Clause().addLiterals(g.conflict_clause(cuts[0]))
+			uips = self.graph.uips(recentDecision)
+			uip = self.graph.uip(recentDecision)
+			cuts = self.graph.cut(uip)
+			conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
 			data["conflict_info"] = {"all_uips": (str(u) for u in uips), "right_uip": uip, "conflict_clause": str(conflict_clause), "cut_conflict": (c.literal.index for c in cuts[0]), 
 				"cut_other": (c.literal.index for c in cuts[1])}
 			self.original_clause_db.addClause(conflict_clause)
