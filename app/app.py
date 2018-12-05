@@ -12,12 +12,14 @@ solution = ""
 
 @app.route("/")
 def index():
+	print("here2")
 	return render_template("index.html")
 
 # get initial clause database
 @app.route('/clause_db', methods=['POST'])
 def clause_db():
 	global solution
+	print("here3")
 	data = request.form['clauseLibrary']
 	clause_db = parse_clauses(data)
 	solution = Solution(clause_db)
