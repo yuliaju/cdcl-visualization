@@ -19,9 +19,6 @@ type outgoingEdges = number;
 
 let selected_var: number;
 
-// Variables that have not yet been decided
-let available_variables: number[];
-
 /*************************************************************/
 
 function sendClauseLibrary(cl: string) {
@@ -32,10 +29,8 @@ function sendClauseLibrary(cl: string) {
     data: JSON.stringify({'clauseLibrary': cl}),
     success: function (response) {
       console.log(response);
-      available_variables = response.available;
 
-      // available_variables = [1,2];
-      updateDropdown();
+      updateDropdown(response.available);
       updateLevel(response.level);
 
       // Display the dropdown and the box (only need to do this the first time)
@@ -54,14 +49,13 @@ function sendClauseLibrary(cl: string) {
   });
 }
 
-function updateDropdown() {
+function updateDropdown(available_variables: number[]) {
   let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
 
   // Remove all options but the placeholder
-  let length = dropdown.options.length;
-  for (let i = 1; i < length; i++) {
-    dropdown.options[i] = null;
-  }
+  dropdown.options.length = 1;
+
+  available_variables.sort();
 
   available_variables.map(
     function(v: number) {
@@ -123,9 +117,8 @@ function sendDecision(decision: boolean) {
         addNodes(response.new_nodes);
         addEdges(response.edges);
         updateLevel(response.level);
-        available_variables = response.available;
-        updateDropdown();
-        console.log(s.graph.nodes());
+        updateDropdown(response.available);
+
         s.refresh();
 
         if (response.conflict) {
@@ -133,8 +126,7 @@ function sendDecision(decision: boolean) {
           hideSelectionSection();
         } else {
           // sort available_variables in ascending order?
-          available_variables = response.available;
-          updateDropdown();
+          updateDropdown(response.available);
         }
       }
     },
@@ -147,19 +139,8 @@ function sendDecision(decision: boolean) {
   });
 }
 
-// function to get UIPs and display
-function getUIPs(uips: string) {
-
-}
-
-// function to get conflict clause and display
-function getConflict(conflictClause: string) {
-
-}
-
-// receive generated nodes at each level
+// Receive generated nodes at each level
 function addNodes(nodes: object) {
-  // s.graph.addNode({id: '0', label: "p0"});
   // nodes :: { int: string }
   for (let index in nodes) {
     if (nodes.hasOwnProperty(index)) {
@@ -176,12 +157,6 @@ function addNodes(nodes: object) {
 }
 
 function addEdges(edges: object) {
-  // s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
-  // s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
-
-  // let edgesIsEmpty: boolean = Object.keys(edges).length === 0 && edges.constructor === Object;
-  console.log(edges);
-
   if (Object.keys(edges).length !== 0) {
     for (let key in edges) {
       if (edges.hasOwnProperty(key)) {
@@ -217,4 +192,14 @@ function hideSelectionSection() {
 
   let selectionSection = document.getElementById("selectionSection") as HTMLElement;
   selectionSection.style.display = "flex";
+}
+
+// function to get UIPs and display
+function getUIPs(uips: string) {
+
+}
+
+// function to get conflict clause and display
+function getConflict(conflictClause: string) {
+
 }

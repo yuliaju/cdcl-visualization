@@ -4,8 +4,6 @@ function isNot(maybeNot) {
     return maybeNot.num !== undefined;
 }
 var selected_var;
-// Variables that have not yet been decided
-var available_variables;
 /*************************************************************/
 function sendClauseLibrary(cl) {
     $.ajax({
@@ -15,9 +13,7 @@ function sendClauseLibrary(cl) {
         data: JSON.stringify({ 'clauseLibrary': cl }),
         success: function (response) {
             console.log(response);
-            available_variables = response.available;
-            // available_variables = [1,2];
-            updateDropdown();
+            updateDropdown(response.available);
             updateLevel(response.level);
             // Display the dropdown and the box (only need to do this the first time)
             var dropdown = document.getElementById("varDropdown");
@@ -33,13 +29,11 @@ function sendClauseLibrary(cl) {
         dataType: "json"
     });
 }
-function updateDropdown() {
+function updateDropdown(available_variables) {
     var dropdown = document.getElementById("varDropdown");
     // Remove all options but the placeholder
-    var length = dropdown.options.length;
-    for (var i = 1; i < length; i++) {
-        dropdown.options[i] = null;
-    }
+    dropdown.options.length = 1;
+    available_variables.sort();
     available_variables.map(function (v) {
         var opt = document.createElement('option');
         opt.value = v.toString();
@@ -90,17 +84,14 @@ function sendDecision(decision) {
                 addNodes(response.new_nodes);
                 addEdges(response.edges);
                 updateLevel(response.level);
-                available_variables = response.available;
-                updateDropdown();
-                console.log(s.graph.nodes());
+                updateDropdown(response.available);
                 s.refresh();
                 if (response.conflict) {
                     hideSelectionSection();
                 }
                 else {
                     // sort available_variables in ascending order?
-                    available_variables = response.available;
-                    updateDropdown();
+                    updateDropdown(response.available);
                 }
             }
         },
@@ -112,15 +103,8 @@ function sendDecision(decision) {
         dataType: "json"
     });
 }
-// function to get UIPs and display
-function getUIPs(uips) {
-}
-// function to get conflict clause and display
-function getConflict(conflictClause) {
-}
-// receive generated nodes at each level
+// Receive generated nodes at each level
 function addNodes(nodes) {
-    // s.graph.addNode({id: '0', label: "p0"});
     // nodes :: { int: string }
     for (var index in nodes) {
         if (nodes.hasOwnProperty(index)) {
@@ -135,10 +119,6 @@ function addNodes(nodes) {
     });
 }
 function addEdges(edges) {
-    // s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
-    // s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
-    // let edgesIsEmpty: boolean = Object.keys(edges).length === 0 && edges.constructor === Object;
-    console.log(edges);
     if (Object.keys(edges).length !== 0) {
         var _loop_1 = function (key) {
             if (edges.hasOwnProperty(key)) {
@@ -172,4 +152,10 @@ function hideSelectionSection() {
     dropdown.style.display = "inline-flex";
     var selectionSection = document.getElementById("selectionSection");
     selectionSection.style.display = "flex";
+}
+// function to get UIPs and display
+function getUIPs(uips) {
+}
+// function to get conflict clause and display
+function getConflict(conflictClause) {
 }
