@@ -82,6 +82,7 @@ class Solution:
 		data["conflict"] = copy.copy(self.conflict)
 		data["edges"] = copy.copy(self.graph.edges_front(new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
+		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
 		if self.conflict:
 			#TO DO: reset database and decided!!!

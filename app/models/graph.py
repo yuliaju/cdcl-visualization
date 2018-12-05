@@ -28,6 +28,7 @@ class Graph:
 	def __init__(self):
 		self.size = 0
 		self.edges = {}
+		# literals
 		self.decided = []
 
 	def __str__(self):
@@ -72,6 +73,16 @@ class Graph:
 		l = []
 		for d in self.decided:
 			l.append(str(d))
+		return l
+
+	def available_front(self, lits):
+		l = []
+		ds = [d.index for d in self.decided]
+		print(ds)
+		for i in range(1, lits+1):
+			if i not in ds:
+				l.append(i)
+		print(l)
 		return l
 
 	#return node corresponding to literal, if it exists. False if not.
