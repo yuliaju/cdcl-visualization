@@ -25,15 +25,18 @@ let available_variables: number[];
 /*************************************************************/
 
 function sendClauseLibrary(cl: string) {
-  (function($){
+  console.log("Heyo");
+    // console.log("inside func");
     $.post('/clause_db', {
       clauses: cl
   }).done(function(response) {
+      console.log("done");
       // available_variables = response.available;
       // sort available_variables in ascending order?
   }).fail(function() {
+      console.log("fail");
       $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-  })});
+  });
 
   available_variables=[1,2];
   updateDropdown();

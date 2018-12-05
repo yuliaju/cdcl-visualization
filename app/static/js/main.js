@@ -9,16 +9,20 @@ var selected_var;
 var available_variables;
 /*************************************************************/
 function sendClauseLibrary(cl) {
+    console.log("Heyo");
     (function ($) {
+        // console.log("inside func");
         $.post('/clause_db', {
             clauses: cl
         }).done(function (response) {
+            console.log("done");
             // available_variables = response.available;
             // sort available_variables in ascending order?
         }).fail(function () {
+            console.log("fail");
             $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
         });
-    });
+    }(jQuery));
     available_variables = [1, 2];
     updateDropdown();
     // Display the dropdown and the box (only need to do this the first time)
