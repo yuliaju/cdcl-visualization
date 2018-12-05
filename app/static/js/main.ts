@@ -96,9 +96,7 @@ function updateButtons() {
 }
 
 // On button click
-function sendDecision(b: string) {
-  let decision: boolean = (b == 'true');
-
+function sendDecision(decision: boolean) {
   // Hide buttons
   let varButton = document.getElementById("decideVar") as HTMLElement;
   let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
@@ -122,9 +120,12 @@ function sendDecision(b: string) {
         console.log("here");
         console.log(response);
         // update graph depending on what we get back from backend
-        addNodes(response.newnodes);
+        addNodes(response.new_nodes);
         addEdges(response.edges);
         updateLevel(response.level);
+        available_variables = response.available;
+        updateDropdown();
+        console.log(s.graph.nodes());
         s.refresh();
 
         if (response.conflict) {
@@ -159,9 +160,10 @@ function getConflict(conflictClause: string) {
 // receive generated nodes at each level
 function addNodes(nodes: object) {
   // s.graph.addNode({id: '0', label: "p0"});
+  // nodes :: { int: string }
   for (let index in nodes) {
     if (nodes.hasOwnProperty(index)) {
-      s.graph.addNode({id: index, label: nodes[index]})
+      s.graph.addNode({id: index.toString(), label: nodes[index]})
     }
   }
 
@@ -183,15 +185,15 @@ function addEdges(edges: object) {
   if (Object.keys(edges).length !== 0) {
     for (let key in edges) {
       if (edges.hasOwnProperty(key)) {
-        if (edges[key].length != 0) {
+        edges[key].map(target =>
           s.graph.addEdge({
-            id: key,
-            source: edges[key][0].toString(),
-            target: edges[key][1].toString(),
+            id: key.toString().concat(target.toString()),
+            source: key.toString(),
+            target: target.toString(),
             size: 3,
             type: "arrow"
           })
-        }
+        )
       }
     }
   }
