@@ -1,6 +1,4 @@
-"use strict";
-exports.__esModule = true;
-var $ = require("jquery");
+// import * as $ from 'jquery';
 var s;
 function isNot(maybeNot) {
     return maybeNot.num !== undefined;
