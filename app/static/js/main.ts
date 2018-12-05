@@ -25,18 +25,6 @@ let available_variables: number[];
 /*************************************************************/
 
 function sendClauseLibrary(cl: string) {
-  // (function($){
-  //   $.post('/clause_db', {
-  //     clauses: cl
-  // }).done(function(response) {
-  //     // available_variables = response.available;
-  //     // sort available_variables in ascending order?
-  //     console.log("Post request worked");
-  //     console.log(response);
-  // }).fail(function() {
-  //     $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-  // })});
-
   $.ajax({
     type: "POST",
     contentType: "application/json; charset=utf-8",
@@ -44,6 +32,18 @@ function sendClauseLibrary(cl: string) {
     data: JSON.stringify({'clauseLibrary': cl}),
     success: function (response) {
       console.log(response);
+      available_variables = response.available;
+
+      // available_variables = [1,2];
+      updateDropdown();
+      updateLevel(response.level);
+
+      // Display the dropdown and the box (only need to do this the first time)
+      let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
+      dropdown.style.display = "inline-flex";
+
+      let selectionSection = document.getElementById("selectionSection") as HTMLElement;
+      selectionSection.style.display = "flex";
     },
     error: function(errorMsg) {
       // add better error response
@@ -52,16 +52,6 @@ function sendClauseLibrary(cl: string) {
     },
     dataType: "json"
   });
-
-  available_variables=[1,2];
-  updateDropdown();
-
-  // Display the dropdown and the box (only need to do this the first time)
-  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
-  dropdown.style.display = "inline-flex";
-
-  let selectionSection = document.getElementById("selectionSection") as HTMLElement;
-  selectionSection.style.display = "flex";
 }
 
 function updateDropdown() {
@@ -116,33 +106,42 @@ function sendDecision(b: string) {
   varButton.style.display = "none";
   notVarButton.style.display = "none";
 
-  // to-do change using global var and b
-  // send to backend showVariable(v);
-  (function($){
-    $.post('/decision', {
-      num: selected_var,
-      sign: decision
-  }).done(function(response) {
+  $.ajax({
+    type: "POST",
+    contentType: "application/json; charset=utf-8",
+    url: "/decision",
+    data: JSON.stringify({
+      'num': selected_var,
+      'sign': decision
+    }),
+    success: function (response) {
       if (response.finished) {
-
+        // display response.options somewhere prominent
+        hideSelectionSection();
       } else {
         // update graph depending on what we get back from backend
         addNodes(response.newnodes);
         addEdges(response.edges);
+        updateLevel(response.level);
         s.refresh();
 
         if (response.conflict) {
-          // todo: hide everything in selectionSection, add step-through buttons
 
+          hideSelectionSection();
         } else {
           // sort available_variables in ascending order?
           available_variables = response.available;
           updateDropdown();
         }
       }
-  }).fail(function() {
+    },
+    error: function(errorMsg) {
+      // add better error response
       $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-  })});
+      console.log(errorMsg);
+    },
+    dataType: "json"
+  });
 }
 
 // function to get UIPs and display
@@ -158,8 +157,6 @@ function getConflict(conflictClause: string) {
 // receive generated nodes at each level
 function addNodes(nodes: object) {
   // s.graph.addNode({id: '0', label: "p0"});
-  // s.graph.addNode({id: '1', label: "p1"});
-  // s.graph.addNode({id: '2', label: "p2"});
   for (let index in nodes) {
     if (nodes.hasOwnProperty(index)) {
       s.graph.addNode({id: index, label: nodes[index]})
@@ -185,21 +182,27 @@ function addEdges(edges: object) {
                         target: edges[key][1].toString,
                         size: 3,
                         type: "arrow"
-                      })
+      })
     }
   }
 }
 
+function updateLevel(level: number) {
+  var levelDiv = document.getElementById("currentLevel") as HTMLElement;
+  levelDiv.style.display = "inline-flex";
+  levelDiv.innerHTML = "Currently at level " + level.toString();
+}
 
-// todo: may be unnecessary make into a class method-type thing
-function showVariable(v: variable): string {
-  let result: string;
+function hideSelectionSection() {
+  let varButton = document.getElementById("decideVar") as HTMLElement;
+  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
 
-  if (isNot(v)) {
-    result += '~p' + v.num.toString();
-  } else {
-    result += 'p' + v.toString();
-  }
+  varButton.style.display = "none";
+  notVarButton.style.display = "none";
 
-  return result;
+  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
+  dropdown.style.display = "inline-flex";
+
+  let selectionSection = document.getElementById("selectionSection") as HTMLElement;
+  selectionSection.style.display = "flex";
 }
