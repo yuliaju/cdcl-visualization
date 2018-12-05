@@ -18,12 +18,11 @@ class Solution:
 	
 
 
-	def run_alg(self):
+	def run_alg(self, new_nodes):
 		data = {}
 		self.conflict = False
 		#Propogate: Decide any singular clauses, then repeat check one last time
 		new_decide = True
-		new_nodes = {}
 		while new_decide:
 			new_decide = False
 			for i in range(1, self.clause_db.getLen()+1):
@@ -33,8 +32,8 @@ class Solution:
 						# if clause not satisfied and of length one, decide that literal
 						l = c.nonExcludedLiterals()[0].literal
 						self.clause_db.decide_clauses(l)
-						self.g.decide_graph(self.level, l, i, self.clause_db.getClause(i))
-						label = self.g.decided.append(l)
+						self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
+						label = self.graph.decided.append(l)
 						new_nodes[l.index] = label
 						new_decide = True
 
@@ -75,6 +74,9 @@ class Solution:
 		else:
 			self.level += 1
 
+		print("bee do")
+		print(new_nodes)
+
 		# Create data array for frontend
 		data["new_nodes"] = new_nodes
 		data["finished"] = self.finished
@@ -103,4 +105,4 @@ class Solution:
 		self.graph.decided.append(l)
 		self.clause_db.decide_clauses(l)
 		self.graph.decide_graph(self.level, l)
-		return self.run_alg()
+		return self.run_alg({num:str(self.graph.getNode(l))})

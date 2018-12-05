@@ -23,7 +23,7 @@ def clause_db():
 	clause_db = parse_clauses("")
 	print(clause_db)
 	solution = Solution(clause_db)
-	return_data = solution.run_alg()
+	return_data = solution.run_alg({})
 	print(return_data)
 	return jsonify(return_data)
 
@@ -35,6 +35,7 @@ def user_decision():
 	num = data["num"]
 	sign = data["sign"]
 	return_data = solution.new_input(num, sign)
+	print(return_data)
 	return jsonify(return_data)
 
 if __name__ == "__main__":
