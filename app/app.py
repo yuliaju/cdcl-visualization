@@ -21,6 +21,7 @@ def clause_db():
 	global solution
 	print("here3")
 	# data = request.form['clauseLibrary']
+	data = request.args.get('clauseLibrary')
 	clause_db = parse_clauses("")
 	print(clause_db)
 	solution = Solution(clause_db)

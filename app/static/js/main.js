@@ -8,17 +8,6 @@ var selected_var;
 var available_variables;
 /*************************************************************/
 function sendClauseLibrary(cl) {
-    // (function($){
-    //   $.post('/clause_db', {
-    //     clauses: cl
-    // }).done(function(response) {
-    //     // available_variables = response.available;
-    //     // sort available_variables in ascending order?
-    //     console.log("Post request worked");
-    //     console.log(response);
-    // }).fail(function() {
-    //     $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-    // })});
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -26,6 +15,15 @@ function sendClauseLibrary(cl) {
         data: JSON.stringify({ 'clauseLibrary': cl }),
         success: function (response) {
             console.log(response);
+            available_variables = response.available;
+            // available_variables = [1,2];
+            updateDropdown();
+            updateLevel(response.level);
+            // Display the dropdown and the box (only need to do this the first time)
+            var dropdown = document.getElementById("varDropdown");
+            dropdown.style.display = "inline-flex";
+            var selectionSection = document.getElementById("selectionSection");
+            selectionSection.style.display = "flex";
         },
         error: function (errorMsg) {
             // add better error response
@@ -34,13 +32,6 @@ function sendClauseLibrary(cl) {
         },
         dataType: "json"
     });
-    available_variables = [1, 2];
-    updateDropdown();
-    // Display the dropdown and the box (only need to do this the first time)
-    var dropdown = document.getElementById("varDropdown");
-    dropdown.style.display = "inline-flex";
-    var selectionSection = document.getElementById("selectionSection");
-    selectionSection.style.display = "flex";
 }
 function updateDropdown() {
     var dropdown = document.getElementById("varDropdown");
@@ -80,22 +71,27 @@ function sendDecision(b) {
     var notVarButton = document.getElementById("decideNotVar");
     varButton.style.display = "none";
     notVarButton.style.display = "none";
-    // to-do change using global var and b
-    // send to backend showVariable(v);
-    (function ($) {
-        $.post('/decision', {
-            num: selected_var,
-            sign: decision
-        }).done(function (response) {
+    $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        url: "/decision",
+        data: JSON.stringify({
+            'num': selected_var,
+            'sign': decision
+        }),
+        success: function (response) {
             if (response.finished) {
+                // display response.options somewhere prominent
+                hideSelectionSection();
             }
             else {
                 // update graph depending on what we get back from backend
                 addNodes(response.newnodes);
                 addEdges(response.edges);
+                updateLevel(response.level);
                 s.refresh();
                 if (response.conflict) {
-                    // todo: hide everything in selectionSection, add step-through buttons
+                    hideSelectionSection();
                 }
                 else {
                     // sort available_variables in ascending order?
@@ -103,9 +99,13 @@ function sendDecision(b) {
                     updateDropdown();
                 }
             }
-        }).fail(function () {
+        },
+        error: function (errorMsg) {
+            // add better error response
             $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-        });
+            console.log(errorMsg);
+        },
+        dataType: "json"
     });
 }
 // function to get UIPs and display
@@ -117,8 +117,6 @@ function getConflict(conflictClause) {
 // receive generated nodes at each level
 function addNodes(nodes) {
     // s.graph.addNode({id: '0', label: "p0"});
-    // s.graph.addNode({id: '1', label: "p1"});
-    // s.graph.addNode({id: '2', label: "p2"});
     for (var index in nodes) {
         if (nodes.hasOwnProperty(index)) {
             s.graph.addNode({ id: index, label: nodes[index] });
@@ -146,14 +144,18 @@ function addEdges(edges) {
         }
     }
 }
-// todo: may be unnecessary make into a class method-type thing
-function showVariable(v) {
-    var result;
-    if (isNot(v)) {
-        result += '~p' + v.num.toString();
-    }
-    else {
-        result += 'p' + v.toString();
-    }
-    return result;
+function updateLevel(level) {
+    var levelDiv = document.getElementById("currentLevel");
+    levelDiv.style.display = "inline-flex";
+    levelDiv.innerHTML = "Currently at level " + level.toString();
+}
+function hideSelectionSection() {
+    var varButton = document.getElementById("decideVar");
+    var notVarButton = document.getElementById("decideNotVar");
+    varButton.style.display = "none";
+    notVarButton.style.display = "none";
+    var dropdown = document.getElementById("varDropdown");
+    dropdown.style.display = "inline-flex";
+    var selectionSection = document.getElementById("selectionSection");
+    selectionSection.style.display = "flex";
 }
