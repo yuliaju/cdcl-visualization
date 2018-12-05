@@ -64,8 +64,7 @@ function updateButtons() {
     notVarButton.style.display = "inline-flex";
 }
 // On button click
-function sendDecision(b) {
-    var decision = (b == 'true');
+function sendDecision(decision) {
     // Hide buttons
     var varButton = document.getElementById("decideVar");
     var notVarButton = document.getElementById("decideNotVar");
@@ -88,9 +87,12 @@ function sendDecision(b) {
                 console.log("here");
                 console.log(response);
                 // update graph depending on what we get back from backend
-                addNodes(response.newnodes);
+                addNodes(response.new_nodes);
                 addEdges(response.edges);
                 updateLevel(response.level);
+                available_variables = response.available;
+                updateDropdown();
+                console.log(s.graph.nodes());
                 s.refresh();
                 if (response.conflict) {
                     hideSelectionSection();
@@ -119,9 +121,10 @@ function getConflict(conflictClause) {
 // receive generated nodes at each level
 function addNodes(nodes) {
     // s.graph.addNode({id: '0', label: "p0"});
+    // nodes :: { int: string }
     for (var index in nodes) {
         if (nodes.hasOwnProperty(index)) {
-            s.graph.addNode({ id: index, label: nodes[index] });
+            s.graph.addNode({ id: index.toString(), label: nodes[index] });
         }
     }
     // Reposition all nodes
@@ -137,18 +140,21 @@ function addEdges(edges) {
     // let edgesIsEmpty: boolean = Object.keys(edges).length === 0 && edges.constructor === Object;
     console.log(edges);
     if (Object.keys(edges).length !== 0) {
-        for (var key in edges) {
+        var _loop_1 = function (key) {
             if (edges.hasOwnProperty(key)) {
-                if (edges[key].length != 0) {
-                    s.graph.addEdge({
-                        id: key,
-                        source: edges[key][0].toString(),
-                        target: edges[key][1].toString(),
+                edges[key].map(function (target) {
+                    return s.graph.addEdge({
+                        id: key.toString().concat(target.toString()),
+                        source: key.toString(),
+                        target: target.toString(),
                         size: 3,
                         type: "arrow"
                     });
-                }
+                });
             }
+        };
+        for (var key in edges) {
+            _loop_1(key);
         }
     }
 }
