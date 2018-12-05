@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import json
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import requests
 from .models.solution import *
 from .models.parse import *

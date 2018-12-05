@@ -1,4 +1,4 @@
-import * as $ from "jquery";
+import * as $ from 'jquery';
 
 let s;
 
@@ -25,15 +25,33 @@ let available_variables: number[];
 /*************************************************************/
 
 function sendClauseLibrary(cl: string) {
-  (function($){
-    $.post('/clause_db', {
-      clauses: cl
-  }).done(function(response) {
-      // available_variables = response.available;
-      // sort available_variables in ascending order?
-  }).fail(function() {
+  // (function($){
+  //   $.post('/clause_db', {
+  //     clauses: cl
+  // }).done(function(response) {
+  //     // available_variables = response.available;
+  //     // sort available_variables in ascending order?
+  //     console.log("Post request worked");
+  //     console.log(response);
+  // }).fail(function() {
+  //     $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
+  // })});
+
+  $.ajax({
+    type: "POST",
+    contentType: "application/json; charset=utf-8",
+    url: "/clause_db",
+    data: JSON.stringify({'clauseLibrary': cl}),
+    success: function (response) {
+      console.log(response);
+    },
+    error: function(errorMsg) {
+      // add better error response
       $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-  })});
+      console.log(errorMsg);
+    },
+    dataType: "json"
+  });
 
   available_variables=[1,2];
   updateDropdown();
