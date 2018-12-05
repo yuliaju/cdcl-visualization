@@ -177,11 +177,11 @@ function addEdges(edges: object) {
   for (let key in edges) {
     if (edges.hasOwnProperty(key)) {
       s.graph.addEdge({
-                        id: key,
-                        source: edges[key][0].toString(),
-                        target: edges[key][1].toString,
-                        size: 3,
-                        type: "arrow"
+        id: key,
+        source: edges[key][0].toString(),
+        target: edges[key][1].toString,
+        size: 3,
+        type: "arrow"
       })
     }
   }
@@ -190,7 +190,7 @@ function addEdges(edges: object) {
 function updateLevel(level: number) {
   var levelDiv = document.getElementById("currentLevel") as HTMLElement;
   levelDiv.style.display = "inline-flex";
-  levelDiv.innerHTML = "Currently at level " + level.toString();
+  levelDiv.innerHTML = "Current Level: " + level.toString();
 }
 
 function hideSelectionSection() {
