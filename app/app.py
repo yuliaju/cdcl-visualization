@@ -20,10 +20,12 @@ def index():
 def clause_db():
 	global solution
 	print("here3")
-	data = request.form['clauseLibrary']
-	clause_db = parse_clauses(data)
+	# data = request.form['clauseLibrary']
+	clause_db = parse_clauses("")
+	print(clause_db)
 	solution = Solution(clause_db)
 	return_data = solution.run_alg()
+	print(return_data)
 	return jsonify(return_data)
 
 # get num and sign of new decision literal

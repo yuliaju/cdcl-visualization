@@ -11,7 +11,7 @@ class Solution:
 		self.conflict = False
 		self.level = 0
 		self.original_clause_db = original_clause_db
-		self.clause_db = []
+		self.clause_db = copy.deepcopy(original_clause_db)
 	def __str__(self):
 		return ""
 
