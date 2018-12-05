@@ -80,16 +80,17 @@ class Solution:
 		data["finished"] = self.finished
 		data["level"] = copy.copy(self.level)
 		data["conflict"] = copy.copy(self.conflict)
-		data["edges"] = copy.copy(self.graph.edges_front(new_nodes))
+		data["edges"] = copy.copy(self.graph.new_edges_front(new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
 		if self.conflict:
 			#TO DO: reset database and decided!!!
 			# TO DO: send reset data
-			# data["reset"] = {"level": , "decided": , "edges": , "nodes": }
+			
 			self.level = self.g.backtrack_level(conflict_clause)
 			self.g.removeNodes(backtrack_level)
+			# data["reset"] = {"level": self.level, "decided": , "edges": self.graph.edges_front(), "nodes": self.graph.allNodes_front}
 
 		return data
 	

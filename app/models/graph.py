@@ -59,8 +59,11 @@ class Graph:
 			nodes.append(i)
 		return nodes
 
+	def allNodes_front(self):
+		return [i.literal.index for i in self.allNodes]
+
 	#TO DO: only send edges associated with new_nodes
-	def edges_front(self, new_nodes):
+	def edges_front(self):
 		l = {}
 		for v in self.edges:
 			temp = []
@@ -68,6 +71,9 @@ class Graph:
 				temp.append(e.literal.index)
 			l[v.literal.index] = temp
 		return l
+
+	def new_edges_front(self, new_nodes):
+
 
 	def decided_front(self):
 		l = []
