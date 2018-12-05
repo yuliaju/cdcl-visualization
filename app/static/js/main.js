@@ -85,6 +85,8 @@ function sendDecision(b) {
                 hideSelectionSection();
             }
             else {
+                console.log("here");
+                console.log(response);
                 // update graph depending on what we get back from backend
                 addNodes(response.newnodes);
                 addEdges(response.edges);
@@ -132,15 +134,21 @@ function addNodes(nodes) {
 function addEdges(edges) {
     // s.graph.addEdge({id: '01', source: '0', target: '1', size: 1, type: "arrow"});
     // s.graph.addEdge({id: '02', source: '0', target: '2', size: 1, type: "arrow"});
-    for (var key in edges) {
-        if (edges.hasOwnProperty(key)) {
-            s.graph.addEdge({
-                id: key,
-                source: edges[key][0].toString(),
-                target: edges[key][1].toString,
-                size: 3,
-                type: "arrow"
-            });
+    // let edgesIsEmpty: boolean = Object.keys(edges).length === 0 && edges.constructor === Object;
+    console.log(edges);
+    if (Object.keys(edges).length !== 0) {
+        for (var key in edges) {
+            if (edges.hasOwnProperty(key)) {
+                if (edges[key].length != 0) {
+                    s.graph.addEdge({
+                        id: key,
+                        source: edges[key][0].toString(),
+                        target: edges[key][1].toString(),
+                        size: 3,
+                        type: "arrow"
+                    });
+                }
+            }
         }
     }
 }
