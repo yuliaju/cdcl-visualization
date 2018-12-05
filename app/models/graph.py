@@ -17,12 +17,6 @@ class Graph:
 				if self.clause is not None:
 					s += ": C" + str(self.clausenum)
 			return s
-		# def __eq__(self, other):
-		# 	if self.conflict == True:
-		# 		return other.conflict
-		# 	if other.conflict == True:
-		# 		return self.conflict
-		# 	return self.literal == other.literal
 
 	#initialize graph
 	def __init__(self):
@@ -62,8 +56,7 @@ class Graph:
 	def allNodes_front(self):
 		return [i.literal.index for i in self.allNodes]
 
-	#TO DO: only send edges associated with new_nodes
-	def edges_front(self):
+	def all_edges_front(self):
 		l = {}
 		for v in self.edges:
 			temp = []
@@ -72,7 +65,16 @@ class Graph:
 			l[v.literal.index] = temp
 		return l
 
-	# def new_edges_front(self, new_nodes):
+	def new_edges_front(self, new_nodes):
+		l = {}
+		for v in self.edges:
+			print(str(v))
+			if v.literal.index in new_nodes.keys() and len(self.edges[v]) != 0:
+				temp = []
+				for e in self.edges[v]:
+					temp.append(e.literal.index)
+				l[v.literal.index] = temp
+		return l
 
 
 	def decided_front(self):

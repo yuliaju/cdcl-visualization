@@ -31,7 +31,9 @@ def clause_db():
 @app.route('/decision', methods=['POST'])
 def user_decision():
 	global solution
+	print("user data")
 	data = json.loads(request.data)
+	print(data)
 	num = data["num"]
 	sign = data["sign"]
 	return_data = solution.new_input(num, sign)

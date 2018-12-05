@@ -4,6 +4,9 @@ from .clause import *
 from .util import *
 from .clause_db import *
 
+
+
+# TO DO: WHAT ABOUT UNSAT???
 class Solution:
 	def __init__(self, original_clause_db):
 		self.graph = Graph()
@@ -12,11 +15,8 @@ class Solution:
 		self.level = 0
 		self.original_clause_db = original_clause_db
 		self.clause_db = copy.deepcopy(original_clause_db)
-	def __str__(self):
-		return ""
-
-	
-
+	# def __str__(self):
+	# 	return ""
 
 	def run_alg(self, new_nodes):
 		data = {}
@@ -74,26 +74,22 @@ class Solution:
 		else:
 			self.level += 1
 
-		print("bee do")
-		print(new_nodes)
-
 		# Create data array for frontend
 		data["new_nodes"] = new_nodes
 		data["finished"] = self.finished
 		data["level"] = copy.copy(self.level)
 		data["conflict"] = copy.copy(self.conflict)
-		# CHANGE THIS TO DO
-		data["edges"] = copy.copy(self.graph.edges_front())
+		data["edges"] = copy.copy(self.graph.new_edges_front(new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
 		if self.conflict:
 			#TO DO: reset database and decided!!!
-			# TO DO: send reset data
+
 			
 			self.level = self.g.backtrack_level(conflict_clause)
 			self.g.removeNodes(backtrack_level)
-			# data["reset"] = {"level": self.level, "decided": , "edges": self.graph.edges_front(), "nodes": self.graph.allNodes_front}
+			# data["reset"] = {"level": self.level, "decided": , "edges": self.graph.all_edges_front(), "nodes": self.graph.allNodes_front}
 
 		return data
 	
