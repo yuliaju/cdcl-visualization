@@ -147,7 +147,7 @@ function addEdges(edges) {
 function updateLevel(level) {
     var levelDiv = document.getElementById("currentLevel");
     levelDiv.style.display = "inline-flex";
-    levelDiv.innerHTML = "Currently at level " + level.toString();
+    levelDiv.innerHTML = "Current Level: " + level.toString();
 }
 function hideSelectionSection() {
     var varButton = document.getElementById("decideVar");
