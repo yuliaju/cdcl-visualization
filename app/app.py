@@ -12,7 +12,6 @@ solution = ""
 
 @app.route("/")
 def index():
-	print("here2")
 	return render_template("index.html")
 
 # get initial clause database
@@ -21,7 +20,6 @@ def clause_db():
 	global solution
 	data = json.loads(request.data)
 	clause_db = parse_clauses("")
-	print(clause_db)
 	solution = Solution(clause_db)
 	return_data = solution.run_alg({})
 	print(return_data)
@@ -31,9 +29,7 @@ def clause_db():
 @app.route('/decision', methods=['POST'])
 def user_decision():
 	global solution
-	print("user data")
 	data = json.loads(request.data)
-	print(data)
 	num = data["num"]
 	sign = data["sign"]
 	return_data = solution.new_input(num, sign)

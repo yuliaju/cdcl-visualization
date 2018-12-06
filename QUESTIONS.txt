@@ -1,26 +1,11 @@
-QUESTIONS/NOTES:
-1) right now I am sending you only new nodes and edges. This is more efficient (you don't have to regenerate the graph every time, just use the api to create the new nodes). But would you rather I send all?
---This is fine; it matches up well with how I call the graph library
-
-2) I realized that when there is a conflict, I need to send you {level, nodes, edges, decided} at the conflict AND once everything has been reset. I added data["reset"], included only when conflict is true. It contains:
-
-level
-decided
-edges: ALL edges in new (reset) graph, same format
-nodes: ALL nodes in new (reset) graph, same format
---(y) got it!
-
-
--Sally
-
 
 THOUGHTS FOR LATER
 user should not be able to modify clause db during alg OR if they do, alg restarts
 --I think it's fine if the alg restarts if they modify the clause db; that should be a familiar UX
-
+***--OK sounds good. So I've made it so the alg restarts, but you'll need to clear the graph nodes if they press it
 
 
 IF TIME
 let user load sample clause databases
-show which clauses are satisfied (already implemented in backend!
+show which clauses are satisfied (already implemented in backend!)
 add helpful educational tidbits

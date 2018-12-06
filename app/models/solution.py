@@ -1,7 +1,6 @@
 import copy
 from .graph import *
 from .clause import *
-from .util import *
 from .clause_db import *
 
 
@@ -65,7 +64,8 @@ class Solution:
 			uip = self.graph.uip(recentDecision)
 			cuts = self.graph.cut(uip)
 			conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
-			data["conflict_info"] = {"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
+			data["conflict_info"] = {"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
+				str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
 				"cut_other": [c.literal.index for c in cuts[1]]}
 			self.original_clause_db.addClause(conflict_clause)
 
@@ -85,11 +85,12 @@ class Solution:
 
 		if self.conflict:
 			#TO DO: reset database and decided!!!
-
-			
+			self.clause_db = copy.deepcopy(self.original_clause_db)
 			self.level = self.graph.backtrack_level(conflict_clause)
-			self.graph.removeNodes(self.level)
-			# data["reset"] = {"level": self.level, "decided": , "edges": self.graph.all_edges_front(), "nodes": self.graph.allNodes_front}
+			self.graph.reset(self.level)
+			data["reset"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
+				self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
+				self.graph.available_front(self.original_clause_db.num_literals)}
 
 		return data
 	

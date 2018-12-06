@@ -55,12 +55,12 @@ class Graph:
 		return nodes
 
 	def allNodes_front(self):
-		return [i.literal.index for i in self.allNodes]
+		return [i.literal.index for i in self.allNodes()]
 
 	def all_edges_front(self):
 		l = {}
 		for v in self.edges:
-			if not (v.conflict):
+			if not (v.conflict) and len(self.edges[v]) != 0:
 				temp = []
 				for e in self.edges[v]:
 					if e.conflict:
@@ -94,11 +94,9 @@ class Graph:
 	def available_front(self, lits):
 		l = []
 		ds = [d.index for d in self.decided]
-		print(ds)
 		for i in range(1, lits+1):
 			if i not in ds:
 				l.append(i)
-		print(l)
 		return l
 
 	#return node corresponding to literal, if it exists. False if not.
@@ -109,8 +107,7 @@ class Graph:
 		return False
 
 	#remove all nodes above level
-	def removeNodes(self, level):
-		print(str(self))
+	def reset(self, level):
 		dels = []
 		self.decided = []
 		con = self.getConflict()
@@ -120,8 +117,6 @@ class Graph:
 		for i in self.allNodes():
 			if i.level > level:
 				dels.append(i)
-			else:
-				print("here!")
 		#delete nodes from graph
 		for d in dels:
 			del self.edges[d]
@@ -243,8 +238,6 @@ class Graph:
 		lowest = float("inf")
 		nodes = []
 		for lit in conflict_clause.literals:
-			if self.getNode(lit.literal) == False:
-				print("ehehehehe")
 			nodes.append(self.getNode(lit.literal))
 		for node in nodes:
 			if node.level < lowest:
@@ -263,7 +256,7 @@ class Graph:
 				if n:
 					self.addEdge(n, newnode)
 				else:
-					print("problem")
+					raise Exception("null node")
 		return self
 
 	#update graph given literal l
@@ -274,3 +267,8 @@ class Graph:
 		if clause is not None:
 			self.new_edges(newnode, clause, l)	
 		return str(newnode)
+
+
+
+
+
