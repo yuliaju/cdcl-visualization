@@ -55,7 +55,7 @@ class Solution:
 
 			cl = self.clause_db.is_conflict()
 
-			self.graph.addNode(Graph.Node(None, None, self.clause_db.getClause(cl), cl, True))
+			self.graph.addNode(Graph.Node(Literal("K", True), None, self.clause_db.getClause(cl), cl, True))
 			newnode = self.graph.getConflict()
 			self.graph.new_edges(newnode, self.clause_db.getClause(cl), None)
 			recentDecision = self.graph.recentDecision(self.level)
@@ -65,8 +65,8 @@ class Solution:
 			uip = self.graph.uip(recentDecision)
 			cuts = self.graph.cut(uip)
 			conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
-			data["conflict_info"] = {"all_uips": (str(u) for u in uips), "right_uip": uip, "conflict_clause": str(conflict_clause), "cut_conflict": (c.literal.index for c in cuts[0]), 
-				"cut_other": (c.literal.index for c in cuts[1])}
+			data["conflict_info"] = {"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
+				"cut_other": [c.literal.index for c in cuts[1]]}
 			self.original_clause_db.addClause(conflict_clause)
 
 			
@@ -87,8 +87,8 @@ class Solution:
 			#TO DO: reset database and decided!!!
 
 			
-			self.level = self.g.backtrack_level(conflict_clause)
-			self.g.removeNodes(backtrack_level)
+			self.level = self.graph.backtrack_level(conflict_clause)
+			self.graph.removeNodes(self.level)
 			# data["reset"] = {"level": self.level, "decided": , "edges": self.graph.all_edges_front(), "nodes": self.graph.allNodes_front}
 
 		return data

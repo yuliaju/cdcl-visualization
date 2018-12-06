@@ -1,5 +1,6 @@
 import copy
 from .clause import *
+from .clause import *
 
 class Graph:
 	class Node:
@@ -59,21 +60,28 @@ class Graph:
 	def all_edges_front(self):
 		l = {}
 		for v in self.edges:
-			temp = []
-			for e in self.edges[v]:
-				temp.append(e.literal.index)
-			l[v.literal.index] = temp
+			if not (v.conflict):
+				temp = []
+				for e in self.edges[v]:
+					if e.conflict:
+						temp.append("K")
+					else:
+						temp.append(e.literal.index)
+				l[v.literal.index] = temp
 		return l
 
 	def new_edges_front(self, new_nodes):
 		l = {}
 		for v in self.edges:
-			print(str(v))
-			if v.literal.index in new_nodes.keys() and len(self.edges[v]) != 0:
-				temp = []
-				for e in self.edges[v]:
-					temp.append(e.literal.index)
-				l[v.literal.index] = temp
+			if not (v.conflict):
+				if v.literal.index in new_nodes.keys() and len(self.edges[v]) != 0:
+					temp = []
+					for e in self.edges[v]:
+						if e.conflict:
+							temp.append("K")
+						else:
+							temp.append(e.literal.index)
+					l[v.literal.index] = temp
 		return l
 
 
@@ -211,7 +219,7 @@ class Graph:
 		con = self.rec_path([[uip]])
 		for path in con:
 			for node in path:
-				if node not in conflict_side and node.conflict is False and node is not uip:
+				if node not in conflict_side and node is not uip:
 					conflict_side.append(node)
 		for node in self.allNodes():
 			if node not in conflict_side:
