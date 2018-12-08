@@ -13,9 +13,7 @@ class Solution:
 		self.conflict = False
 		self.level = 0
 		self.original_clause_db = original_clause_db
-		self.clause_db = copy.deepcopy(original_clause_db)
-	# def __str__(self):
-	# 	return ""
+		self.clause_db = copy.deepcopy(original_clause_db) 
 
 	def run_alg(self, new_nodes):
 		data = {}
@@ -84,10 +82,13 @@ class Solution:
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
 		if self.conflict:
-			#TO DO: reset database and decided!!!
-			self.clause_db = copy.deepcopy(self.original_clause_db)
+			#reset level, graph, and clause_db
 			self.level = self.graph.backtrack_level(conflict_clause)
 			self.graph.reset(self.level)
+			self.clause_db = copy.deepcopy(self.original_clause_db)	
+			for l in self.graph.decided:
+				self.clause_db.decide_clauses(l)
+			#load reset data
 			data["reset"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
 				self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
 				self.graph.available_front(self.original_clause_db.num_literals)}
@@ -103,3 +104,5 @@ class Solution:
 		self.clause_db.decide_clauses(l)
 		self.graph.decide_graph(self.level, l)
 		return self.run_alg({num:str(self.graph.getNode(l))})
+
+

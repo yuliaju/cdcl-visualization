@@ -9,3 +9,12 @@ IF TIME
 let user load sample clause databases
 show which clauses are satisfied (already implemented in backend!)
 add helpful educational tidbits
+
+
+
+Sally to do:
+parse clauses
+return unsat
+test!!!
+
+send list of satisfied clauses

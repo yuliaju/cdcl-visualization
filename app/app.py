@@ -19,7 +19,7 @@ def index():
 def clause_db():
 	global solution
 	data = json.loads(request.data)
-	clause_db = parse_clauses("")
+	clause_db = parse_clauses()
 	solution = Solution(clause_db)
 	return_data = solution.run_alg({})
 	print(return_data)
