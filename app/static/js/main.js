@@ -4,6 +4,8 @@ function isNot(maybeNot) {
     return maybeNot.num !== undefined;
 }
 var selected_var;
+var uips;
+var closest_uip;
 /*************************************************************/
 function sendClauseLibrary(cl) {
     $.ajax({
@@ -88,6 +90,10 @@ function sendDecision(decision) {
                 s.refresh();
                 if (response.conflict) {
                     hideSelectionSection();
+                    // addConflictUI();
+                    console.log(response.conflict_info.all_uips);
+                    uips = response.conflict_info.all_uips;
+                    closest_uip = response.conflict_info.right_uip;
                 }
                 else {
                     // sort available_variables in ascending order?
@@ -123,13 +129,15 @@ function addEdges(edges) {
         var _loop_1 = function (key) {
             if (edges.hasOwnProperty(key)) {
                 edges[key].map(function (target) {
-                    return s.graph.addEdge({
-                        id: key.toString().concat(target.toString()),
-                        source: key.toString(),
-                        target: target.toString(),
-                        size: 3,
-                        type: "arrow"
-                    });
+                    if (target != "K") {
+                        s.graph.addEdge({
+                            id: key.toString().concat(target.toString()),
+                            source: key.toString(),
+                            target: target.toString(),
+                            size: 10,
+                            type: "arrow"
+                        });
+                    }
                 });
             }
         };
@@ -149,12 +157,47 @@ function hideSelectionSection() {
     varButton.style.display = "none";
     notVarButton.style.display = "none";
     var dropdown = document.getElementById("varDropdown");
-    dropdown.style.display = "inline-flex";
+    dropdown.style.display = "none";
     var selectionSection = document.getElementById("selectionSection");
-    selectionSection.style.display = "flex";
+    selectionSection.style.display = "none";
+}
+function addConflictUI() {
+    var graph = document.getElementById("graph");
+    graph.classList.add("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+    var conflictSection = document.getElementById("conflictSection");
+    conflictSection.style.display = "flex";
+}
+function removeConflictUI() {
+    var graph = document.getElementById("graph");
+    graph.removeAttribute("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+    var conflictSection = document.getElementById("conflictSection");
+    conflictSection.style.display = "none";
 }
 // function to get UIPs and display
-function getUIPs(uips) {
+function getUIPs() {
+    console.log('in getUIPs', uips);
+    s.graph.nodes().forEach(function (node) {
+        console.log(node);
+        if (uips.indexOf(node.label) > -1) {
+            console.log("here");
+            node.color = 'red';
+        }
+    });
+    s.render();
+    var thisButton = document.getElementById("conflict_getUIPs");
+    thisButton.style.display = "none";
+    var nextButton = document.getElementById("conflict_getUIP");
+    thisButton.style.display = "inline-flex";
+}
+function getClosestUIP() {
+    s.graph.nodes().forEach(function (node) {
+        if (closest_uip !== node.label) {
+            node.color = '#357EDD';
+        }
+    });
+    s.render();
+    var thisButton = document.getElementById("conflict_getUIP");
+    thisButton.style.display = "none";
 }
 // function to get conflict clause and display
 function getConflict(conflictClause) {

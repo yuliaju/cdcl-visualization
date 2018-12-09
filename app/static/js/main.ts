@@ -18,6 +18,8 @@ type id = number;
 type outgoingEdges = number;
 
 let selected_var: number;
+let uips: string[];
+let closest_uip: string;
 
 /*************************************************************/
 
@@ -122,8 +124,12 @@ function sendDecision(decision: boolean) {
         s.refresh();
 
         if (response.conflict) {
-
           hideSelectionSection();
+          // addConflictUI();
+
+          console.log(response.conflict_info.all_uips);
+          uips = response.conflict_info.all_uips;
+          closest_uip = response.conflict_info.right_uip;
         } else {
           // sort available_variables in ascending order?
           updateDropdown(response.available);
@@ -160,14 +166,17 @@ function addEdges(edges: object) {
   if (Object.keys(edges).length !== 0) {
     for (let key in edges) {
       if (edges.hasOwnProperty(key)) {
-        edges[key].map(target =>
-          s.graph.addEdge({
-            id: key.toString().concat(target.toString()),
-            source: key.toString(),
-            target: target.toString(),
-            size: 3,
-            type: "arrow"
-          })
+        edges[key].map(target => {
+          if (target != "K") {
+            s.graph.addEdge({
+              id: key.toString().concat(target.toString()),
+              source: key.toString(),
+              target: target.toString(),
+              size: 10,
+              type: "arrow"
+            })
+          }
+        }
         )
       }
     }
@@ -188,15 +197,58 @@ function hideSelectionSection() {
   notVarButton.style.display = "none";
 
   let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
-  dropdown.style.display = "inline-flex";
+  dropdown.style.display = "none";
 
   let selectionSection = document.getElementById("selectionSection") as HTMLElement;
-  selectionSection.style.display = "flex";
+  selectionSection.style.display = "none";
+}
+
+function addConflictUI() {
+  let graph = document.getElementById("graph") as HTMLElement;
+  graph.classList.add("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+
+  let conflictSection = document.getElementById("conflictSection") as HTMLElement;
+  conflictSection.style.display = "flex";
+}
+
+function removeConflictUI() {
+  let graph = document.getElementById("graph") as HTMLElement;
+  graph.removeAttribute("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+
+  let conflictSection = document.getElementById("conflictSection") as HTMLElement;
+  conflictSection.style.display = "none";
 }
 
 // function to get UIPs and display
-function getUIPs(uips: string) {
+function getUIPs() {
+  console.log('in getUIPs', uips);
 
+  s.graph.nodes().forEach(function(node) {
+    console.log(node);
+    if (uips.indexOf(node.label) > -1) {
+      console.log("here");
+      node.color = 'red';
+    }
+  });
+  s.render()
+
+  let thisButton = document.getElementById("conflict_getUIPs") as HTMLElement;
+  thisButton.style.display = "none";
+
+  let nextButton = document.getElementById("conflict_getUIP") as HTMLElement;
+  thisButton.style.display = "inline-flex";
+}
+
+function getClosestUIP() {
+  s.graph.nodes().forEach(function(node) {
+    if (closest_uip !== node.label) {
+      node.color = '#357EDD'
+    }
+  });
+  s.render()
+
+  let thisButton = document.getElementById("conflict_getUIP") as HTMLElement;
+  thisButton.style.display = "none";
 }
 
 // function to get conflict clause and display

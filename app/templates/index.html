@@ -20,7 +20,7 @@
     </div>
 
     <div class="row flex-row">
-      <div class="graph" id="sigma-container" style="width:40%"></div>
+      <div class="graph br2 bw2 ba ph3 pv2 washed-red br--top-l" id="sigma-container" style="width:50%"></div>
 
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
@@ -63,25 +63,44 @@
         </div>
       </div>
 
-      <script>
-        // Initialize sigma:
-        s = new sigma(
-          {
-             renderer: {
-               container: document.getElementById('sigma-container'),
-               type: 'canvas'
-             },
-             settings: {
-               defaultNodeColor: '#357EDD'
-             }
-           }
-         );
 
-         // to-do: draggable + zoomable graph
-         // this zooms out
-         s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
-      </script>
 
     </div>
+
+    <div class="row flex-row" id="conflictSection">
+        <div class="br2 bw2 ba ph3 pv2 mb2 washed-red br--bottom-l bg-washed-red bt-0" id="conflictSection" style="width:50%">
+          <div class="mid-gray" style="display:inline-flex;">Step-through the conflict</div>
+          <div style="display:inline-flex;">
+            <a id="conflict_getUIPs" onclick="getUIPs()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2">
+              View Unique Implication Points (UIPs)
+            </a>
+            <a id="conflict_getUIP" onclick="getUIP()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2" style="display:none">
+              View Closest Unique Implication Points
+            </a>
+          </div>
+        </div>
+        <div style="width:40%"></div>
+    </div>
+
+    <script>
+      // Initialize sigma:
+      s = new sigma(
+        {
+           renderer: {
+             container: document.getElementById('sigma-container'),
+             type: 'canvas'
+           },
+           settings: {
+             defaultNodeColor: '#357EDD',
+             labelThreshold: 0,
+             arrowSizeRatio: 40
+           }
+         }
+       );
+
+       // to-do: draggable + zoomable graph
+       // this zooms out
+       s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
+    </script>
   </body>
 </html>
