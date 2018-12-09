@@ -186,7 +186,8 @@ class Graph:
 			else:
 				finished = False
 				for adjacent in self.edges[last]:
-					new_path = path.copy()
+					# new_path = path.copy()
+					new_path = path[:]
 					new_path.append(adjacent)
 					new_paths.append(new_path)
 		if finished:
@@ -267,10 +268,5 @@ class Graph:
 		newnode = self.getNode(l)
 		#add edges
 		if clause is not None:
-			self.new_edges(newnode, clause, l)	
+			self.new_edges(newnode, clause, l)
 		return str(newnode)
-
-
-
-
-

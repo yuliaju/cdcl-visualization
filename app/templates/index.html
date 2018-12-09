@@ -20,8 +20,8 @@
     </div>
 
     <div class="row flex-row">
-      <div class="graph" id="sigma-container" style="width:40%"></div>
-      
+      <div id="sigma-container" style="width:50%"></div>
+
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
           <div class="row">
@@ -56,30 +56,58 @@
 
         <div class="row">
           <div id="errorMsg"></div>
-          <div id="currentLevel" class="f5 b db mb1" style="width:40%; display:none"></div>
+          <div id="currentLevel" class="f5 b db mb1" style="display:none"></div>
           <!-- <div class="info">
             May be where the updated clause database and/or explanations is displayed
           </div> -->
         </div>
       </div>
 
-      <script>
-        // Initialize sigma:
-        s = new sigma(
-          {
-             renderer: {
-               container: document.getElementById('sigma-container'),
-               type: 'canvas'
-             },
-             settings: {
-               defaultNodeColor: '#357EDD'
-             }
-           }
-         );
 
-         // to-do: draggable + zoomable graph
-      </script>
 
     </div>
+
+    <div class="row flex-row">
+        <div class="br2 bw2 ba ph3 pv2 mb2 washed-red br--bottom-l bg-washed-red bt-0" id="conflictSection" style="width:50%;display:none">
+          <div class="mid-gray" style="display:inline-flex;">Step through the conflict</div>
+          <div style="display:inline-flex;">
+            <a id="conflict_getUIPs" onclick="getUIPs()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2">
+              View Unique Implication Points (UIPs)
+            </a>
+            <a id="conflict_getUIP" onclick="getClosestUIP()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2" style="display:none">
+              View Closest UIP
+            </a>
+            <a id="conflict_showCut" onclick="showCut()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2" style="display:none">
+              Show Cut
+            </a>
+            <a id="conflict_addConflictClause" onclick="addConflictClause()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2" style="display:none">
+              Add Conflict Clause
+            </a>
+          </div>
+        </div>
+        <div style="width:40%"></div>
+    </div>
+
+    <script>
+      // Initialize sigma:
+      s = new sigma(
+        {
+           renderer: {
+             container: document.getElementById('sigma-container'),
+             type: 'canvas'
+           },
+           settings: {
+             defaultNodeColor: '#357EDD',
+             labelThreshold: 0,
+             arrowSizeRatio: 40
+             // autoRescale: false
+           }
+         }
+       );
+
+       // to-do: draggable + zoomable graph
+       // this zooms out
+       s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
+    </script>
   </body>
 </html>

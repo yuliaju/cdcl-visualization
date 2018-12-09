@@ -4,6 +4,10 @@ function isNot(maybeNot) {
     return maybeNot.num !== undefined;
 }
 var selected_var;
+var uips;
+var closest_uip;
+var conflict_info;
+var post_conflict_info;
 /*************************************************************/
 function sendClauseLibrary(cl) {
     $.ajax({
@@ -15,11 +19,8 @@ function sendClauseLibrary(cl) {
             console.log(response);
             updateDropdown(response.available);
             updateLevel(response.level);
-            // Display the dropdown and the box (only need to do this the first time)
-            var dropdown = document.getElementById("varDropdown");
-            dropdown.style.display = "inline-flex";
-            var selectionSection = document.getElementById("selectionSection");
-            selectionSection.style.display = "flex";
+            // Display the dropdown and the box
+            showSelectionSection();
         },
         error: function (errorMsg) {
             // add better error response
@@ -33,6 +34,7 @@ function updateDropdown(available_variables) {
     var dropdown = document.getElementById("varDropdown");
     // Remove all options but the placeholder
     dropdown.options.length = 1;
+    // Sort options in ascending order
     available_variables.sort();
     available_variables.map(function (v) {
         var opt = document.createElement('option');
@@ -78,19 +80,23 @@ function sendDecision(decision) {
                 hideSelectionSection();
             }
             else {
-                console.log("here");
                 console.log(response);
                 // update graph depending on what we get back from backend
                 addNodes(response.new_nodes);
+                if (response.conflict) {
+                    addNodes({ 'K': 'K: '.concat(response.conflict_info.conflict_clause) });
+                }
                 addEdges(response.edges);
                 updateLevel(response.level);
                 updateDropdown(response.available);
                 s.refresh();
                 if (response.conflict) {
                     hideSelectionSection();
+                    addConflictUI();
+                    conflict_info = response.conflict_info;
+                    post_conflict_info = response.reset;
                 }
                 else {
-                    // sort available_variables in ascending order?
                     updateDropdown(response.available);
                 }
             }
@@ -117,17 +123,18 @@ function addNodes(nodes) {
         node.y = Math.sin(Math.PI * 2 * i / a.length);
         node.size = 1;
     });
+    s.render();
 }
 function addEdges(edges) {
     if (Object.keys(edges).length !== 0) {
         var _loop_1 = function (key) {
             if (edges.hasOwnProperty(key)) {
                 edges[key].map(function (target) {
-                    return s.graph.addEdge({
+                    s.graph.addEdge({
                         id: key.toString().concat(target.toString()),
                         source: key.toString(),
                         target: target.toString(),
-                        size: 3,
+                        size: 10,
                         type: "arrow"
                     });
                 });
@@ -149,13 +156,97 @@ function hideSelectionSection() {
     varButton.style.display = "none";
     notVarButton.style.display = "none";
     var dropdown = document.getElementById("varDropdown");
+    dropdown.style.display = "none";
+    var selectionSection = document.getElementById("selectionSection");
+    selectionSection.style.display = "none";
+}
+function showSelectionSection() {
+    var dropdown = document.getElementById("varDropdown");
     dropdown.style.display = "inline-flex";
     var selectionSection = document.getElementById("selectionSection");
     selectionSection.style.display = "flex";
 }
-// function to get UIPs and display
-function getUIPs(uips) {
+function addConflictUI() {
+    var _a;
+    var graph = document.getElementById("sigma-container");
+    var graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l'];
+    (_a = graph.classList).add.apply(_a, graphConflictUIList);
+    var conflictSection = document.getElementById("conflictSection");
+    conflictSection.style.display = "flex";
+    var firstButton = document.getElementById("conflict_getUIPs");
+    firstButton.style.display = "inline-flex";
 }
-// function to get conflict clause and display
-function getConflict(conflictClause) {
+function removeConflictUI() {
+    var _a;
+    var graph = document.getElementById("sigma-container");
+    var graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l'];
+    (_a = graph.classList).remove.apply(_a, graphConflictUIList);
+    var conflictSection = document.getElementById("conflictSection");
+    conflictSection.style.display = "none";
+}
+function getUIPs() {
+    // color all possible uips red
+    s.graph.nodes().forEach(function (node) {
+        if (conflict_info.all_uips.indexOf(node.label) > -1) {
+            console.log("here");
+            node.color = 'red';
+        }
+    });
+    // recolor all the edges to be blue again
+    s.graph.edges().forEach(function (edge) { return edge.color = '#357EDD'; });
+    s.render();
+    var thisButton = document.getElementById("conflict_getUIPs");
+    thisButton.style.display = "none";
+    var nextButton = document.getElementById("conflict_getUIP");
+    nextButton.style.display = "inline-flex";
+}
+function getClosestUIP() {
+    // only the closest uip remains red
+    s.graph.nodes().forEach(function (node) {
+        if (conflict_info.right_uip !== node.label) {
+            node.color = '#357EDD';
+        }
+    });
+    s.render();
+    var thisButton = document.getElementById("conflict_getUIP");
+    thisButton.style.display = "none";
+    var nextButton = document.getElementById("conflict_showCut");
+    nextButton.style.display = "inline-flex";
+}
+function showCut() {
+    var cut_conflict = conflict_info.cut_conflict.map(function (x) { return x.toString(); });
+    // Show all elements on conflict side of cut as red
+    s.graph.nodes().forEach(function (node) {
+        if (cut_conflict.indexOf(node.id) > -1) {
+            node.color = 'red';
+        }
+        else {
+            node.color = '#357EDD';
+        }
+    });
+    // recolor all the edges to be blue again
+    s.graph.edges().forEach(function (edge) { return edge.color = '#357EDD'; });
+    s.render();
+    var thisButton = document.getElementById("conflict_showCut");
+    thisButton.style.display = "none";
+    var nextButton = document.getElementById("conflict_addConflictClause");
+    nextButton.style.display = "inline-flex";
+}
+function addConflictClause() {
+    s.graph.clear();
+    s.refresh();
+    console.log('post_conflict_info ', post_conflict_info);
+    // post_conflict_info.nodes :: [number]
+    post_conflict_info.nodes.forEach(function (node) {
+        addNodes({ node: node.toString() });
+    });
+    console.log(s.graph.nodes());
+    addEdges(post_conflict_info.edges);
+    s.render();
+    var thisButton = document.getElementById("conflict_addConflictClause");
+    thisButton.style.display = "none";
+    removeConflictUI();
+    showSelectionSection();
+    updateDropdown(post_conflict_info.available);
+    updateLevel(post_conflict_info.level);
 }
