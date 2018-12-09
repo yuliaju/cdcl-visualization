@@ -223,15 +223,17 @@ class Graph:
 
 	def conflict_clause(self, conflict_cut):
 		clause = []
+		indices = []
 		for node in self.edges:
 			for adj in self.edges[node]:
-				if adj in conflict_cut and node not in conflict_cut and node.literal not in clause:
+				if adj in conflict_cut and node not in conflict_cut and node.literal.index not in indices:
 					l = copy.deepcopy(node.literal)
 					if l.sign:
 						l.sign = False
 					else:
 						l.sign = True
 					clause.append(l)
+					indices.append(l.index)
 		return clause
 
 	def backtrack_level(self, conflict_clause):
