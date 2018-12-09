@@ -21,7 +21,7 @@
 
     <div class="row flex-row">
       <div class="graph" id="sigma-container" style="width:40%"></div>
-      
+
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
           <div class="row">
@@ -56,7 +56,7 @@
 
         <div class="row">
           <div id="errorMsg"></div>
-          <div id="currentLevel" class="f5 b db mb1" style="width:40%; display:none"></div>
+          <div id="currentLevel" class="f5 b db mb1" style="display:none"></div>
           <!-- <div class="info">
             May be where the updated clause database and/or explanations is displayed
           </div> -->
@@ -78,6 +78,8 @@
          );
 
          // to-do: draggable + zoomable graph
+         // this zooms out
+         s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
       </script>
 
     </div>
