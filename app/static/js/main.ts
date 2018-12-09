@@ -20,6 +20,9 @@ type outgoingEdges = number;
 let selected_var: number;
 let uips: string[];
 let closest_uip: string;
+let conflict_info: any;
+let post_conflict_info: any;
+
 
 /*************************************************************/
 
@@ -35,12 +38,8 @@ function sendClauseLibrary(cl: string) {
       updateDropdown(response.available);
       updateLevel(response.level);
 
-      // Display the dropdown and the box (only need to do this the first time)
-      let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
-      dropdown.style.display = "inline-flex";
-
-      let selectionSection = document.getElementById("selectionSection") as HTMLElement;
-      selectionSection.style.display = "flex";
+      // Display the dropdown and the box
+      showSelectionSection();
     },
     error: function(errorMsg) {
       // add better error response
@@ -57,6 +56,7 @@ function updateDropdown(available_variables: number[]) {
   // Remove all options but the placeholder
   dropdown.options.length = 1;
 
+  // Sort options in ascending order
   available_variables.sort();
 
   available_variables.map(
@@ -113,10 +113,14 @@ function sendDecision(decision: boolean) {
         // display response.options somewhere prominent
         hideSelectionSection();
       } else {
-        console.log("here");
         console.log(response);
         // update graph depending on what we get back from backend
         addNodes(response.new_nodes);
+
+        if (response.conflict) {
+          addNodes({'K': 'K: '.concat(response.conflict_info.conflict_clause)});
+        }
+
         addEdges(response.edges);
         updateLevel(response.level);
         updateDropdown(response.available);
@@ -125,13 +129,11 @@ function sendDecision(decision: boolean) {
 
         if (response.conflict) {
           hideSelectionSection();
-          // addConflictUI();
+          addConflictUI();
 
-          console.log(response.conflict_info.all_uips);
-          uips = response.conflict_info.all_uips;
-          closest_uip = response.conflict_info.right_uip;
+          conflict_info = response.conflict_info;
+          post_conflict_info = response.reset;
         } else {
-          // sort available_variables in ascending order?
           updateDropdown(response.available);
         }
       }
@@ -160,6 +162,8 @@ function addNodes(nodes: object) {
     node.y = Math.sin(Math.PI * 2 * i / a.length);
     node.size=1;
   });
+
+  s.render();
 }
 
 function addEdges(edges: object) {
@@ -167,7 +171,6 @@ function addEdges(edges: object) {
     for (let key in edges) {
       if (edges.hasOwnProperty(key)) {
         edges[key].map(target => {
-          if (target != "K") {
             s.graph.addEdge({
               id: key.toString().concat(target.toString()),
               source: key.toString(),
@@ -175,9 +178,7 @@ function addEdges(edges: object) {
               size: 10,
               type: "arrow"
             })
-          }
-        }
-        )
+        })
       }
     }
   }
@@ -203,55 +204,116 @@ function hideSelectionSection() {
   selectionSection.style.display = "none";
 }
 
+function showSelectionSection() {
+  let dropdown = document.getElementById("varDropdown") as HTMLSelectElement;
+  dropdown.style.display = "inline-flex";
+
+  let selectionSection = document.getElementById("selectionSection") as HTMLElement;
+  selectionSection.style.display = "flex";
+}
+
 function addConflictUI() {
-  let graph = document.getElementById("graph") as HTMLElement;
-  graph.classList.add("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+  let graph = document.getElementById("sigma-container") as HTMLElement;
+  const graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l']
+  graph.classList.add(...graphConflictUIList);
 
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
   conflictSection.style.display = "flex";
+
+  let firstButton = document.getElementById("conflict_getUIPs") as HTMLElement;
+  firstButton.style.display = "inline-flex";
 }
 
 function removeConflictUI() {
-  let graph = document.getElementById("graph") as HTMLElement;
-  graph.removeAttribute("br2 bw3 ba ph3 pv2 mb2 washed-red br--top-l");
+  let graph = document.getElementById("sigma-container") as HTMLElement;
+  const graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l']
+  graph.classList.remove(...graphConflictUIList);
 
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
   conflictSection.style.display = "none";
 }
 
-// function to get UIPs and display
 function getUIPs() {
-  console.log('in getUIPs', uips);
-
+  // color all possible uips red
   s.graph.nodes().forEach(function(node) {
-    console.log(node);
-    if (uips.indexOf(node.label) > -1) {
+    if (conflict_info.all_uips.indexOf(node.label) > -1) {
       console.log("here");
       node.color = 'red';
     }
   });
+
+  // recolor all the edges to be blue again
+  s.graph.edges().forEach(edge => edge.color = '#357EDD');
   s.render()
 
   let thisButton = document.getElementById("conflict_getUIPs") as HTMLElement;
   thisButton.style.display = "none";
 
   let nextButton = document.getElementById("conflict_getUIP") as HTMLElement;
-  thisButton.style.display = "inline-flex";
+  nextButton.style.display = "inline-flex";
 }
 
 function getClosestUIP() {
+  // only the closest uip remains red
   s.graph.nodes().forEach(function(node) {
-    if (closest_uip !== node.label) {
+    if (conflict_info.right_uip !== node.label) {
       node.color = '#357EDD'
     }
   });
+
   s.render()
 
   let thisButton = document.getElementById("conflict_getUIP") as HTMLElement;
   thisButton.style.display = "none";
+
+  let nextButton = document.getElementById("conflict_showCut") as HTMLElement;
+  nextButton.style.display = "inline-flex";
 }
 
-// function to get conflict clause and display
-function getConflict(conflictClause: string) {
+function showCut() {
+  let cut_conflict : string[] = conflict_info.cut_conflict.map(x => x.toString());
 
+  // Show all elements on conflict side of cut as red
+  s.graph.nodes().forEach(function(node) {
+    if (cut_conflict.indexOf(node.id) > -1) {
+      node.color = 'red';
+    } else {
+      node.color = '#357EDD';
+    }
+  });
+
+  // recolor all the edges to be blue again
+  s.graph.edges().forEach(edge => edge.color = '#357EDD');
+  s.render()
+
+  let thisButton = document.getElementById("conflict_showCut") as HTMLElement;
+  thisButton.style.display = "none";
+
+  let nextButton = document.getElementById("conflict_addConflictClause") as HTMLElement;
+  nextButton.style.display = "inline-flex";
+}
+
+function addConflictClause() {
+  s.graph.clear();
+  s.refresh();
+
+  console.log('post_conflict_info ', post_conflict_info);
+  // post_conflict_info.nodes :: [number]
+  post_conflict_info.nodes.forEach(node => {
+    addNodes({node: node.toString()});
+  });
+
+  console.log(s.graph.nodes());
+  addEdges(post_conflict_info.edges);
+
+  s.render();
+
+  let thisButton = document.getElementById("conflict_addConflictClause") as HTMLElement;
+  thisButton.style.display = "none";
+
+  removeConflictUI();
+  showSelectionSection();
+
+  updateDropdown(post_conflict_info.available);
+  updateLevel(post_conflict_info.level);
 }
