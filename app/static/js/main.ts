@@ -163,6 +163,8 @@ function addNodes(nodes: object) {
     node.size=1;
   });
 
+  console.log('in addNodes ', s.graph.nodes());
+
   s.render();
 }
 
@@ -298,12 +300,8 @@ function addConflictClause() {
   s.refresh();
 
   console.log('post_conflict_info ', post_conflict_info);
-  // post_conflict_info.nodes :: [number]
-  post_conflict_info.nodes.forEach(node => {
-    addNodes({node: node.toString()});
-  });
 
-  console.log(s.graph.nodes());
+  addNodes(post_conflict_info.nodes);
   addEdges(post_conflict_info.edges);
 
   s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });

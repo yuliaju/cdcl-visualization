@@ -123,6 +123,7 @@ function addNodes(nodes) {
         node.y = Math.sin(Math.PI * 2 * i / a.length);
         node.size = 1;
     });
+    console.log('in addNodes ', s.graph.nodes());
     s.render();
 }
 function addEdges(edges) {
