@@ -74,15 +74,18 @@ class Graph:
 	def new_edges_front(self, new_nodes):
 		l = {}
 		for v in self.edges:
-			if not (v.conflict):
-				if v.literal.index in new_nodes.keys() and len(self.edges[v]) != 0:
-					temp = []
-					for e in self.edges[v]:
-						if e.conflict:
-							temp.append("K")
-						else:
-							temp.append(e.literal.index)
-					l[v.literal.index] = temp
+			if not (v.conflict) and len(self.edges[v]) != 0:
+				new = False
+				if v.literal.index in new_nodes.keys():
+					new = True
+				temp = []
+				for e in self.edges[v]:
+					if new and e.conflict:
+						temp.append("K")
+					elif new or e.literal.index in new_nodes.keys():
+						temp.append(e.literal.index)
+
+				l[v.literal.index] = temp
 		return l
 
 
