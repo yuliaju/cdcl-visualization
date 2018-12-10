@@ -83,7 +83,6 @@ class Graph:
 						temp.append("K")
 					elif new or e.literal.index in new_nodes.keys():
 						temp.append(e.literal.index)
-
 				l[v.literal.index] = temp
 		return l
 
