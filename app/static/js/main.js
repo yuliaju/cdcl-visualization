@@ -240,6 +240,7 @@ function addConflictClause() {
     addNodes(post_conflict_info.nodes);
     addEdges(post_conflict_info.edges);
     s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
+    s.refresh();
     s.render();
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";

@@ -306,6 +306,7 @@ function addConflictClause() {
 
   s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
 
+  s.refresh();
   s.render();
 
   let thisButton = document.getElementById("conflict_addConflictClause") as HTMLElement;
