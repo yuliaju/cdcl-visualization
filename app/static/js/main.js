@@ -42,6 +42,8 @@ function updateDropdown(available_variables) {
         opt.innerHTML = 'p' + v.toString();
         dropdown.appendChild(opt);
     });
+    // reset value to disabled value each time
+    dropdown.value = '';
 }
 function updateSelectedVar() {
     var dropdown = document.getElementById("varDropdown");
@@ -170,7 +172,7 @@ function showSelectionSection() {
 function addConflictUI() {
     var _a;
     var graph = document.getElementById("sigma-container");
-    var graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l'];
+    var graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l'];
     (_a = graph.classList).add.apply(_a, graphConflictUIList);
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "flex";
@@ -180,7 +182,7 @@ function addConflictUI() {
 function removeConflictUI() {
     var _a;
     var graph = document.getElementById("sigma-container");
-    var graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l'];
+    var graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l'];
     (_a = graph.classList).remove.apply(_a, graphConflictUIList);
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "none";

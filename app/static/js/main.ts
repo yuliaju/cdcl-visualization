@@ -67,6 +67,9 @@ function updateDropdown(available_variables: number[]) {
       dropdown.appendChild(opt);
     }
   );
+
+  // reset value to disabled value each time
+  dropdown.value = '';
 }
 
 function updateSelectedVar() {
@@ -216,7 +219,7 @@ function showSelectionSection() {
 
 function addConflictUI() {
   let graph = document.getElementById("sigma-container") as HTMLElement;
-  const graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l']
+  const graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l']
   graph.classList.add(...graphConflictUIList);
 
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
@@ -228,7 +231,7 @@ function addConflictUI() {
 
 function removeConflictUI() {
   let graph = document.getElementById("sigma-container") as HTMLElement;
-  const graphConflictUIList = ['br2', 'bw3', 'ba', 'ph3', 'pv2', 'washed-red', 'br--top-l']
+  const graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l']
   graph.classList.remove(...graphConflictUIList);
 
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
