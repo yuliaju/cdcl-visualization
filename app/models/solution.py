@@ -15,6 +15,25 @@ class Solution:
 		self.original_clause_db = original_clause_db
 		self.clause_db = copy.deepcopy(original_clause_db) 
 
+
+	def propogate(self, new_nodes):
+		new_decide = True
+		while new_decide:
+			new_decide = False
+			for i in range(1, self.clause_db.getLen()+1):
+				c = self.clause_db.getClause(i)
+				if not c.satisfied:
+					if len(c.nonExcludedLiterals()) == 1:
+						# if clause not satisfied and of length one, decide that literal
+						l = c.nonExcludedLiterals()[0].literal
+						self.clause_db.decide_clauses(l)
+						self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
+						self.graph.decided.append(l)
+						new_nodes[l.index] = str(self.graph.getNode(l))
+						new_decide = True
+
+
+
 	def run_alg(self, new_nodes):
 		data = {}
 		self.conflict = False
@@ -82,12 +101,18 @@ class Solution:
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 
 		if self.conflict:
+			new_nodes = {}
 			#reset level, graph, and clause_db
 			self.level = self.graph.backtrack_level(conflict_clause)
 			self.graph.reset(self.level)
 			self.clause_db = copy.deepcopy(self.original_clause_db)	
 			for l in self.graph.decided:
 				self.clause_db.decide_clauses(l)
+				new_nodes[l.index] = str(self.graph.getNode(l))
+			#PROPOGATE
+			self.propogate(new_nodes)
+
+
 			self.level = self.level + 1
 			#load reset data
 			data["reset"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
