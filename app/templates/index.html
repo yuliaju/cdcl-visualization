@@ -20,13 +20,13 @@
     </div>
 
     <div class="row flex-row">
-      <div id="sigma-container" style="width:50%"></div>
+      <div id="sigma-container" style="width:50%;height:350px"></div>
 
       <div class="flex-col" style="width: 40%">
         <div class="clauses">
           <div class="row">
-            <label for="clauseLibrary" class="f6 b db mb1">Clause Database <span class="normal black-60"></span></label>
-            <small id="clauseLibrary-desc" class="f6 black-60">Add data input layout info here</small>
+            <label for="clauseLibrary" class="f5 b db mb1">Clause Database <span class="normal black-60"></span></label>
+            <small id="clauseLibrary-desc" class="f6 black-60">Input clauses in conjunctive normal rorm (CNF) as numbered propositions (e.g., p1) separated by "or", with new lines in between clauses. Represent not as a tilde ("~").</small>
             <textarea id="clauseLibrary" rows="8" cols="50" class="db border-box hover-black w-100 ba b--black-20 pa2 br2 mt2 mb2" aria-describedby="clauseLibrary-desc"></textarea>
           </div>
 
@@ -38,7 +38,15 @@
 
         </div>
 
-        <div id="selectionSection" class="row flex-row f6 br2 ba ph3 pv2 mb2 moon-gray" style="width:100%; display:none">
+        <div class="row mt1 mb2">
+          <div id="errorMsg"></div>
+          <div id="currentLevel" class="f5 b db" style="display:none"></div>
+          <!-- <div class="info">
+            May be where the updated clause database and/or explanations is displayed
+          </div> -->
+        </div>
+
+        <div id="selectionSection" class="row flex-row f6 br2 ba ph3 pv2 mb2 moon-gray" style="width:100%; height: 60px; display:none; align-items:center">
           <div class="dropdown flex-col" style="width: 40%; align-items: flex-start">
             <select id="varDropdown" onchange="updateSelectedVar();" style="display:none">
               <option value="" disabled selected>Select a proposition</option>
@@ -46,20 +54,12 @@
           </div>
 
           <div class="flex-col" style="width: 30%; align-items: center">
-            <a id="decideVar" onclick="sendDecision(true)" class="f6 link dim ph3 pv2 mb2 white bg-dark-green br2" style="display:none">Decide p1</a>
+            <a id="decideVar" onclick="sendDecision(true)" class="f6 link dim ph3 pv2 white bg-dark-green br2" style="display:none">Decide p1</a>
           </div>
 
           <div class="flex-col" style="width: 30%; align-items: flex-end">
-            <a id="decideNotVar" onclick="sendDecision(false)" class="f6 link dim ph3 pv2 mb2 white bg-dark-pink br2" style="display:none">Decide not p1</a>
+            <a id="decideNotVar" onclick="sendDecision(false)" class="f6 link dim ph3 pv2 white bg-dark-pink br2" style="display:none">Decide not p1</a>
           </div>
-        </div>
-
-        <div class="row">
-          <div id="errorMsg"></div>
-          <div id="currentLevel" class="f5 b db mb1" style="display:none"></div>
-          <!-- <div class="info">
-            May be where the updated clause database and/or explanations is displayed
-          </div> -->
         </div>
       </div>
 
@@ -67,9 +67,9 @@
 
     </div>
 
-    <div class="row flex-row">
-        <div class="br2 bw2 ba ph3 pv2 mb2 washed-red br--bottom-l bg-washed-red bt-0" id="conflictSection" style="width:50%;display:none">
-          <div class="mid-gray" style="display:inline-flex;">Step through the conflict</div>
+    <div class="row flex-row" style="align-items:center">
+        <div class="br2 bw2 ba ph3 pv2 mb2 washed-red br--bottom-l bg-washed-red bt-0" id="conflictSection" style="width:50%;display:none; justify-content:space-between">
+          <div class="mid-gray f5 db i" style="display:inline-flex;align-items:center">Step through the conflict</div>
           <div style="display:inline-flex;">
             <a id="conflict_getUIPs" onclick="getUIPs()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2">
               View Unique Implication Points (UIPs)
