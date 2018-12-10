@@ -55,10 +55,7 @@ class Graph:
 		return nodes
 
 	def allNodes_front(self):
-		front = {}
-		for i in self.allNodes():
-			front[i.literal.index] = str(i)
-		return front
+		return {i.literal.index:str(i) for i in self.allNodes()}
 
 	def all_edges_front(self):
 		l = {}
@@ -86,7 +83,6 @@ class Graph:
 						temp.append("K")
 					elif new or e.literal.index in new_nodes.keys():
 						temp.append(e.literal.index)
-
 				l[v.literal.index] = temp
 		return l
 
