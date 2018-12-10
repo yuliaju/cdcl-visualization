@@ -6,7 +6,7 @@ class Literal:
 	def __str__(self):
 		s = ""
 		if not self.sign:
-			s += "neg "
+			s += "~"
 		return s + str(self.index)
 
 	def __eq__(self, other):
@@ -50,10 +50,10 @@ class Clause:
 			s += str(i)
 			s += (" or ")
 		s = s[0:len(s)-4]
-		if self.satisfied:
-			s += " SAT!!"
-		else:
-			s += "not sat"
+		# if self.satisfied:
+		# 	s += " SAT!!"
+		# else:
+		# 	s += "not sat"
 		return s
 
 	# def __deepcopy__(self):

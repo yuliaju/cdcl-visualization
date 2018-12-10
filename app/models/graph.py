@@ -55,7 +55,8 @@ class Graph:
 		return nodes
 
 	def allNodes_front(self):
-		return [i.literal.index for i in self.allNodes()]
+		# return [i.literal.index for i in self.allNodes()]
+		return [str(i) for i in self.allNodes()]
 
 	def all_edges_front(self):
 		l = {}
