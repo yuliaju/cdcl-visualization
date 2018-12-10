@@ -18,3 +18,8 @@ return unsat
 test!!!
 
 send list of satisfied clauses
+
+
+
+after reset, node levels are incorrect
+look at levels in conflict

@@ -88,10 +88,12 @@ class Solution:
 			self.clause_db = copy.deepcopy(self.original_clause_db)	
 			for l in self.graph.decided:
 				self.clause_db.decide_clauses(l)
+			self.level = self.level + 1
 			#load reset data
 			data["reset"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
 				self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
 				self.graph.available_front(self.original_clause_db.num_literals)}
+
 
 		return data
 	
