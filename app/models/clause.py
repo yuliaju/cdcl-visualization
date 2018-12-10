@@ -7,7 +7,7 @@ class Literal:
 		s = ""
 		if not self.sign:
 			s += "~"
-		return s + str(self.index)
+		return s + "p" + str(self.index)
 
 	def __eq__(self, other):
 		if self.index == other.index and self.sign==other.sign:

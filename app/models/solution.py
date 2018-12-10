@@ -64,7 +64,7 @@ class Solution:
 			conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
 			data["conflict_info"] = {"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
 				str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
-				"cut_other": [c.literal.index for c in cuts[1]]}
+				"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict())}
 			self.original_clause_db.addClause(conflict_clause)
 
 			
