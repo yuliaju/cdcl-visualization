@@ -84,7 +84,7 @@ function sendDecision(decision) {
                 // update graph depending on what we get back from backend
                 addNodes(response.new_nodes);
                 if (response.conflict) {
-                    addNodes({ 'K': 'K: '.concat(response.conflict_info.conflict_clause) });
+                    addNodes({ 'K': response.conflict_info.conflict_label });
                 }
                 addEdges(response.edges);
                 updateLevel(response.level);
@@ -123,6 +123,7 @@ function addNodes(nodes) {
         node.y = Math.sin(Math.PI * 2 * i / a.length);
         node.size = 1;
     });
+    console.log('in addNodes ', s.graph.nodes());
     s.render();
 }
 function addEdges(edges) {
@@ -236,13 +237,10 @@ function addConflictClause() {
     s.graph.clear();
     s.refresh();
     console.log('post_conflict_info ', post_conflict_info);
-    // post_conflict_info.nodes :: [number]
-    post_conflict_info.nodes.forEach(function (node) {
-        addNodes({ node: node.toString() });
-    });
-    console.log(s.graph.nodes());
+    addNodes(post_conflict_info.nodes);
     addEdges(post_conflict_info.edges);
     s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
+    s.refresh();
     s.render();
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";
