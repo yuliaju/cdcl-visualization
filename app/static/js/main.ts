@@ -118,7 +118,7 @@ function sendDecision(decision: boolean) {
         addNodes(response.new_nodes);
 
         if (response.conflict) {
-          addNodes({'K': 'K: '.concat(response.conflict_info.conflict_clause)});
+          addNodes({'K': response.conflict_info.conflict_label});
         }
 
         addEdges(response.edges);
