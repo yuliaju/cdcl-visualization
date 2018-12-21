@@ -16,6 +16,7 @@ class Solution:
 		self.clause_db = copy.deepcopy(original_clause_db) 
 
 
+	#Propogate: Decide any singular clauses, then repeat check one last time
 	def propogate(self, new_nodes):
 		new_decide = True
 		while new_decide:
@@ -31,28 +32,15 @@ class Solution:
 						self.graph.decided.append(l)
 						new_nodes[l.index] = str(self.graph.getNode(l))
 						new_decide = True
+		return new_nodes
 
 
 
 	def run_alg(self, new_nodes):
 		data = {}
 		self.conflict = False
-		#Propogate: Decide any singular clauses, then repeat check one last time
-		new_decide = True
-		while new_decide:
-			new_decide = False
-			for i in range(1, self.clause_db.getLen()+1):
-				c = self.clause_db.getClause(i)
-				if not c.satisfied:
-					if len(c.nonExcludedLiterals()) == 1:
-						# if clause not satisfied and of length one, decide that literal
-						l = c.nonExcludedLiterals()[0].literal
-						self.clause_db.decide_clauses(l)
-						self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
-						self.graph.decided.append(l)
-						new_nodes[l.index] = str(self.graph.getNode(l))
-						new_decide = True
-
+		
+		new_nodes = self.propogate(new_nodes)
 
 		#are all clauses satisfied?
 		if self.clause_db.is_finished():

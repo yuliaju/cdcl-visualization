@@ -19,12 +19,12 @@ def index():
 def clause_db():
 	global solution
 	data = json.loads(request.data)
-	print(data["clauseLibrary"])
 	clause_db = parse_clauses(data["clauseLibrary"])
-	print("HERE")
-	print(str(clause_db))
+	if clause_db == False:
+		return jsonify({"parser": False})
 	solution = Solution(clause_db)
 	return_data = solution.run_alg({})
+	return_data["parser"] = True
 	print(return_data)
 	return jsonify(return_data)
 
@@ -36,9 +36,6 @@ def user_decision():
 	num = data["num"]
 	sign = data["sign"]
 	return_data = solution.new_input(num, sign)
-	print(return_data)
-	print("DATABASE\n")
-	print(solution.clause_db)
 	return jsonify(return_data)
 
 if __name__ == "__main__":

@@ -20,8 +20,8 @@ def dfa(c):
 	num = None
 	for i in c:	
 		if i.isdigit():
-			if i not in props:
-				props.append(i)
+			if int(i) not in props:
+				props.append(int(i))
 			curr = 'num'
 			num = i
 		elif i == '~':
@@ -55,6 +55,9 @@ def parse_clauses(data):
 		curr = dfa(c)
 		if not curr:
 			return False
+		for p in props:
+			if p > len(props) or p < 1:
+				return False
 		for i in curr:
 			print(str(i))
 		to_db.append(Clause().addLiterals(curr))

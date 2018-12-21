@@ -51,3 +51,13 @@ p3 or ~p4
 p4 or p5 or p6
 ~p5 or p7
 ~p6 or p7 or ~p8
+
+
+~p1 or ~p2 or ~p3
+~p1 or ~p2 or p3
+~p1 or p2 or ~p3
+~p1 or p2 or p3
+p1 or ~p2 or ~p3
+p1 or ~p2 or p3
+p1 or p2 or ~p3
+p1 or p2 or p3

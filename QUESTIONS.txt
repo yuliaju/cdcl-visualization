@@ -1,25 +1,29 @@
 
-THOUGHTS FOR LATER
-user should not be able to modify clause db during alg OR if they do, alg restarts
---I think it's fine if the alg restarts if they modify the clause db; that should be a familiar UX
-***--OK sounds good. So I've made it so the alg restarts, but you'll need to clear the graph nodes if they press it
+
 
 
 IF TIME
 let user load sample clause databases
 show which clauses are satisfied (already implemented in backend!)
 add helpful educational tidbits
+add helpful error messages about incorrect input
+allow users to add unconsecutive p numbers
 
 
 
 Sally to do:
-parse clauses
 return unsat
 test!!!
 
-send list of satisfied clauses
+Julia to do:
+reset graph when "generate database" is pressed
 
 
 
-after reset, node levels are incorrect
-look at levels in conflict
+QUESTIONS
+how do you want me to send a list of satisfied clauses?
+I added another example db to outline.txt (the one from pset1) for testing. It reaches the conflict correctly, but
+I can't get it to transition from the conflict box back to asking the user for decisions. Will you take a look?
+
+NOTES:
+Additional piece of data called "parser" sent back the first time. False if incorrect input
