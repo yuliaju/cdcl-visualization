@@ -58,7 +58,7 @@ class Solution:
 		if self.clause_db.is_finished():
 			self.finished = True
 			options = []
-			for i in range(self.clause_db.num_literals):
+			for i in range(1, self.clause_db.num_literals):
 				decided_indices = [l.index for l in self.graph.decided]
 				if i not in decided_indices:
 					options.append(i)
