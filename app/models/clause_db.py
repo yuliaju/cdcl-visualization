@@ -9,7 +9,9 @@ class Clause_db:
 		self.num_literals = num_literals
 
 	def __str__(self):
-		s = "Clause Database:"
+		s = "Clause Database:\n"
+		s += "Length: " + str(self.len)
+		s += "\nNum Literals: " + str(self.num_literals) + "\n"
 		for c in self.clauses:
 			s += str(c) + "\n"
 		return s

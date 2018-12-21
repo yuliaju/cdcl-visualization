@@ -50,10 +50,10 @@ class Clause:
 			s += str(i)
 			s += (" or ")
 		s = s[0:len(s)-4]
-		# if self.satisfied:
-		# 	s += " SAT!!"
-		# else:
-		# 	s += "not sat"
+		if self.satisfied:
+			s += " SAT!!"
+		else:
+			s += "not sat"
 		return s
 
 	# def __deepcopy__(self):
