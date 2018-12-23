@@ -240,14 +240,29 @@ class Graph:
 		return clause
 
 	def backtrack_level(self, conflict_clause):
-		lowest = float("inf")
 		nodes = []
 		for lit in conflict_clause.literals:
 			nodes.append(self.getNode(lit.literal))
-		for node in nodes:
-			if node.level < lowest:
-				lowest = node.level
-		return lowest
+		if len(nodes) == 1:
+			if nodes[0].level == 0:
+				return -1
+			else:
+				return 0
+		highest = nodes[0].level
+		if highest < nodes[1].level:
+			highest2 = highest
+			highest = nodes[1].level
+		else:
+			highest2 = nodes[1].level
+		for i in range(2,len(nodes)):
+			node = nodes[i]
+			if node.level >= highest:
+				highest = node.level
+				highest2 = highest 
+			elif node.level >= highest2:
+				highest2 = node.level
+
+		return highest2
 
 
 	# Update edges based on new decision

@@ -51,18 +51,15 @@ def parse_clauses(data):
 	clauses = data.split("\n")
 	to_db = []
 	for c in clauses:
-		print("here")
 		curr = dfa(c)
 		if not curr:
 			return False
-		for p in props:
-			if p > len(props) or p < 1:
-				return False
-		for i in curr:
-			print(str(i))
 		to_db.append(Clause().addLiterals(curr))
-	for i in to_db:
-		print(str(i))
+	for p in props:
+		if p > len(props) or p < 1:
+			print("loop false")
+			print(p)
+			return False
 	return Clause_db(len(props)).addClauses(to_db)
 
 

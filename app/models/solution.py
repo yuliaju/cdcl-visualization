@@ -51,6 +51,7 @@ class Solution:
 				if i not in decided_indices:
 					options.append(i)
 			data["options"] = options
+			datat["satisfied"] = False
 
 
 		#is there a conflict?
@@ -92,6 +93,9 @@ class Solution:
 			new_nodes = {}
 			#reset level, graph, and clause_db
 			self.level = self.graph.backtrack_level(conflict_clause)
+			if self.level == -1:
+				data["finished"] = True
+				data["satisfied"] = False
 			self.graph.reset(self.level)
 			self.clause_db = copy.deepcopy(self.original_clause_db)	
 			for l in self.graph.decided:
