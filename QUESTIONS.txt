@@ -12,9 +12,8 @@ allow users to add unconsecutive p numbers
 
 
 Sally to do:
-return unsat
 test!!!
-backtrack level is SECOND HIGHEST level (so if only one to choose from, ans is 0)
+test backtrack level
 
 Julia to do:
 reset graph when "generate database" is pressed
@@ -28,3 +27,4 @@ I can't get it to transition from the conflict box back to asking the user for d
 
 NOTES:
 Additional piece of data called "parser" sent back the first time. False if incorrect input
+Additional piece of data: if finished = True, satisfied = true or false
