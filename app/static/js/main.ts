@@ -33,13 +33,25 @@ function sendClauseLibrary(cl: string) {
     url: "/clause_db",
     data: JSON.stringify({'clauseLibrary': cl}),
     success: function (response) {
+      // Clear graph in case it's not the first time calling this method
+      s.graph.clear();
+      s.refresh();
       console.log(response);
 
-      updateDropdown(response.available);
-      updateLevel(response.level);
+      let parseErrorMsg = document.getElementById("parseErrorMsg") as HTMLElement;
 
-      // Display the dropdown and the box
-      showSelectionSection();
+      if (!response.parser) {
+        // parsing error
+        parseErrorMsg.style.display = "block";
+      } else {
+        parseErrorMsg.style.display = "none";
+
+        updateDropdown(response.available);
+        updateLevel(response.level);
+
+        // Display the dropdown and the box
+        showSelectionSection();
+      }
     },
     error: function(errorMsg) {
       // add better error response
