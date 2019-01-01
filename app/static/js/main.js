@@ -181,20 +181,12 @@ function showSelectionSection() {
     selectionSection.style.display = "flex";
 }
 function addConflictUI() {
-    var _a;
-    var graph = document.getElementById("sigma-container");
-    var graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l'];
-    (_a = graph.classList).add.apply(_a, graphConflictUIList);
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "flex";
     var firstButton = document.getElementById("conflict_getUIPs");
     firstButton.style.display = "inline-flex";
 }
 function removeConflictUI() {
-    var _a;
-    var graph = document.getElementById("sigma-container");
-    var graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l'];
-    (_a = graph.classList).remove.apply(_a, graphConflictUIList);
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "none";
 }

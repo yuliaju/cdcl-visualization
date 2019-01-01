@@ -230,10 +230,6 @@ function showSelectionSection() {
 }
 
 function addConflictUI() {
-  let graph = document.getElementById("sigma-container") as HTMLElement;
-  const graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l']
-  graph.classList.add(...graphConflictUIList);
-
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
   conflictSection.style.display = "flex";
 
@@ -242,10 +238,6 @@ function addConflictUI() {
 }
 
 function removeConflictUI() {
-  let graph = document.getElementById("sigma-container") as HTMLElement;
-  const graphConflictUIList = ['br2', 'bw3', 'ba', 'washed-red', 'br--top-l']
-  graph.classList.remove(...graphConflictUIList);
-
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
   conflictSection.style.display = "none";
 }
