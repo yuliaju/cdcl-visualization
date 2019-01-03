@@ -51,7 +51,7 @@ class Solution:
 				if i not in decided_indices:
 					options.append(i)
 			data["options"] = options
-			datat["satisfied"] = False
+			data["satisfied"] = False
 
 
 		#is there a conflict?
