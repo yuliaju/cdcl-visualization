@@ -70,6 +70,8 @@ class Solution:
 
 	#send front_end new data
 	def main_data(self, data, num_conflicts):
+		if num_conflicts == 0:
+			num_conflicts = False
 		data["finished"] = self.finished
 		data["conflict"] = num_conflicts
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
@@ -139,7 +141,7 @@ class Solution:
 			num_conflicts += 1
 			#save current propogated state for frontend before resolving conflict
 			if num_conflicts > 1:
-				data["propogation"].append(self.front_data([]))
+				data["propogation"].append(self.state_data({}))
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
 			#clause db is unsat
