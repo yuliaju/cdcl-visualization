@@ -144,8 +144,14 @@ class Graph:
 
 	#get node of most recent decision
 	def recentDecision(self, level):
+		print("rD")
+		print(level)
+		print(type(level))
 		for i in self.allNodes():
+			print(str(i))
+			print(str(i.clause))
 			if i.level == level and i.clause is None:
+				print("here!")
 				return i
 		raise Exception("Problem! No recent decision")
 
