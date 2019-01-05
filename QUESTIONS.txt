@@ -20,24 +20,7 @@ graph - change font/label of nodes
 
 
 QUESTIONS
-how do you want me to send a list of satisfied clauses?
--- J: would it be possible to send two lists, one with a string (?) of each clause ["p1 or p2", "p3 or ~p4"]
--- (i'm not sure how you store it in the backend, just send me what's convenient) and another with corresponding
--- indices of booleans, where true means that clause is satisfied [true, false]
--- S: done. but all_clauses is only sent the first time to avoid repetition. Let me know if you want me to change that.
-
-I added another example db to outline.txt (the one from pset1) for testing. It reaches the conflict correctly, but
-I can't get it to transition from the conflict box back to asking the user for decisions. Will you take a look?
--- J: i think the bug is that “K” isn’t being removed from the list of edges
--- S: fixed!
-
 -- J: error when the clause database is just 'p1' (finishes but returns satisfied: false)
-
-
--conflict clause - not sure where this is??
--error when clausedb = p1
--why is p1 in conflict new_nodes??
--put all_clauses everywhere
 
 
 
@@ -53,7 +36,6 @@ clause_sat = [T/F, T/F, ... for each clause]
 
 
 CHANGES:
-all_clauses is sent the very first time only (so its not repetitve)
 conflict is now false or an int value = how many simultaneous conflicts
 if conflict is not false, still have conflict_info and reset, but reset does not include propogation
 the new_nodes and decided lists involved in the conflict are now located in conflict_info. new_nodes and decided in data refer to the state of the graph after the conflict is resolved
@@ -74,9 +56,3 @@ conflict_info also contains all_clauses and clause_sat
 
 ***FIRST check for conflict and display
 ***THEN check for finished - b/c if finished is true and conflict is true, must display conflict first
-
-
-
-
-
-
