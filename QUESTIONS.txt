@@ -1,7 +1,3 @@
-
-
-
-
 IF TIME
 let user load sample clause databases
 show which clauses are satisfied (already implemented in backend!)
@@ -16,14 +12,22 @@ test!!!
 test backtrack level
 
 Julia to do:
-reset graph when "generate database" is pressed
-
+(maybe) make graph database state section look nicer
+refactor ts
+graph - node layout
+graph - display the cut
 
 
 QUESTIONS
 how do you want me to send a list of satisfied clauses?
+-- J: would it be possible to send two lists, one with a string (?) of each clause ["p1 or p2", "p3 or ~p4"]
+-- (i'm not sure how you store it in the backend, just send me what's convenient) and another with corresponding
+-- indices of booleans, where true means that clause is satisfied [true, false]
+
 I added another example db to outline.txt (the one from pset1) for testing. It reaches the conflict correctly, but
 I can't get it to transition from the conflict box back to asking the user for decisions. Will you take a look?
+
+-- J: error when the clause database is just 'p1' (finishes but returns satisfied: false)
 
 NOTES:
 Additional piece of data called "parser" sent back the first time. False if incorrect input

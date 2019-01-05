@@ -16,9 +16,10 @@ function sendClauseLibrary(cl) {
         url: "/clause_db",
         data: JSON.stringify({ 'clauseLibrary': cl }),
         success: function (response) {
-            // Clear graph in case it's not the first time calling this method
+            // in case it's not the first time calling this method
             s.graph.clear();
             s.refresh();
+            hideFinishedSection();
             console.log(response);
             var parseErrorMsg = document.getElementById("parseErrorMsg");
             if (!response.parser) {
@@ -31,6 +32,11 @@ function sendClauseLibrary(cl) {
                 updateLevel(response.level);
                 // Display the dropdown and the box
                 showSelectionSection();
+                // Show the state of the clause database in the backend
+                showClauseDatabaseState();
+                updateClauseDatabaseState();
+                // In case there's a propagation already
+                processResponse(response);
             }
         },
         error: function (errorMsg) {
@@ -40,6 +46,11 @@ function sendClauseLibrary(cl) {
         },
         dataType: "json"
     });
+}
+// to-do
+function updateClauseDatabaseState() {
+    var clauseDatabaseState = document.getElementById("clauseDatabaseState");
+    clauseDatabaseState.innerHTML = "";
 }
 function updateDropdown(available_variables) {
     var dropdown = document.getElementById("varDropdown");
@@ -88,31 +99,7 @@ function sendDecision(decision) {
             'sign': decision
         }),
         success: function (response) {
-            if (response.finished) {
-                // display response.options somewhere prominent
-                hideSelectionSection();
-            }
-            else {
-                console.log(response);
-                // update graph depending on what we get back from backend
-                addNodes(response.new_nodes);
-                if (response.conflict) {
-                    addNodes({ 'K': response.conflict_info.conflict_label });
-                }
-                addEdges(response.edges);
-                updateLevel(response.level);
-                updateDropdown(response.available);
-                s.refresh();
-                if (response.conflict) {
-                    hideSelectionSection();
-                    addConflictUI();
-                    conflict_info = response.conflict_info;
-                    post_conflict_info = response.reset;
-                }
-                else {
-                    updateDropdown(response.available);
-                }
-            }
+            processResponse(response);
         },
         error: function (errorMsg) {
             // add better error response
@@ -121,6 +108,32 @@ function sendDecision(decision) {
         },
         dataType: "json"
     });
+}
+function processResponse(response) {
+    console.log(response);
+    // update graph depending on what we get back from backend
+    addNodes(response.new_nodes);
+    if (response.conflict) {
+        addNodes({ 'K': response.conflict_info.conflict_label });
+    }
+    addEdges(response.edges);
+    updateLevel(response.level);
+    updateDropdown(response.available);
+    s.refresh();
+    if (response.conflict) {
+        hideSelectionSection();
+        addConflictUI();
+        conflict_info = response.conflict_info;
+        post_conflict_info = response.reset;
+    }
+    else {
+        updateDropdown(response.available);
+    }
+    if (response.finished) {
+        // display response.options somewhere prominent
+        hideSelectionSection();
+        showFinishedSection(response.satisfied, response.decided);
+    }
 }
 // Receive generated nodes at each level
 function addNodes(nodes) {
@@ -164,6 +177,10 @@ function updateLevel(level) {
     levelDiv.style.display = "inline-flex";
     levelDiv.innerHTML = "Current Level: " + level.toString();
 }
+function showClauseDatabaseState() {
+    var clauseDatabaseStateSection = document.getElementById("clauseDatabaseStateSection");
+    clauseDatabaseStateSection.style.display = "flex";
+}
 function hideSelectionSection() {
     var varButton = document.getElementById("decideVar");
     var notVarButton = document.getElementById("decideNotVar");
@@ -179,6 +196,24 @@ function showSelectionSection() {
     dropdown.style.display = "inline-flex";
     var selectionSection = document.getElementById("selectionSection");
     selectionSection.style.display = "flex";
+}
+function showFinishedSection(satisfiable, decided) {
+    var finishedSection = document.getElementById("finishedSection");
+    finishedSection.style.display = "flex";
+    var satOrUnsat = document.getElementById("satOrUnsat");
+    if (satisfiable) {
+        satOrUnsat.innerHTML = 'This clause database is satisfiable. Here is the satisfying solution you found!';
+        var satisfyingSolution = document.getElementById("satisfyingSolution");
+        satisfyingSolution.innerHTML = decided.join('\n');
+    }
+    else {
+        satOrUnsat.innerHTML = 'This clause database is unsatisfiable.';
+    }
+    hideSelectionSection();
+}
+function hideFinishedSection() {
+    var finishedSection = document.getElementById("finishedSection");
+    finishedSection.style.display = "none";
 }
 function addConflictUI() {
     var conflictSection = document.getElementById("conflictSection");

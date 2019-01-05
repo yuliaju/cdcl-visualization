@@ -33,9 +33,11 @@ function sendClauseLibrary(cl: string) {
     url: "/clause_db",
     data: JSON.stringify({'clauseLibrary': cl}),
     success: function (response) {
-      // Clear graph in case it's not the first time calling this method
+      // in case it's not the first time calling this method
       s.graph.clear();
       s.refresh();
+      hideFinishedSection();
+
       console.log(response);
 
       let parseErrorMsg = document.getElementById("parseErrorMsg") as HTMLElement;
@@ -51,6 +53,13 @@ function sendClauseLibrary(cl: string) {
 
         // Display the dropdown and the box
         showSelectionSection();
+
+        // Show the state of the clause database in the backend
+        showClauseDatabaseState();
+        updateClauseDatabaseState();
+
+        // In case there's a propagation already
+        processResponse(response);
       }
     },
     error: function(errorMsg) {
@@ -60,6 +69,12 @@ function sendClauseLibrary(cl: string) {
     },
     dataType: "json"
   });
+}
+
+// to-do
+function updateClauseDatabaseState() {
+  let clauseDatabaseState = document.getElementById("clauseDatabaseState") as HTMLElement;
+  clauseDatabaseState.innerHTML = "";
 }
 
 function updateDropdown(available_variables: number[]) {
@@ -124,34 +139,7 @@ function sendDecision(decision: boolean) {
       'sign': decision
     }),
     success: function (response) {
-      if (response.finished) {
-        // display response.options somewhere prominent
-        hideSelectionSection();
-      } else {
-        console.log(response);
-        // update graph depending on what we get back from backend
-        addNodes(response.new_nodes);
-
-        if (response.conflict) {
-          addNodes({'K': response.conflict_info.conflict_label});
-        }
-
-        addEdges(response.edges);
-        updateLevel(response.level);
-        updateDropdown(response.available);
-
-        s.refresh();
-
-        if (response.conflict) {
-          hideSelectionSection();
-          addConflictUI();
-
-          conflict_info = response.conflict_info;
-          post_conflict_info = response.reset;
-        } else {
-          updateDropdown(response.available);
-        }
-      }
+      processResponse(response);
     },
     error: function(errorMsg) {
       // add better error response
@@ -160,6 +148,38 @@ function sendDecision(decision: boolean) {
     },
     dataType: "json"
   });
+}
+
+function processResponse(response: any) {
+  console.log(response);
+  // update graph depending on what we get back from backend
+  addNodes(response.new_nodes);
+
+  if (response.conflict) {
+    addNodes({'K': response.conflict_info.conflict_label});
+  }
+
+  addEdges(response.edges);
+  updateLevel(response.level);
+  updateDropdown(response.available);
+
+  s.refresh();
+
+  if (response.conflict) {
+    hideSelectionSection();
+    addConflictUI();
+
+    conflict_info = response.conflict_info;
+    post_conflict_info = response.reset;
+  } else {
+    updateDropdown(response.available);
+  }
+
+  if (response.finished) {
+    // display response.options somewhere prominent
+    hideSelectionSection();
+    showFinishedSection(response.satisfied, response.decided);
+  }
 }
 
 // Receive generated nodes at each level
@@ -207,6 +227,12 @@ function updateLevel(level: number) {
   levelDiv.innerHTML = "Current Level: " + level.toString();
 }
 
+function showClauseDatabaseState() {
+  let clauseDatabaseStateSection = document.getElementById("clauseDatabaseStateSection") as HTMLElement;
+
+  clauseDatabaseStateSection.style.display = "flex";
+}
+
 function hideSelectionSection() {
   let varButton = document.getElementById("decideVar") as HTMLElement;
   let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
@@ -227,6 +253,29 @@ function showSelectionSection() {
 
   let selectionSection = document.getElementById("selectionSection") as HTMLElement;
   selectionSection.style.display = "flex";
+}
+
+function showFinishedSection(satisfiable: boolean, decided: any) {
+  let finishedSection = document.getElementById("finishedSection") as HTMLElement;
+  finishedSection.style.display = "flex";
+
+  let satOrUnsat = document.getElementById("satOrUnsat") as HTMLElement;
+
+  if (satisfiable) {
+    satOrUnsat.innerHTML = 'This clause database is satisfiable. Here is the satisfying solution you found!';
+
+    let satisfyingSolution = document.getElementById("satisfyingSolution") as HTMLElement;
+    satisfyingSolution.innerHTML = decided.join('\n');
+  } else {
+    satOrUnsat.innerHTML = 'This clause database is unsatisfiable.';
+  }
+
+  hideSelectionSection();
+}
+
+function hideFinishedSection() {
+  let finishedSection = document.getElementById("finishedSection") as HTMLElement;
+  finishedSection.style.display = "none";
 }
 
 function addConflictUI() {

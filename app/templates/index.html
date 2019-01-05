@@ -52,7 +52,7 @@
           </div> -->
         </div>
 
-        <div id="selectionSection" class="row flex-row f6 br2 ba ph3 pv2 mb2 moon-gray" style="width:100%; height: 60px; display:none; align-items:center">
+        <div id="selectionSection" class="row flex-row f6 br2 ba ph3 pv2 mb4 moon-gray" style="width:100%; height: 60px; display:none; align-items:center">
           <div class="dropdown flex-col" style="width: 40%; align-items: flex-start">
             <select id="varDropdown" onchange="updateSelectedVar();" style="display:none">
               <option value="" disabled selected>Select a literal to decide</option>
@@ -67,15 +67,20 @@
             <a id="decideNotVar" onclick="sendDecision(false)" class="f6 link dim ph3 pv2 white bg-dark-pink br2" style="display:none"></a>
           </div>
         </div>
+
+        <!-- todo: make this section look nicer -->
+        <div id="clauseDatabaseStateSection" class="row flex-row br2 ba ph3 pv2 mb2 moon-gray" style="display:none; width:100%; justify-content:left">
+          <div class="f5 i db gray">Clause Database State</div>
+          <div id="clauseDatabaseState" class="f6"></div>
+        </div>
+
       </div>
-
-
 
     </div>
 
 
     <div class="row flex-row" style="align-items:center">
-        <div class="bw2 ba ph3 pv2 washed-red bg-washed-red bt-0 mt1 br2" id="conflictSection" style="width:50%;display:none; justify-content:space-between">
+        <div class="bw2 ba ph3 pv2 washed-red bg-washed-red mt1 br2" id="conflictSection" style="width:50%;display:none; justify-content:space-between">
           <div class="mid-gray f5 db i" style="display:inline-flex;align-items:center">Step through the conflict</div>
           <div style="display:inline-flex;">
             <a id="conflict_getUIPs" onclick="getUIPs()" class="f6 link dim ph3 pv2 ml3 mid-gray bg-white br2">
@@ -93,6 +98,14 @@
           </div>
         </div>
         <div style="width:40%"></div>
+    </div>
+
+    <div class="row flex-row" style="align-items:center">
+      <div id="finishedSection" style="display:none; width:50%;justify-content:left" class="row flex-row bw2 ba ph3 pv2 light-blue bg-light-blue mt1 br2">
+        <div id="satOrUnsat" class="mid-gray f5 db" style="display:inline-flex;"></div>
+        <div style="display:inline-flex;" class="mid-gray f5 db" id="satisfyingSolution"></div>
+      </div>
+      <div style="width:40%"></div>
     </div>
 
     <script>
