@@ -22,6 +22,7 @@ let uips: string[];
 let closest_uip: string;
 let conflict_info: any;
 let post_conflict_info: any;
+let num_conflicts_remaining: number;
 
 
 /*************************************************************/
@@ -152,25 +153,27 @@ function sendDecision(decision: boolean) {
 
 function processResponse(response: any) {
   console.log(response);
-  // update graph depending on what we get back from backend
-  addNodes(response.new_nodes);
 
-  if (response.conflict) {
-    addNodes({'K': response.conflict_info.conflict_label});
+  if (response.conflict > 0) {
+    addNodes({'K': response.conflict_info[0].conflict_label});
+    addNodes(response.conflict_info[0].new_nodes);
+    addEdges(response.conflict_info[0].edges);
+  } else {
+    addNodes(response.new_nodes);
+    addEdges(response.edges);
   }
 
-  addEdges(response.edges);
   updateLevel(response.level);
   updateDropdown(response.available);
 
   s.refresh();
 
-  if (response.conflict) {
+  if (response.conflict > 0) {
     hideSelectionSection();
     addConflictUI();
 
-    conflict_info = response.conflict_info;
-    post_conflict_info = response.reset;
+    conflict_info = response.conflict_info[0];
+    post_conflict_info = response.reset[0];
   } else {
     updateDropdown(response.available);
   }
