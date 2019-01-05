@@ -58,7 +58,7 @@ function sendClauseLibrary(cl: string) {
 
         // Show the state of the clause database in the backend
         showClauseDatabaseState();
-        updateClauseDatabaseState();
+        updateClauseDatabaseState(response.all_clauses, response.clause_sat);
 
         // In case there's a propagation already
         processResponse(response);
@@ -73,10 +73,19 @@ function sendClauseLibrary(cl: string) {
   });
 }
 
-// to-do
-function updateClauseDatabaseState() {
+function updateClauseDatabaseState(clause_list: string[], clause_sat: boolean[]) {
+  let state_string: string = "";
+
+  clause_list.map(function(clause, index) {
+    // check or x mark
+    state_string += clause_sat[index] ? "&#10003;" : "&#10007;";
+    state_string += " Clause #" + index.toString() + ": ";
+    state_string += clause + "<br />";
+  });
+  state_string = state_string.trim();
+
   let clauseDatabaseState = document.getElementById("clauseDatabaseState") as HTMLElement;
-  clauseDatabaseState.innerHTML = "";
+  clauseDatabaseState.innerHTML = state_string;
 }
 
 function updateDropdown(available_variables: number[]) {
@@ -166,6 +175,7 @@ function processResponse(response: any) {
 
   updateLevel(response.level);
   updateDropdown(response.available);
+  updateClauseDatabaseState(response.all_clauses, response.clause_sat);
 
   s.refresh();
 
@@ -404,6 +414,7 @@ function addConflictClause() {
   // to-do: add button to view propagation as a separate step
   addNodes(post_conflict_info.nodes);
   addEdges(post_conflict_info.edges);
+  updateClauseDatabaseState(conflict_info.all_clauses, conflict_info.clause_sat);
 
   s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
 
