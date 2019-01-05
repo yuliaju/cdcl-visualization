@@ -36,6 +36,7 @@ def user_decision():
 	num = data["num"]
 	sign = data["sign"]
 	return_data = solution.new_input(num, sign)
+	print(return_data)
 	return jsonify(return_data)
 
 if __name__ == "__main__":

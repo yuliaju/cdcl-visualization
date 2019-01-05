@@ -112,6 +112,7 @@ class Graph:
 	def reset(self, level):
 		dels = []
 		self.decided = []
+		#remove conflict from edges
 		con = self.getConflict()
 		if con is not False:
 			del self.edges[con]
@@ -122,11 +123,14 @@ class Graph:
 		#delete nodes from graph
 		for d in dels:
 			del self.edges[d]
-		#remove edges pointing towards them
+		#append conflict to del list
+		dels.append(con)
+		#remove edges pointing towards all dels
 		for i in self.allNodes():
 			for d in dels:
 				if d in self.edges[i]:
 					self.edges[i].remove(d)
+		#update decided to include all nodes left
 		for i in self.allNodes():
 			self.decided.append(i.literal)
 		return self

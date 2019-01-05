@@ -27,10 +27,6 @@ class Clause:
 
 		def __str__(self):
 			s = str(self.literal)
-			if self.satisfied:
-				s += " sat"
-			if self.excluded:
-				s += " ex"
 			return s
 		# def __deepcopy__(self):
 		# 	return ClauseLiteral(copy.deepcopy(self.literal, self.satisfied, self.excluded))
@@ -50,10 +46,6 @@ class Clause:
 			s += str(i)
 			s += (" or ")
 		s = s[0:len(s)-4]
-		if self.satisfied:
-			s += " SAT!!"
-		else:
-			s += "not sat"
 		return s
 
 	# def __deepcopy__(self):

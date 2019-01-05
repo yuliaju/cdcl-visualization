@@ -101,15 +101,19 @@ class Solution:
 			for l in self.graph.decided:
 				self.clause_db.decide_clauses(l)
 				new_nodes[l.index] = str(self.graph.getNode(l))
-			#PROPOGATE
-			self.propogate(new_nodes)
 
-
-			self.level = self.level + 1
 			#load reset data
 			data["reset"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
 				self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
 				self.graph.available_front(self.original_clause_db.num_literals)}
+
+			#PROPOGATE
+			# self.propogate(new_nodes)
+			self.level = self.level + 1
+
+			# data["propogate"] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
+			# 	self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
+			# 	self.graph.available_front(self.original_clause_db.num_literals)}
 
 
 		return data
