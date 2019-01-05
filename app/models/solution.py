@@ -42,8 +42,6 @@ class Solution:
 		return True
 
 	def analyze_conflict(self):
-		print("analyzing")
-		print(self.level)
 		c_data = {}
 		#get conflict clause number
 		cl = self.clause_db.is_conflict()
@@ -80,7 +78,7 @@ class Solution:
 		return self.state_data(data)
 
 	def state_data(self, data):
-		data["new_nodes"] = self.new_nodes
+		data["new_nodes"] = copy.copy(self.new_nodes)
 		data["level"] = copy.copy(self.level)
 		data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
@@ -143,17 +141,12 @@ class Solution:
 		data["propogation"] = []
 		#while propogating creates a conflict
 		while not self.propogate():
-			print("top of loop")
-			print(self.graph)
 			num_conflicts += 1
 			#save current propogated state for frontend before resolving conflict
 			if num_conflicts > 1:
 				data["propogation"].append(self.state_data({}))
-				print(data["propogation"])
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
-			print("reset level")
-			print(reset_level)
 			#clause db is unsat
 			if reset_level < 0:
 				data["finished"] = True
@@ -173,9 +166,7 @@ class Solution:
 				# data["reset"].append({"level": self.level, "decided": self.graph.decided_front(), "edges": 
 				# 	self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
 				# 	self.graph.available_front(self.original_clause_db.num_literals)})
-				self.new_nodes = self.graph.allNodes_front()
-			print("HEREBEEDO")
-			print(data)
+				self.new_nodes = {}
 
 		return self.run_alg(data, num_conflicts)
 
