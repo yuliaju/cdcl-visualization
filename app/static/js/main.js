@@ -1,4 +1,15 @@
 // import * as $ from 'jquery';
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var s;
 function isNot(maybeNot) {
     return maybeNot.num !== undefined;
@@ -8,6 +19,9 @@ var uips;
 var closest_uip;
 var conflict_info;
 var post_conflict_info;
+var num_conflicts_remaining;
+// to-do: definitely need to refactor this
+var next_conflict_response = {};
 /*************************************************************/
 function sendClauseLibrary(cl) {
     $.ajax({
@@ -111,20 +125,31 @@ function sendDecision(decision) {
 }
 function processResponse(response) {
     console.log(response);
-    // update graph depending on what we get back from backend
-    addNodes(response.new_nodes);
-    if (response.conflict) {
-        addNodes({ 'K': response.conflict_info.conflict_label });
+    if (response.conflict > 0) {
+        addNodes({ 'K': response.conflict_info[0].conflict_label });
+        addNodes(response.conflict_info[0].new_nodes);
+        addEdges(response.conflict_info[0].edges);
     }
-    addEdges(response.edges);
+    else {
+        addNodes(response.new_nodes);
+        addEdges(response.edges);
+    }
     updateLevel(response.level);
     updateDropdown(response.available);
     s.refresh();
-    if (response.conflict) {
+    if (response.conflict > 0) {
         hideSelectionSection();
         addConflictUI();
-        conflict_info = response.conflict_info;
-        post_conflict_info = response.reset;
+        conflict_info = response.conflict_info[0];
+        post_conflict_info = response.reset[0];
+        num_conflicts_remaining = response.conflict - 1;
+        if (num_conflicts_remaining != 0) {
+            // shallow copy
+            next_conflict_response = __assign({}, response);
+            next_conflict_response.conflict = response.conflict - 1;
+            next_conflict_response.conflict_info = response.conflict_info.slice(1);
+            next_conflict_response.reset = response.reset.slice(1);
+        }
     }
     else {
         updateDropdown(response.available);
@@ -299,6 +324,7 @@ function showCut() {
 function addConflictClause() {
     s.graph.clear();
     s.refresh();
+    // to-do: add button to view propagation as a separate step
     addNodes(post_conflict_info.nodes);
     addEdges(post_conflict_info.edges);
     s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
@@ -307,7 +333,12 @@ function addConflictClause() {
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";
     removeConflictUI();
-    showSelectionSection();
-    updateDropdown(post_conflict_info.available);
-    updateLevel(post_conflict_info.level);
+    if (num_conflicts_remaining > 0) {
+        processResponse(next_conflict_response);
+    }
+    else {
+        showSelectionSection();
+        updateDropdown(post_conflict_info.available);
+        updateLevel(post_conflict_info.level);
+    }
 }
