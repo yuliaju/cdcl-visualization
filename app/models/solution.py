@@ -90,12 +90,14 @@ class Solution:
 	def satisfied(self, data):
 		self.finished = True
 		options = []
-		for i in range(1, self.clause_db.num_literals):
-			decided_indices = [l.index for l in self.graph.decided]
+		decided_indices = [l.index for l in self.graph.decided]
+		for i in range(1, self.clause_db.num_literals):	
 			if i not in decided_indices:
 				options.append(i)
 		data["options"] = options
-		data["satisfied"] = true
+		data["satisfied"] = True
+		data["finished"] = True
+		data["decided"] = copy.copy(self.graph.decided_front())
 		return data
 
 	#propogate. If conflict reached, db is unsat. else continue
