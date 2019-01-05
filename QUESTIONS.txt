@@ -16,6 +16,7 @@ Julia to do:
 refactor ts
 graph - node layout
 graph - display the cut
+graph - change font/label of nodes
 
 
 QUESTIONS
