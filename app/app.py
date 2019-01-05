@@ -23,7 +23,7 @@ def clause_db():
 	if clause_db == False:
 		return jsonify({"parser": False})
 	solution = Solution(clause_db)
-	return_data = solution.run_alg({})
+	return_data = solution.start_alg()
 	return_data["parser"] = True
 	print(return_data)
 	return jsonify(return_data)

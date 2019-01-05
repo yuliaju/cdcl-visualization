@@ -19,6 +19,18 @@ class Clause_db:
 	def __iter__(self):
 		return self
 
+	def array_of(self):
+		arr = []
+		for c in self.clauses:
+			arr.append(str(c))
+		return arr
+
+	def array_sat(self):
+		arr = []
+		for c in self.clauses:
+			arr.append(c.satisfied)
+		return arr
+
 	def getLen(self):
 		return self.len
 

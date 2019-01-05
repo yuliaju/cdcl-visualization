@@ -142,11 +142,12 @@ class Graph:
 				return i
 		return False
 
+	#get node of most recent decision
 	def recentDecision(self, level):
 		for i in self.allNodes():
 			if i.level == level and i.clause is None:
 				return i
-		return False
+		raise Exception("Problem! No recent decision")
 
 	#add edge from node1 to node2
 	def addEdge(self, node1, node2):
