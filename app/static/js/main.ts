@@ -23,7 +23,8 @@ let closest_uip: string;
 let conflict_info: any;
 let post_conflict_info: any;
 let num_conflicts_remaining: number;
-
+// to-do: definitely need to refactor this
+let next_conflict_response: any = {};
 
 /*************************************************************/
 
@@ -174,6 +175,15 @@ function processResponse(response: any) {
 
     conflict_info = response.conflict_info[0];
     post_conflict_info = response.reset[0];
+    num_conflicts_remaining = response.conflict - 1;
+
+    if (num_conflicts_remaining != 0) {
+      // shallow copy
+      next_conflict_response = { ...response };
+      next_conflict_response.conflict = response.conflict - 1;
+      next_conflict_response.conflict_info = response.conflict_info.slice(1);
+      next_conflict_response.reset = response.reset.slice(1);
+    }
   } else {
     updateDropdown(response.available);
   }
@@ -391,6 +401,7 @@ function addConflictClause() {
   s.graph.clear();
   s.refresh();
 
+  // to-do: add button to view propagation as a separate step
   addNodes(post_conflict_info.nodes);
   addEdges(post_conflict_info.edges);
 
@@ -403,8 +414,13 @@ function addConflictClause() {
   thisButton.style.display = "none";
 
   removeConflictUI();
-  showSelectionSection();
 
-  updateDropdown(post_conflict_info.available);
-  updateLevel(post_conflict_info.level);
+  if (num_conflicts_remaining > 0) {
+    processResponse(next_conflict_response);
+  } else {
+    showSelectionSection();
+
+    updateDropdown(post_conflict_info.available);
+    updateLevel(post_conflict_info.level);
+  }
 }
