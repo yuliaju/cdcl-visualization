@@ -26,6 +26,7 @@ how do you want me to send a list of satisfied clauses?
 
 I added another example db to outline.txt (the one from pset1) for testing. It reaches the conflict correctly, but
 I can't get it to transition from the conflict box back to asking the user for decisions. Will you take a look?
+-- J: i think the bug is that “K” isn’t being removed from the list of edges
 
 -- J: error when the clause database is just 'p1' (finishes but returns satisfied: false)
 

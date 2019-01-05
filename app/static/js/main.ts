@@ -31,7 +31,7 @@ function sendClauseLibrary(cl: string) {
     type: "POST",
     contentType: "application/json; charset=utf-8",
     url: "/clause_db",
-    data: JSON.stringify({'clauseLibrary': cl}),
+    data: JSON.stringify({'clauseLibrary': cl.trim()}),
     success: function (response) {
       // in case it's not the first time calling this method
       s.graph.clear();
