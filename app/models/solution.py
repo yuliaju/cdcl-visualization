@@ -57,27 +57,31 @@ class Solution:
 		uip = self.graph.uip(recentDecision)
 		cuts = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
-		c_data = {"decided": copy.copy(self.graph.decided_front()), "new_nodes": self.new_nodes, 
-			"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
+		state_data = self.state_data({})
+		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
 			str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
-			"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict()),
-			"all_clauses": copy.copy(self.clause_db.array_of()), 
-			"clause_sat": copy.copy(self.clause_db.array_sat())}
+			"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict())}
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
 		reset_level = self.graph.backtrack_level(conflict_clause)
+		c_data.update(state_data)
 		return (c_data, reset_level, conflict_clause)
 
 
 	#send front_end new data
-	def front_data(self, data, num_conflicts):
-		data["new_nodes"] = self.new_nodes
+	def main_data(self, data, num_conflicts):
+		if num_conflicts == 0:
+			num_conflicts = False
 		data["finished"] = self.finished
-		data["level"] = copy.copy(self.level)
 		data["conflict"] = num_conflicts
+		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
+		return self.state_data(data)
+
+	def state_data(self, data):
+		data["new_nodes"] = self.new_nodes
+		data["level"] = copy.copy(self.level)
 		data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
-		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
 		data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		return data
@@ -112,7 +116,7 @@ class Solution:
 		#while all clauses are not satisfied
 		while not self.clause_db.is_finished():
 			#send frontend data, ask for user decision
-			data = self.front_data(data, num_conflicts)
+			data = self.main_data(data, num_conflicts)
 			self.level += 1
 			return data	
 		return self.satisfied(data)
@@ -137,7 +141,7 @@ class Solution:
 			num_conflicts += 1
 			#save current propogated state for frontend before resolving conflict
 			if num_conflicts > 1:
-				data["propogation"].append(self.front_data([]))
+				data["propogation"].append(self.state_data({}))
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
 			#clause db is unsat
@@ -154,9 +158,10 @@ class Solution:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#add reset data
-				data["reset"].append({"level": self.level, "decided": self.graph.decided_front(), "edges": 
-					self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
-					self.graph.available_front(self.original_clause_db.num_literals)})
+				data["reset"] = self.state_data({})
+				# data["reset"].append({"level": self.level, "decided": self.graph.decided_front(), "edges": 
+				# 	self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
+				# 	self.graph.available_front(self.original_clause_db.num_literals)})
 				self.level = self.level + 1
 				self.new_nodes = self.graph.allNodes_front()
 
