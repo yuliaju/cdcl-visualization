@@ -61,6 +61,7 @@ class Solution:
 			"all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
 			str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
 			"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict()),
+			"all_clauses": copy.copy(self.clause_db.array_of()), 
 			"clause_sat": copy.copy(self.clause_db.array_sat())}
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
@@ -77,6 +78,7 @@ class Solution:
 		data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
 		data["decided"] = copy.copy(self.graph.decided_front())
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
+		data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		return data
 
@@ -103,7 +105,6 @@ class Solution:
 			data["satisfied"] = False
 			return data
 		else:
-			data["all_clauses"] = self.clause_db.array_of()
 			return self.run_alg(data, False)
 
 
@@ -128,14 +129,17 @@ class Solution:
 		self.new_nodes = {}
 		self.new_nodes[num] = str(self.graph.getNode(l))
 		num_conflicts = 0
+		data["conflict_info"] = []
+		data["reset"] = []
+		data["propogation"] = []
 		#while propogating creates a conflict
 		while not self.propogate():
 			num_conflicts += 1
 			#save current propogated state for frontend before resolving conflict
 			if num_conflicts > 1:
-				data[("propogation"+str(num_conflicts-1))] = self.front_data([])
+				data["propogation"].append(self.front_data([]))
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
-			data[("conflict_info"+str(num_conflicts))] = c_data
+			data["conflict_info"].append(c_data)
 			#clause db is unsat
 			if reset_level < 0:
 				data["finished"] = True
@@ -150,9 +154,9 @@ class Solution:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#add reset data
-				data[("reset"+str(num_conflicts))] = {"level": self.level, "decided": self.graph.decided_front(), "edges": 
+				data["reset"].append({"level": self.level, "decided": self.graph.decided_front(), "edges": 
 					self.graph.all_edges_front(), "nodes": self.graph.allNodes_front(), "available": 
-					self.graph.available_front(self.original_clause_db.num_literals)}
+					self.graph.available_front(self.original_clause_db.num_literals)})
 				self.level = self.level + 1
 				self.new_nodes = self.graph.allNodes_front()
 

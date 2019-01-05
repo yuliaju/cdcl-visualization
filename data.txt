@@ -1,0 +1,37 @@
+state_data:
+new_nodes
+level
+edges
+decided
+all_clauses
+clause_sat
+
+
+
+main_data:
+finished
+conflict
+available
+
+
+
+ALWAYS main_data and state_data
+
+
+if conflict is not false:
+
+conflict_info:
+state_data
+all_uips
+right_uip
+conflict_clause
+cut_conflict
+cut_other
+conflict_label
+
+
+
+reset:
+state_data
+
+
