@@ -4,7 +4,7 @@ show which clauses are satisfied (already implemented in backend!)
 add helpful educational tidbits
 add helpful error messages about incorrect input
 allow users to add unconsecutive p numbers
-
+propogation button
 
 
 Sally to do:
@@ -77,6 +77,8 @@ conflict_info also contains all_clauses and clause_sat
 
 
 
+
+does 
 
 
 
