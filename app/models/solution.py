@@ -5,7 +5,6 @@ from .clause_db import *
 
 
 
-# TO DO: WHAT ABOUT UNSAT???
 class Solution:
 	def __init__(self, original_clause_db):
 		self.graph = Graph()

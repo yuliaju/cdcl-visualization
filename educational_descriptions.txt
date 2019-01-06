@@ -1,0 +1,20 @@
+educational descriptions
+
+
+
+
+The CDCL algorithm finds a satisfying solution to a propositional formula in Conjunctive Normal Form (CNF) if one exists. First enter clauses
+into the clause database.
+
+
+First the algorithm will propogate any decisions. For instance, if a unit clause exists, we know the value of that literal.
+
+
+If it has been propogated but the database is not satisfied, the algorithm asks the user for an arbitrary assignment of a literal.
+
+
+This literal is added to the graph, and the decision is propogated. Nodes indicate the literal, its level, and (if it is not a decision node)
+the clause in which it was propogated. A propogated node is pointed to by all other nodes in its corresponding clause.
+
+
+When a conflict is reached, ...
