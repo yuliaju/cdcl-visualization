@@ -15,20 +15,6 @@ Julia to do:
 refactor ts
 
 
-QUESTIONS
--- J: error when the clause database is just 'p1' (finishes but returns satisfied: false)
-
-
-
-DATA always contains:
-new_nodes
-finished
-level
-conflict
-edges
-decided
-available
-clause_sat = [T/F, T/F, ... for each clause]
 
 
 CHANGES:
