@@ -1,6 +1,5 @@
 IF TIME
 let user load sample clause databases
-show which clauses are satisfied (already implemented in backend!)
 add helpful educational tidbits
 add helpful error messages about incorrect input
 allow users to add unconsecutive p numbers

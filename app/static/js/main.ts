@@ -194,12 +194,18 @@ function processResponse(response: any) {
       next_conflict_response.conflict_info = response.conflict_info.slice(1);
       next_conflict_response.reset = response.reset.slice(1);
     }
+
+    if (response.conflict_info[0].finished) {
+      hideSelectionSection();
+      showFinishedSection(response.conflict_info[0].satisfied, response.conflict_info[0].decided);
+    }
   } else {
     updateDropdown(response.available);
   }
 
-  if (response.finished) {
-    // display response.options somewhere prominent
+  // clause satisfiability should update to what is in conflict info first,
+  // then once conflict clause is added, update to the clause-sat in data
+  if (response.finished && num_conflicts_remaining == 0) {
     hideSelectionSection();
     showFinishedSection(response.satisfied, response.decided);
   }
@@ -247,13 +253,10 @@ function addNodes(nodes: object) {
     node.size=1;
   });
 
-  console.log('in addNodes ', s.graph.nodes());
-
   s.render();
 }
 
 function addEdges(edges: object) {
-  console.log("Here: ", edges);
   if (Object.keys(edges).length !== 0) {
     for (let key in edges) {
       if (edges.hasOwnProperty(key)) {
@@ -412,7 +415,7 @@ function addConflictClause() {
   s.refresh();
 
   // to-do: add button to view propagation as a separate step
-  addNodes(post_conflict_info.nodes);
+  addNodes(post_conflict_info.new_nodes);
   addEdges(post_conflict_info.edges);
   updateClauseDatabaseState(conflict_info.all_clauses, conflict_info.clause_sat);
 
@@ -431,7 +434,6 @@ function addConflictClause() {
   } else {
     showSelectionSection();
 
-    updateDropdown(post_conflict_info.available);
     updateLevel(post_conflict_info.level);
   }
 }
