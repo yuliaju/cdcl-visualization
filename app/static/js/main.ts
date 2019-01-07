@@ -168,16 +168,19 @@ function processResponse(response: any) {
     addNodes({'K': response.conflict_info[0].conflict_label});
     addNodes(response.conflict_info[0].new_nodes);
     addEdges(response.conflict_info[0].edges);
-  } else {
+    updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
+  } else if (response.new_nodes){
+    // on the last response (if it's not a conflict), these all will all be undefined
     addNodes(response.new_nodes);
     addEdges(response.edges);
+    updateClauseDatabaseState(response.all_clauses, response.clause_sat);
   }
 
-  updateLevel(response.level);
-  updateDropdown(response.available);
-  updateClauseDatabaseState(response.all_clauses, response.clause_sat);
-
-  s.refresh();
+  // similarly, these will be undefined in the last response (if it's not a conflict)
+  if (response.level) {
+    updateLevel(response.level);
+    updateDropdown(response.available);
+  }
 
   if (response.conflict > 0) {
     hideSelectionSection();
@@ -199,13 +202,9 @@ function processResponse(response: any) {
       hideSelectionSection();
       showFinishedSection(response.conflict_info[0].satisfied, response.conflict_info[0].decided);
     }
-  } else {
-    updateDropdown(response.available);
-  }
-
-  // clause satisfiability should update to what is in conflict info first,
-  // then once conflict clause is added, update to the clause-sat in data
-  if (response.finished && num_conflicts_remaining == 0) {
+  } else if (response.finished) {
+    // clause satisfiability should update to what is in conflict info first,
+    // then once conflict clause is added, update to the clause-sat in data
     hideSelectionSection();
     showFinishedSection(response.satisfied, response.decided);
   }
@@ -254,6 +253,7 @@ function addNodes(nodes: object) {
   });
 
   s.render();
+  s.refresh();
 }
 
 function addEdges(edges: object) {
@@ -272,6 +272,9 @@ function addEdges(edges: object) {
       }
     }
   }
+
+  s.render();
+  s.refresh();
 }
 
 function updateLevel(level: number) {
@@ -420,7 +423,6 @@ function addConflictClause() {
   updateClauseDatabaseState(conflict_info.all_clauses, conflict_info.clause_sat);
 
   s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
-
   s.refresh();
   s.render();
 
@@ -434,6 +436,7 @@ function addConflictClause() {
   } else {
     showSelectionSection();
 
+    updateClauseDatabaseState(post_conflict_info.all_clauses, post_conflict_info.clause_sat);
     updateLevel(post_conflict_info.level);
   }
 }
