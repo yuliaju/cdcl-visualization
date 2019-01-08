@@ -77,16 +77,16 @@ class Solution:
 		return data
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, data):
-		s_data = {}
+	def state_data(self, s_data):
+		# s_data = {}
 		s_data["new_nodes"] = copy.copy(self.new_nodes)
 		s_data["level"] = copy.copy(self.level)
 		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
 		s_data["decided"] = copy.copy(self.graph.decided_front())
 		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
-		data["state"] = s_data
-		return data
+		# data["state"] = s_data
+		return s_data
 
 	def pre_prop(self):
 		data = {}
@@ -137,17 +137,15 @@ class Solution:
 		curr_reset = {}
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
+			self.conflict += 1
 			#if more than one conflict, save current state before solving conflict
 			if self.conflict > 1:
-				print("NOOOO")
 				data["reset"].append(self.state_data(curr_reset))
 				curr_reset = {}
 				self.new_nodes = {}
 			#compute conflict data and save for frontend
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
-			print("here")
-			print(data)
 			#clause db is unsat
 			if reset_level < 0:
 				self.finished = True
