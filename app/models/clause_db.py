@@ -55,7 +55,7 @@ class Clause_db:
 		return self
 
 	#return true if all clauses in database are satisfied, false if not
-	def is_finished(self):
+	def is_satisfied(self):
 		fin = True
 		for i in self.clauses:
 			if not i.satisfied:

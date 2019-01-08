@@ -10,7 +10,8 @@ class Solution:
 		self.graph = Graph()
 		self.new_nodes = {}
 		self.finished = False
-		self.conflict = False
+		self.satisfied = False
+		self.conflict = 0
 		self.level = 0
 		self.original_clause_db = original_clause_db
 		self.clause_db = copy.deepcopy(original_clause_db) 
@@ -36,7 +37,7 @@ class Solution:
 						new_decide = True
 						#is there a conflict?
 						if self.clause_db.is_conflict() is not False:
-							self.conflict = True
+							self.conflict += 1
 							return False
 		return True
 
@@ -68,73 +69,59 @@ class Solution:
 
 
 	#main data for frontend
-	def main_data(self, data, num_conflicts):
-		if num_conflicts == 0:
-			num_conflicts = False
+	def main_data(self, data):
 		data["finished"] = self.finished
-		data["conflict"] = num_conflicts
-		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
-		data["satisfied"] = ?????
+		data["satisfied"] = self.satisfied
+		data["conflict"] = self.conflict
+		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))		
 		return data
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, data, pre_prop_nodes=None, pre_prop_edges=None, pre_prop_clause_sat=None):
-		data["new_nodes"] = copy.copy(self.new_nodes)
-		data["level"] = copy.copy(self.level)
-		data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
-		data["decided"] = copy.copy(self.graph.decided_front())
-		data["all_clauses"] = copy.copy(self.clause_db.array_of())
-		data["clause_sat"] = copy.copy(self.clause_db.array_sat())
-		if pre_prop_nodes is not None and len(pre_prop_nodes) > 0:
-			data["pre_prop_nodes"] = pre_prop_nodes
-		if pre_prop_edges is not None and len(pre_prop_edges) > 0:
-			data["pre_prop_edges"] = pre_prop_nodes
+	def state_data(self, data):
+		s_data = {}
+		s_data["new_nodes"] = copy.copy(self.new_nodes)
+		s_data["level"] = copy.copy(self.level)
+		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
+		s_data["decided"] = copy.copy(self.graph.decided_front())
+		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
+		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
+		data["state"] = s_data
 		return data
 
-	#satisfied data for frontend
-	def satisfied(self, data):
-		self.finished = True
-		options = []
-		decided_indices = [l.index for l in self.graph.decided]
-		for i in range(1, self.clause_db.num_literals):	
-			if i not in decided_indices:
-				options.append(i)
-		data["new_nodes"] = self.new_nodes
-		data["edges"] = self.graph.new_edges_front(self.new_nodes)
-		data["options"] = options
-		data["satisfied"] = True
-		data["finished"] = True
-		data["decided"] = copy.copy(self.graph.decided_front())
+	def pre_prop(self, data):
+		p_data = {}
+		p_data["pre_prop_nodes"] = copy.copy(self.new_nodes)
+		p_data["pre_prop_edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
+		p_data["pre_prop_clause_sat"] = copy.copy(self.clause_db.array_sat())
+		p_data["pre_prop_all_clauses"] = copy.copy(self.clause_db.array_of())
+		data["pre_prop_state"] = p_data
 		return data
 
-	#propogate. If conflict reached, db is unsat. else continue
+
+	#First run only: Propogate. If conflict reached, db is unsat. Else continue algorithm
 	def start_alg(self):
-		data = {}
-		#propogate
-		state = self.propogate()
-		#If conflict, db is not satisfiable
-		if self.conflict:
-			data["conflict"] = False
-			data["finished"] = True
-			data["satisfied"] = False
-			return data
+		if not self.propogate:
+			self.finished = True
+			self.satisfied = False
+			return self.state_data(self.main_data({}))
 		else:
-			data = self.state_data(data)
-			return self.run_alg(data, False)
+			return self.run_alg(self.state_data({}))
 
 
-	def run_alg(self, data, num_conflicts):
-		#while all clauses are not satisfied
-		while not self.clause_db.is_finished():
-			#send frontend data, ask for user decision
-			data = self.main_data(data, num_conflicts)
+	def run_alg(self, data):
+		#while all clauses are not satisfied, send frontend current state and ask for user decision
+		while not self.clause_db.is_satisfied():
+			data = self.main_data(data)
 			self.level += 1
-			return data	
-		return self.satisfied(data)
+			return data
+		#Satisfiable solution is found. Send frontend solution
+		self.finished = True
+		self.satisfied = True
+		return self.main_data(data)
 
 
 
-	#receive user input and continue algorithm
+	#Upon receivung user input, continue algorithm
 	def new_input(self, num, sign):
 		data = {}
 		l = Literal(num, sign)
@@ -144,31 +131,25 @@ class Solution:
 		self.new_nodes = {}
 		self.new_nodes[num] = str(self.graph.getNode(l))
 		
-		num_conflicts = 0
-		pre_prop_nodes = {}
-		pre_prop_edges = {}
-		pre_prop_clause_sat = []
 		data["conflict_info"] = []
 		data["reset"] = []
+		curr_reset = {}
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
-			num_conflicts += 1
+			self.num_conflicts += 1
 			#if more than one conflict, save current state before solving conflict
-			if num_conflicts > 1:
-				data["reset"].append(self.state_data({}, pre_prop_nodes, pre_prop_edges))
+			if self.num_conflicts > 1:
+				data["reset"].append(self.state_data(curr_reset))
+				curr_reset = {}
 				self.new_nodes = {}
-				pre_prop_nodes = {}
-				pre_prop_edges = {}
-				pre_prop_clause_sat = []
 			#compute conflict data and save for frontend
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
 			#clause db is unsat
 			if reset_level < 0:
-				data["finished"] = True
-				data["satisfied"] = False
-				data["conflict"] = False
-				return self.state_data(data)
+				self.finished = True
+				self.satisfied = False
+				return self.state_data(self.main_data(data))
 			#reset graph and db
 			else:
 				self.level = reset_level
@@ -179,9 +160,7 @@ class Solution:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#save the state of graph pre propogation
-				pre_prop_nodes = copy.copy(self.new_nodes)
-				pre_prop_edges = copy.copy(self.graph.new_edges_front(self.new_nodes))
-				pre_prop_clause_sat = copy.copy(self.clause_db.array_sat())
+				curr_reset.update(self.pre_prop())
 				self.new_nodes = {}
 				
 				
