@@ -74,10 +74,11 @@ class Solution:
 		data["finished"] = self.finished
 		data["conflict"] = num_conflicts
 		data["available"] = copy.copy(self.graph.available_front(self.original_clause_db.num_literals))
+		data["satisfied"] = ?????
 		return data
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, data, pre_prop_nodes=None, pre_prop_edges=None):
+	def state_data(self, data, pre_prop_nodes=None, pre_prop_edges=None, pre_prop_clause_sat=None):
 		data["new_nodes"] = copy.copy(self.new_nodes)
 		data["level"] = copy.copy(self.level)
 		data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
@@ -113,6 +114,7 @@ class Solution:
 		state = self.propogate()
 		#If conflict, db is not satisfiable
 		if self.conflict:
+			data["conflict"] = False
 			data["finished"] = True
 			data["satisfied"] = False
 			return data
@@ -145,6 +147,7 @@ class Solution:
 		num_conflicts = 0
 		pre_prop_nodes = {}
 		pre_prop_edges = {}
+		pre_prop_clause_sat = []
 		data["conflict_info"] = []
 		data["reset"] = []
 		#while propogating creates a conflict, handle the conflict
@@ -156,6 +159,7 @@ class Solution:
 				self.new_nodes = {}
 				pre_prop_nodes = {}
 				pre_prop_edges = {}
+				pre_prop_clause_sat = []
 			#compute conflict data and save for frontend
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
@@ -163,6 +167,7 @@ class Solution:
 			if reset_level < 0:
 				data["finished"] = True
 				data["satisfied"] = False
+				data["conflict"] = False
 				return self.state_data(data)
 			#reset graph and db
 			else:
@@ -175,15 +180,13 @@ class Solution:
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#save the state of graph pre propogation
 				pre_prop_nodes = copy.copy(self.new_nodes)
-				print(pre_prop_edges)
 				pre_prop_edges = copy.copy(self.graph.new_edges_front(self.new_nodes))
-				print("here")
-				print(pre_prop_edges)
+				pre_prop_clause_sat = copy.copy(self.clause_db.array_sat())
 				self.new_nodes = {}
 				
 				
 		if num_conflicts > 0:
-			data["reset"].append(self.state_data({}, pre_prop_nodes, pre_prop_edges))
+			data["reset"].append(self.state_data({}, pre_prop_nodes, pre_prop_edges, pre_prop_clause_sat))
 		else:
 			data = self.state_data(data)
 		return self.run_alg(data, num_conflicts)
