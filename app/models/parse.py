@@ -48,6 +48,8 @@ def dfa(c):
 
 
 def parse_clauses(data):
+	global props
+	props = []
 	clauses = data.split("\n")
 	to_db = []
 	for c in clauses:

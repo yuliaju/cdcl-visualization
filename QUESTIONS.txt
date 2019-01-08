@@ -4,15 +4,19 @@ add helpful educational tidbits
 add helpful error messages about incorrect input
 allow users to add unconsecutive p numbers
 propogation button
+hide input box when start alg. Include button to "regenerate database"
+organize loose info in top level of data
 
 
 Sally to do:
 test!!!
-test backtrack level
+check uip alg
+screenshot error
 
 Julia to do:
 (maybe) make graph database state section look nicer
 refactor ts
+start clause numbering at 1
 
 
 

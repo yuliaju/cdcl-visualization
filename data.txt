@@ -28,10 +28,13 @@ conflict_clause
 cut_conflict
 cut_other
 conflict_label
+pre_prop_nodes
+pre_prop_edges
 
 
 
 reset:
 state_data
-
+pre_prop_nodes (if they exist)
+pre_prop_edges (if they exist)
 
