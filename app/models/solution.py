@@ -57,7 +57,7 @@ class Solution:
 		uip = self.graph.uip(recentDecision)
 		cuts = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
-		state_data = self.state_data({})
+		state_data = self.state_data()
 		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
 			str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
 			"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict())}
@@ -69,7 +69,7 @@ class Solution:
 
 
 	#main data for frontend
-	def main_data(self, data):
+	def main_data(self, data={}):
 		data["finished"] = self.finished
 		data["satisfied"] = self.satisfied
 		data["conflict"] = self.conflict
@@ -77,16 +77,16 @@ class Solution:
 		return data
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, data):
-		s_data = {}
+	def state_data(self, s_data={}):
+		# s_data = {}
 		s_data["new_nodes"] = copy.copy(self.new_nodes)
 		s_data["level"] = copy.copy(self.level)
 		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
 		s_data["decided"] = copy.copy(self.graph.decided_front())
 		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
-		data["state"] = s_data
-		return data
+		# data["state"] = s_data
+		return s_data
 
 	def pre_prop(self):
 		data = {}
@@ -104,14 +104,17 @@ class Solution:
 		if not self.propogate:
 			self.finished = True
 			self.satisfied = False
-			return self.state_data(self.main_data({}))
+			return self.state_data(self.main_data())
 		else:
-			return self.run_alg(self.state_data({}))
+			return self.run_alg()
 
 
-	def run_alg(self, data):
+	def run_alg(self, data={}):
 		#while all clauses are not satisfied, send frontend current state and ask for user decision
 		while not self.clause_db.is_satisfied():
+			# If conflict is false, send state data
+			if self.conflict < 1:
+				data = self.state_data(data)
 			data = self.main_data(data)
 			self.level += 1
 			return data
@@ -134,20 +137,11 @@ class Solution:
 		
 		data["conflict_info"] = []
 		data["reset"] = []
-		curr_reset = {}
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
-			#if more than one conflict, save current state before solving conflict
-			if self.conflict > 1:
-				print("NOOOO")
-				data["reset"].append(self.state_data(curr_reset))
-				curr_reset = {}
-				self.new_nodes = {}
 			#compute conflict data and save for frontend
 			(c_data, reset_level, conflict_clause) = self.analyze_conflict()
 			data["conflict_info"].append(c_data)
-			print("here")
-			print(data)
 			#clause db is unsat
 			if reset_level < 0:
 				self.finished = True
@@ -163,14 +157,13 @@ class Solution:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#save the state of graph pre propogation
-				curr_reset = self.pre_prop()
+				data["reset"].append(self.pre_prop())
 				self.new_nodes = {}
 				
-				
+		#if there was a conflict, save final state of graph in reset
 		if self.conflict > 0:
-			data["reset"].append(self.state_data(curr_reset))
-		else:
-			data = self.state_data(data)
+			data["reset"][len(data["reset"])-1].update(self.state_data())
+
 		return self.run_alg(data)
 
 
