@@ -1,4 +1,12 @@
 /* Show */
+function showButtons() {
+  let varButton = document.getElementById("decideVar") as HTMLElement;
+  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
+
+  varButton.style.display = "inline-flex";
+  notVarButton.style.display = "inline-flex";
+}
+
 function showClauseDatabaseState() {
   let clauseDatabaseStateSection = document.getElementById("clauseDatabaseStateSection") as HTMLElement;
 
@@ -40,6 +48,13 @@ function showSelectionSection() {
 }
 
 /* Hide */
+function hideButtons() {
+  let varButton = document.getElementById("decideVar") as HTMLElement;
+  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
+
+  varButton.style.display = "none";
+  notVarButton.style.display = "none";
+}
 
 function hideConflictUI() {
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;

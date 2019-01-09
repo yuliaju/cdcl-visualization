@@ -1,4 +1,10 @@
 /* Show */
+function showButtons() {
+    var varButton = document.getElementById("decideVar");
+    var notVarButton = document.getElementById("decideNotVar");
+    varButton.style.display = "inline-flex";
+    notVarButton.style.display = "inline-flex";
+}
 function showClauseDatabaseState() {
     var clauseDatabaseStateSection = document.getElementById("clauseDatabaseStateSection");
     clauseDatabaseStateSection.style.display = "flex";
@@ -30,6 +36,12 @@ function showSelectionSection() {
     selectionSection.style.display = "flex";
 }
 /* Hide */
+function hideButtons() {
+    var varButton = document.getElementById("decideVar");
+    var notVarButton = document.getElementById("decideNotVar");
+    varButton.style.display = "none";
+    notVarButton.style.display = "none";
+}
 function hideConflictUI() {
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "none";

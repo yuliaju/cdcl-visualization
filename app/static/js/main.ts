@@ -25,9 +25,9 @@ let uips: string[];
 let closest_uip: string;
 let conflict_info: any;
 let post_conflict_info: any;
-let num_conflicts_remaining: number;
+let out_of_conflict: boolean = true;
 // to-do: definitely need to refactor this
-let next_conflict_response: any = {};
+let next_conflict_response: any = [];
 
 /*************************************************************/
 
@@ -42,6 +42,7 @@ function sendClauseLibrary(cl: string) {
       s.graph.clear();
       s.refresh();
       hideFinishedSection();
+      hideSelectionSection();
 
       console.log(response);
 
@@ -73,14 +74,58 @@ function sendClauseLibrary(cl: string) {
   });
 }
 
+function processResponse(response: any) {
+  console.log(response);
+
+  if (response.conflict > 0) {
+    addNodes({'K': response.conflict_info[0].conflict_label});
+    addNodes(response.conflict_info[0].pre_prop_nodes);
+    addEdges(response.conflict_info[0].pre_prop_edges);
+    updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
+  } else {
+    addNodes(response.new_nodes);
+    addEdges(response.edges);
+    updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+  }
+
+  // similarly, these will be undefined in the last response (if it's not a conflict)
+  updateLevel(response.level);
+  updateDropdown(response.available);
+
+  if (response.conflict > 0) {
+    hideSelectionSection();
+    showConflictUI();
+
+    conflict_info = response.conflict_info[0];
+
+    if (response.conflict - 1 !== 0) {
+      out_of_conflict = false;
+
+      // shallow copy
+      next_conflict_response = { ...response };
+      next_conflict_response.conflict = response.conflict - 1;
+      next_conflict_response.conflict_info = response.conflict_info.slice(1);
+    } else {
+      out_of_conflict = true;
+
+      next_conflict_response = null;
+      if (response.finished) {
+        addNodes(response.new_nodes);
+        addEdges(response.edges);
+        updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+      }
+    }
+  }
+
+  if (response.finished && out_of_conflict) {
+    hideSelectionSection();
+    showFinishedSection(response.satisfied, response.decided);
+  }
+}
+
 // On button click
 function sendDecision(decision: boolean) {
-  // Hide buttons
-  let varButton = document.getElementById("decideVar") as HTMLElement;
-  let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
-
-  varButton.style.display = "none";
-  notVarButton.style.display = "none";
+  hideButtons();
 
   $.ajax({
     type: "POST",
@@ -100,53 +145,4 @@ function sendDecision(decision: boolean) {
     },
     dataType: "json"
   });
-}
-
-function processResponse(response: any) {
-  console.log(response);
-
-  if (response.conflict > 0) {
-    addNodes({'K': response.conflict_info[0].conflict_label});
-    addNodes(response.conflict_info[0].new_nodes);
-    addEdges(response.conflict_info[0].edges);
-    updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
-  } else if (response.new_nodes){
-    // on the last response (if it's not a conflict), these all will all be undefined
-    addNodes(response.new_nodes);
-    addEdges(response.edges);
-    updateClauseDatabaseState(response.all_clauses, response.clause_sat);
-  }
-
-  // similarly, these will be undefined in the last response (if it's not a conflict)
-  if (response.available) {
-    updateLevel(response.level);
-    updateDropdown(response.available);
-  }
-
-  if (response.conflict > 0) {
-    hideSelectionSection();
-    showConflictUI();
-
-    conflict_info = response.conflict_info[0];
-    post_conflict_info = response.reset[0];
-    num_conflicts_remaining = response.conflict - 1;
-
-    if (num_conflicts_remaining != 0) {
-      // shallow copy
-      next_conflict_response = { ...response };
-      next_conflict_response.conflict = response.conflict - 1;
-      next_conflict_response.conflict_info = response.conflict_info.slice(1);
-      next_conflict_response.reset = response.reset.slice(1);
-    }
-
-    if (response.conflict_info[0].finished) {
-      hideSelectionSection();
-      showFinishedSection(response.conflict_info[0].satisfied, response.conflict_info[0].decided);
-    }
-  } else if (response.finished) {
-    // clause satisfiability should update to what is in conflict info first,
-    // then once conflict clause is added, update to the clause-sat in data
-    hideSelectionSection();
-    showFinishedSection(response.satisfied, response.decided);
-  }
 }

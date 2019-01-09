@@ -14,7 +14,7 @@ class Solution:
 		self.conflict = 0
 		self.level = 0
 		self.original_clause_db = original_clause_db
-		self.clause_db = copy.deepcopy(original_clause_db) 
+		self.clause_db = copy.deepcopy(original_clause_db)
 
 
 	#Propogate: Decide any singular clauses. Return false if conflict
@@ -58,8 +58,8 @@ class Solution:
 		cuts = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cuts[0]))
 		state_data = self.state_data()
-		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause": 
-			str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]], 
+		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause":
+			str(conflict_clause), "cut_conflict": [c.literal.index for c in cuts[0]],
 			"cut_other": [c.literal.index for c in cuts[1]], "conflict_label": str(self.graph.getConflict())}
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
@@ -129,7 +129,7 @@ class Solution:
 		self.graph.decide_graph(self.level, l)
 		self.new_nodes = {}
 		self.new_nodes[num] = str(self.graph.getNode(l))
-		
+
 		data["conflict_info"] = []
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
@@ -154,5 +154,3 @@ class Solution:
 				self.new_nodes = {}
 
 		return self.run_alg(data)
-
-

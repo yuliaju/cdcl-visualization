@@ -6,9 +6,7 @@ function updateButtons() {
   varButton.textContent= "p" + selected_var.toString() + " is true";
   notVarButton.textContent= "p" + selected_var.toString() + " is false";
 
-  // Display buttons
-  varButton.style.display = "inline-flex";
-  notVarButton.style.display = "inline-flex";
+  showButtons();
 }
 
 function updateClauseDatabaseState(clause_list: string[], clause_sat: boolean[]) {

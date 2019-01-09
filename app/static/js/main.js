@@ -23,9 +23,9 @@ var uips;
 var closest_uip;
 var conflict_info;
 var post_conflict_info;
-var num_conflicts_remaining;
+var out_of_conflict = true;
 // to-do: definitely need to refactor this
-var next_conflict_response = {};
+var next_conflict_response = [];
 /*************************************************************/
 function sendClauseLibrary(cl) {
     $.ajax({
@@ -38,6 +38,7 @@ function sendClauseLibrary(cl) {
             s.graph.clear();
             s.refresh();
             hideFinishedSection();
+            hideSelectionSection();
             console.log(response);
             var parseErrorMsg = document.getElementById("parseErrorMsg");
             if (!response.parser) {
@@ -63,13 +64,51 @@ function sendClauseLibrary(cl) {
         dataType: "json"
     });
 }
+function processResponse(response) {
+    console.log(response);
+    if (response.conflict > 0) {
+        addNodes({ 'K': response.conflict_info[0].conflict_label });
+        addNodes(response.conflict_info[0].pre_prop_nodes);
+        addEdges(response.conflict_info[0].pre_prop_edges);
+        updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
+    }
+    else {
+        addNodes(response.new_nodes);
+        addEdges(response.edges);
+        updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+    }
+    // similarly, these will be undefined in the last response (if it's not a conflict)
+    updateLevel(response.level);
+    updateDropdown(response.available);
+    if (response.conflict > 0) {
+        hideSelectionSection();
+        showConflictUI();
+        conflict_info = response.conflict_info[0];
+        if (response.conflict - 1 !== 0) {
+            out_of_conflict = false;
+            // shallow copy
+            next_conflict_response = __assign({}, response);
+            next_conflict_response.conflict = response.conflict - 1;
+            next_conflict_response.conflict_info = response.conflict_info.slice(1);
+        }
+        else {
+            out_of_conflict = true;
+            next_conflict_response = null;
+            if (response.finished) {
+                addNodes(response.new_nodes);
+                addEdges(response.edges);
+                updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+            }
+        }
+    }
+    if (response.finished && out_of_conflict) {
+        hideSelectionSection();
+        showFinishedSection(response.satisfied, response.decided);
+    }
+}
 // On button click
 function sendDecision(decision) {
-    // Hide buttons
-    var varButton = document.getElementById("decideVar");
-    var notVarButton = document.getElementById("decideNotVar");
-    varButton.style.display = "none";
-    notVarButton.style.display = "none";
+    hideButtons();
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
@@ -88,48 +127,4 @@ function sendDecision(decision) {
         },
         dataType: "json"
     });
-}
-function processResponse(response) {
-    console.log(response);
-    if (response.conflict > 0) {
-        addNodes({ 'K': response.conflict_info[0].conflict_label });
-        addNodes(response.conflict_info[0].new_nodes);
-        addEdges(response.conflict_info[0].edges);
-        updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
-    }
-    else if (response.new_nodes) {
-        // on the last response (if it's not a conflict), these all will all be undefined
-        addNodes(response.new_nodes);
-        addEdges(response.edges);
-        updateClauseDatabaseState(response.all_clauses, response.clause_sat);
-    }
-    // similarly, these will be undefined in the last response (if it's not a conflict)
-    if (response.available) {
-        updateLevel(response.level);
-        updateDropdown(response.available);
-    }
-    if (response.conflict > 0) {
-        hideSelectionSection();
-        showConflictUI();
-        conflict_info = response.conflict_info[0];
-        post_conflict_info = response.reset[0];
-        num_conflicts_remaining = response.conflict - 1;
-        if (num_conflicts_remaining != 0) {
-            // shallow copy
-            next_conflict_response = __assign({}, response);
-            next_conflict_response.conflict = response.conflict - 1;
-            next_conflict_response.conflict_info = response.conflict_info.slice(1);
-            next_conflict_response.reset = response.reset.slice(1);
-        }
-        if (response.conflict_info[0].finished) {
-            hideSelectionSection();
-            showFinishedSection(response.conflict_info[0].satisfied, response.conflict_info[0].decided);
-        }
-    }
-    else if (response.finished) {
-        // clause satisfiability should update to what is in conflict info first,
-        // then once conflict clause is added, update to the clause-sat in data
-        hideSelectionSection();
-        showFinishedSection(response.satisfied, response.decided);
-    }
 }
