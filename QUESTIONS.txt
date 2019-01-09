@@ -5,6 +5,7 @@ add helpful error messages about incorrect input
 allow users to add unconsecutive p numbers
 propogation button
 hide input box when start alg. Include button to "regenerate database"
+sally optimize reset and backtrack_level
 
 
 Sally to do:

@@ -22,14 +22,14 @@ class Clause:
 	class ClauseLiteral:
 		def __init__(self, literal):
 			self.literal = literal
+			# literal has been assigned the value in the clause
 			self.satisfied = False
+			# literal has been assigned the opposite value than exists in the clause
 			self.excluded = False
 
 		def __str__(self):
 			s = str(self.literal)
 			return s
-		# def __deepcopy__(self):
-		# 	return ClauseLiteral(copy.deepcopy(self.literal, self.satisfied, self.excluded))
 
 	def __init__(self):
 		self.literals = []
@@ -48,9 +48,6 @@ class Clause:
 		s = s[0:len(s)-4]
 		return s
 
-	# def __deepcopy__(self):
-	# 	return Clause(copy.deepcopy(self.literals, self.size, self.satisfied))
-
 	#add literal to clause
 	def addLiteral(self, literal):
 		l = Clause.ClauseLiteral(literal)
@@ -58,14 +55,13 @@ class Clause:
 		self.size += 1
 		return self
 
+	# add multiple literals to clause
 	def addLiterals(self, literals):
 		for i in literals:
-			l = Clause.ClauseLiteral(i)
-			self.literals.append(l)
-			self.size += 1
+			self.addLiteral(i)
 		return self
 
-	#return all literals in the clause that have not been excluded
+	#return all literals in the clause that have not been excluded (ie assigned the negation of the value in that clause)
 	def nonExcludedLiterals(self):
 		ls = []
 		for l in self.literals:

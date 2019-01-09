@@ -46,30 +46,42 @@ class Graph:
 	def addNode(self, node):
 		self.edges[node] = []
 		self.size += 1
+		return node
+
+	#return node corresponding to literal, if it exists. False if not.
+	def getNode(self, literal):
+		for i in self.edges:
+			if i.literal.index == literal.index:
+				return i
+		return False
+
+	#add edge from node1 to node2
+	def addEdge(self, node1, node2):
+		return self.edges[node1].append(node2)
+
+	# Update edges based on new decision
+	def new_edges(self, newnode, clause, l):
+		lits = clause.literals
+		#for all other literals in the clause
+		for m in lits:
+			#no self edges
+			if m.literal is not l:
+				n = self.getNode(m.literal)
+				if n:
+					self.addEdge(n, newnode)
+				else:
+					raise Exception("null node")
 		return self
 
-	def allNodes(self):
-		nodes = []
-		for i in self.edges:
-			nodes.append(i)
-		return nodes
+	#update graph given literal l
+	def decide_graph(self, level, l, clause_num=None, clause=None):
+		newnode = self.addNode(self.Node(l, level, clause, clause_num))
+		#add edges
+		if clause is not None:
+			self.new_edges(newnode, clause, l)
+		return str(newnode)
 
-	def allNodes_front(self):
-		return {i.literal.index:str(i) for i in self.allNodes()}
-
-	def all_edges_front(self):
-		l = {}
-		for v in self.edges:
-			if not (v.conflict) and len(self.edges[v]) != 0:
-				temp = []
-				for e in self.edges[v]:
-					if e.conflict:
-						temp.append("K")
-					else:
-						temp.append(e.literal.index)
-				l[v.literal.index] = temp
-		return l
-
+	# return a dictionary of edges for frontend. key: node indices, value: list of indices of connected nodes
 	def new_edges_front(self, new_nodes):
 		l = {}
 		for v in self.edges:
@@ -86,13 +98,14 @@ class Graph:
 				l[v.literal.index] = temp
 		return l
 
-
+	# return a list of literals with assigned values to frontend
 	def decided_front(self):
 		l = []
 		for d in self.decided:
 			l.append(str(d))
 		return l
 
+	# return a list of indices of literals without an assigned value for frontend
 	def available_front(self, lits):
 		l = []
 		ds = [d.index for d in self.decided]
@@ -101,66 +114,28 @@ class Graph:
 				l.append(i)
 		return l
 
-	#return node corresponding to literal, if it exists. False if not.
-	def getNode(self, literal):
-		for i in self.allNodes():
-			if i.literal.index == literal.index:
-				return i
-		return False
 
 	#remove all nodes above level
 	def reset(self, level):
 		dels = []
-		self.decided = []
-		#remove conflict from edges
-		con = self.getConflict()
-		if con is not False:
-			del self.edges[con]
 		#find nodes above level
-		for i in self.allNodes():
+		for i in self.edges:
 			if i.level > level:
-				dels.append(i)
-		#delete nodes from graph
+				dels.append(i)		
 		for d in dels:
+			#delete nodes from graph
 			del self.edges[d]
-		#append conflict to del list
-		dels.append(con)
-		#remove edges pointing towards all dels
-		for i in self.allNodes():
-			for d in dels:
+			#remove edges pointing towards all dels
+			for i in self.edges:
 				if d in self.edges[i]:
 					self.edges[i].remove(d)
 		#update decided to include all nodes left
-		for i in self.allNodes():
+		self.decided = []
+		for i in self.edges:
 			self.decided.append(i.literal)
 		return self
 
-
-	def getConflict(self):
-		for i in self.allNodes():
-			if i.conflict:
-				return i
-		return False
-
-	#get node of most recent decision
-	def recentDecision(self, level):
-		for i in self.allNodes():
-			if i.level == level and i.clause is None:
-				return i
-		raise Exception("Problem! No recent decision")
-
-	#add edge from node1 to node2
-	def addEdge(self, node1, node2):
-		return self.edges[node1].append(node2)
-
-	#Does node 1 point to node 2?
-	def is_connected(self, node1, node2):
-		return node2 in self.edges[node1]
-
-	#Distance from node to concflit
-	def dist_to_conflict(self, node):
-		return self.dist([node], 0)
-
+	# helper function computing dist_to_conflict
 	def dist(self, nodes, level):
 		new_nodes = []
 		for node in nodes:
@@ -170,15 +145,9 @@ class Graph:
 				new_nodes.append(adj)
 		return self.dist(new_nodes, level+1)
 
-	# Find closest node closest to the conflict
-	def closest(self, nodes):
-		closest = nodes[0]
-		closest_dist = self.dist_to_conflict(nodes[0])
-		for i in range(1, len(nodes)):
-			if self.dist_to_conflict(nodes[i]) < closest_dist:
-				closest_dist = self.dist_to_conflict(nodes[i])
-				closest = nodes[i]
-		return closest
+	#Distance from node to concflit
+	def dist_to_conflict(self, node):
+		return self.dist([node], 0)
 
 	# Return list of lists of paths from node to conflict
 	def rec_path(self, paths):
@@ -193,7 +162,6 @@ class Graph:
 			else:
 				finished = False
 				for adjacent in self.edges[last]:
-					# new_path = path.copy()
 					new_path = path[:]
 					new_path.append(adjacent)
 					new_paths.append(new_path)
@@ -202,18 +170,32 @@ class Graph:
 		else:
 			return self.rec_path(new_paths)
 
-	#Finds all nodes appearing in all paths to conflict from node, excluding the conflict node
-	def uips(self, node):
+	#get node of most recent decision
+	def recentDecision(self, level):
+		for i in self.edges:
+			if i.level == level and i.clause is None:
+				return i
+		raise Exception("Problem! No recent decision")
+
+	# Find closest node closest to the conflict
+	def closest(self, nodes):
+		closest = nodes[0]
+		closest_dist = self.dist_to_conflict(nodes[0])
+		for i in range(1, len(nodes)):
+			if self.dist_to_conflict(nodes[i]) < closest_dist:
+				closest_dist = self.dist_to_conflict(nodes[i])
+				closest = nodes[i]
+		return closest
+
+	#Finds all nodes appearing in all paths to conflict from node, excluding the conflict node. Return (all_uips, closest_uip)
+	def uips(self, level):
+		node = self.recentDecision(level)
 		paths = self.rec_path([[node]])
-		nodes = self.allNodes()
+		nodes = self.edges
 		for path in paths:
 			nodes = [x for x in nodes if x in path and x in nodes and x.conflict == False]
-		return nodes
-
-	#Finds closest uip
-	def uip(self, node):
-		uips = self.uips(node)
-		return self.closest(uips)
+		uip = self.closest(nodes)
+		return (nodes, uip)
 
 	#given the uip, return [conflict_side, other_side]
 	def cut(self, uip):
@@ -224,7 +206,7 @@ class Graph:
 			for node in path:
 				if node not in conflict_side and node is not uip:
 					conflict_side.append(node)
-		for node in self.allNodes():
+		for node in self.edges:
 			if node not in conflict_side:
 				other_side.append(node)
 		return [conflict_side, other_side]
@@ -268,27 +250,3 @@ class Graph:
 				highest2 = node.level
 
 		return highest2
-
-
-	# Update edges based on new decision
-	def new_edges(self, newnode, clause, l):
-		lits = clause.literals
-		#for all other literals in the clause
-		for m in lits:
-			#no self edges
-			if m.literal is not l:
-				n = self.getNode(m.literal)
-				if n:
-					self.addEdge(n, newnode)
-				else:
-					raise Exception("null node")
-		return self
-
-	#update graph given literal l
-	def decide_graph(self, level, l, clause_num=None, clause=None):
-		self.addNode(self.Node(l, level, clause, clause_num))
-		newnode = self.getNode(l)
-		#add edges
-		if clause is not None:
-			self.new_edges(newnode, clause, l)
-		return str(newnode)
