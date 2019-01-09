@@ -2,8 +2,7 @@
 * finished :: boolean
 * satisfied :: boolean
 * available :: [int]
-* if conflict == 0:
-  state :: object
+* state :: object
   - all_clauses :: [string]
   - clause_sat :: [boolean]
   - decided :: [string]
@@ -20,9 +19,6 @@
   - cut_conflict :: [int or "K"]
   - cut_other :: [int]
   - conflict_label :: string
-* if conflict != 0:
-  reset :: [object]
-  - state :: object
   - pre_prop_state:
     ~ pre_prop_nodes :: {int : string}
     ~ pre_prop_edges :: [[int]]
