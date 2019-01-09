@@ -15,7 +15,7 @@ function updateClauseDatabaseState(clause_list: string[], clause_sat: boolean[])
   clause_list.map(function(clause, index) {
     // check or x mark
     state_string += clause_sat[index] ? "&#10003;" : "&#10007;";
-    state_string += " Clause #" + index.toString() + ": ";
+    state_string += " Clause #" + (index + 1).toString() + ": ";
     state_string += clause + "<br />";
   });
   state_string = state_string.trim();

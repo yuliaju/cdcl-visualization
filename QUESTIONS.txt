@@ -15,9 +15,6 @@ screenshot error
 Julia to do:
 (maybe) make graph database state section look nicer
 refactor ts
-start clause numbering at 1
-
-
 
 
 CHANGES:
