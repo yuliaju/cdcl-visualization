@@ -52,7 +52,7 @@ class Solution:
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
 		
 		(uips, uip) = self.graph.uips(self.recent_decision)
-		(cut_con, cut_other, lits) = self.graph.cut(uip)
+		(cut_con, lits) = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(lits)
 		
 		#add conflict clause to database
@@ -62,8 +62,7 @@ class Solution:
 		# Save data of current state for frontend
 		state_data = self.state_data()
 		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause":
-			str(conflict_clause), "cut_conflict": cut_con,
-			"cut_other": cut_other, "conflict_label": str(conflictnode)}		
+			str(conflict_clause), "cut_conflict": cut_con, "conflict_label": str(conflictnode)}		
 		c_data.update(state_data)
 		return (c_data, reset_level)
 
