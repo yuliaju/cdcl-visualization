@@ -43,6 +43,7 @@ class Solution:
 		return True
 
 	def analyze_conflict(self):
+		print("analyze")
 		c_data = {}
 		#get conflict clause number
 		cl = self.clause_db.is_conflict()
@@ -50,15 +51,15 @@ class Solution:
 		conflictnode = self.graph.addNode(Graph.Node(Literal(-1, True), self.level, self.clause_db.getClause(cl), cl, True))
 		#update edges
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
+
+		print(self.graph)
 		
-		(uips, uip) = self.graph.uips(self.recent_decision)
+		(uips, uip) = self.graph.uips(self.level)
 		(cut_con, lits) = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(lits)
 		
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
-		print("here")
-		print(conflict_clause)
 		reset_level = self.graph.backtrack_level(conflict_clause)
 
 		# Save data of current state for frontend
@@ -137,8 +138,10 @@ class Solution:
 		data["conflict_info"] = []
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
+			print("propogate")
 			#compute conflict data and save for frontend
 			(c_data, reset_level) = self.analyze_conflict()
+			print(c_data)
 			#clause db is unsat
 			if reset_level < 0:
 				self.finished = True
