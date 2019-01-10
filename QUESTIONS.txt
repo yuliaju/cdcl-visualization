@@ -5,35 +5,23 @@ add helpful error messages about incorrect input
 allow users to add unconsecutive p numbers
 propogation button
 hide input box when start alg. Include button to "regenerate database"
-sally optimize reset and backtrack_level
+sally optimize uips, rec_path and path_to_set
+
+TESTING TO DOS
+what happens when...
+	immediate propogation of db
+	aftermath of 2 simultaneous conflicts
+	resetting db
+
 
 
 Sally to do:
 test!!!
 check uip alg
-screenshot error
 
 Julia to do:
 (maybe) make graph database state section look nicer
 refactor ts
-
-
-CHANGES:
-conflict is now false or an int value = how many simultaneous conflicts
-if conflict is not false, still have conflict_info and reset, but reset does not include propogation
-the new_nodes and decided lists involved in the conflict are now located in conflict_info. new_nodes and decided in data refer to the state of the graph after the conflict is resolved
-conflict_info also contains all_clauses and clause_sat
-
-
-
-***When a conflict leads directly to another conflict:
-	conflict = int ()
-	conflict_info1
-	reset1
-	propogation1
-	conflict_info2
-	reset2
-	new_nodes, finished, level, etc (which is the state after the second propogation)
 
 
 

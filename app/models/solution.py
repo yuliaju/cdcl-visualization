@@ -9,6 +9,7 @@ class Solution:
 	def __init__(self, original_clause_db):
 		self.graph = Graph()
 		self.new_nodes = {}
+		self.recent_decision = None
 		self.finished = False
 		self.satisfied = False
 		self.conflict = 0
@@ -31,9 +32,9 @@ class Solution:
 					if len(c.nonExcludedLiterals()) == 1:
 						l = c.nonExcludedLiterals()[0].literal
 						self.clause_db.decide_clauses(l)
-						self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
+						new_node = self.graph.decide_graph(self.level, l, i, self.clause_db.getClause(i))
 						self.graph.decided.append(l)
-						self.new_nodes[l.index] = str(self.graph.getNode(l))
+						self.new_nodes[l.index] = str(new_node)
 						new_decide = True
 						#is there a conflict?
 						if self.clause_db.is_conflict() is not False:
@@ -50,9 +51,9 @@ class Solution:
 		#update edges
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
 		
-		(uips, uip) = self.graph.uips(self.level)
-		(cut_con, cut_other) = self.graph.cut(uip)
-		conflict_clause = Clause().addLiterals(self.graph.conflict_clause(cut_con))
+		(uips, uip) = self.graph.uips(self.recent_decision)
+		(cut_con, cut_other, lits) = self.graph.cut(uip)
+		conflict_clause = Clause().addLiterals(lits)
 		
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
@@ -61,10 +62,10 @@ class Solution:
 		# Save data of current state for frontend
 		state_data = self.state_data()
 		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause":
-			str(conflict_clause), "cut_conflict": [c.literal.index for c in cut_con],
-			"cut_other": [c.literal.index for c in cut_other], "conflict_label": str(conflictnode)}		
+			str(conflict_clause), "cut_conflict": cut_con,
+			"cut_other": cut_other, "conflict_label": str(conflictnode)}		
 		c_data.update(state_data)
-		return (c_data, reset_level, conflictnode)
+		return (c_data, reset_level)
 
 
 	#main data for frontend
@@ -76,8 +77,8 @@ class Solution:
 		return self.state_data(data)
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, data={}):
-		s_data = {}
+	def state_data(self, s_data={}):
+		# s_data = {}
 		s_data["new_nodes"] = copy.copy(self.new_nodes)
 		s_data["level"] = copy.copy(self.level)
 		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
@@ -85,8 +86,8 @@ class Solution:
 		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		self.new_nodes = {}
-		data["state"] = s_data
-		return data
+		# data["state"] = s_data
+		return s_data
 
 	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propogated
 	def pre_prop(self, data = {}):
@@ -128,15 +129,15 @@ class Solution:
 		l = Literal(num, sign)
 		self.graph.decided.append(l)
 		self.clause_db.decide_clauses(l)
-		self.graph.decide_graph(self.level, l)
-		# self.new_nodes = {}
-		self.new_nodes[num] = str(self.graph.getNode(l))
+		node = self.graph.decide_graph(self.level, l)
+		self.recent_decision = node
+		self.new_nodes[num] = str(node)
 
 		data["conflict_info"] = []
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
 			#compute conflict data and save for frontend
-			(c_data, reset_level, conflictnode) = self.analyze_conflict()
+			(c_data, reset_level) = self.analyze_conflict()
 			#clause db is unsat
 			if reset_level < 0:
 				self.finished = True
@@ -145,14 +146,13 @@ class Solution:
 			#reset graph and db
 			else:
 				self.level = reset_level
+				self.recent_decision = None
 				self.graph.reset(self.level)
 				self.clause_db = copy.deepcopy(self.original_clause_db)
-				# self.new_nodes = {}
 				for l in self.graph.decided:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
 				#save the state of graph pre propogation
 				data["conflict_info"].append(self.pre_prop(c_data))
-				# self.new_nodes = {}
 
 		return self.run_alg(data)

@@ -23,7 +23,6 @@ class Graph:
 	def __init__(self):
 		self.size = 0
 		self.edges = {}
-		# literals
 		self.decided = []
 
 	def __str__(self):
@@ -79,7 +78,7 @@ class Graph:
 		#add edges
 		if clause is not None:
 			self.new_edges(newnode, clause, l)
-		return str(newnode)
+		return newnode
 
 	# return a dictionary of edges for frontend. key: node indices, value: list of indices of connected nodes
 	def new_edges_front(self, new_nodes):
@@ -170,12 +169,13 @@ class Graph:
 		else:
 			return self.rec_path(new_paths)
 
-	#get node of most recent decision
-	def recentDecision(self, level):
-		for i in self.edges:
-			if i.level == level and i.clause is None:
-				return i
-		raise Exception("Problem! No recent decision")
+	def path_to_set(self, paths):
+		f = []
+		for p in paths:
+			for n in p:
+				if n not in f:
+					f.append(n)
+		return f
 
 	# Find closest node closest to the conflict
 	def closest(self, nodes):
@@ -188,65 +188,64 @@ class Graph:
 		return closest
 
 	#Finds all nodes appearing in all paths to conflict from node, excluding the conflict node. Return (all_uips, closest_uip)
-	def uips(self, level):
-		node = self.recentDecision(level)
+	def uips(self, recentDecision):
+		node = recentDecision
 		paths = self.rec_path([[node]])
-		nodes = self.edges
+		nodes = self.edges.keys()
 		for path in paths:
 			nodes = [x for x in nodes if x in path and x in nodes and x.conflict == False]
 		uip = self.closest(nodes)
 		return (nodes, uip)
 
-	#given the uip, return [conflict_side, other_side]
+	#given the uip, return (conflict_side, other_side, conflict_clause)
 	def cut(self, uip):
 		conflict_side = []
 		other_side = []
+		other_side_nodes = []
+		all_nodes = self.edges.keys()
 		con = self.rec_path([[uip]])
-		for path in con:
-			for node in path:
-				if node not in conflict_side and node is not uip:
-					conflict_side.append(node)
-		for node in self.edges:
-			if node not in conflict_side:
-				other_side.append(node)
-		return [conflict_side, other_side]
-
-	def conflict_clause(self, conflict_cut):
+		con_set = self.path_to_set(con)
+		for r in all_nodes:
+			if r not in con_set or r is uip:
+				other_side.append(r.literal.index)
+				other_side_nodes.append(r)
+			else:
+				conflict_side.append(r.literal.index)
+				
 		clause = []
-		indices = []
-		for node in self.edges:
-			for adj in self.edges[node]:
-				if adj in conflict_cut and node not in conflict_cut and node.literal.index not in indices:
-					l = copy.deepcopy(node.literal)
-					if l.sign:
-						l.sign = False
-					else:
-						l.sign = True
+		for n in other_side_nodes:
+			for adj in self.edges[n]:
+				if adj.literal.index in conflict_side:
+					l = copy.deepcopy(n.literal)
+					l.sign = not l.sign
 					clause.append(l)
-					indices.append(l.index)
-		return clause
+					break
 
+		return (conflict_side, other_side, clause)
+
+
+	# Compute backtrack level after conflict
 	def backtrack_level(self, conflict_clause):
 		nodes = []
+		# Find all nodes associated with conflict clause
 		for lit in conflict_clause.literals:
 			nodes.append(self.getNode(lit.literal))
+		# If only one node exists, implemenet convention
 		if len(nodes) == 1:
 			if nodes[0].level == 0:
 				return -1
 			else:
 				return 0
-		highest = nodes[0].level
-		if highest < nodes[1].level:
-			highest2 = highest
-			highest = nodes[1].level
-		else:
-			highest2 = nodes[1].level
+
+		# Find second highest level in list of nodes
+		highest = max(nodes[0].level, nodes[1].level)
+		highest2 = min(nodes[0].level, nodes[1].level)		
 		for i in range(2,len(nodes)):
 			node = nodes[i]
 			if node.level >= highest:
 				highest = node.level
 				highest2 = highest 
-			elif node.level >= highest2:
+			elif node.level > highest2:
 				highest2 = node.level
 
 		return highest2
