@@ -61,3 +61,7 @@ p1 or ~p2 or ~p3
 p1 or ~p2 or p3
 p1 or p2 or ~p3
 p1 or p2 or p3
+
+~p1
+~p2
+p1 or p2

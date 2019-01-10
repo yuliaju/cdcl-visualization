@@ -9,9 +9,7 @@ sally optimize uips, rec_path and path_to_set
 
 TESTING TO DOS
 what happens when...
-	immediate propogation of db
-	aftermath of 2 simultaneous conflicts
-	resetting db
+	aftermath of 2 simultaneous conflicts - I think this works now!
 
 
 
@@ -22,7 +20,8 @@ check uip alg
 Julia to do:
 (maybe) make graph database state section look nicer
 refactor ts
-
+conflict bar doesn't disappear when regenerating db during other conflict
+maybe don't hide graph when solution is unsat?
 
 
 ***FIRST check for conflict and display

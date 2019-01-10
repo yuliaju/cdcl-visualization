@@ -147,7 +147,7 @@ class Solution:
 			if reset_level < 0:
 				self.finished = True
 				self.satisfied = False
-				data["conflict_info"].append(c_data)
+				data["conflict_info"].append(self.pre_prop(c_data))
 				return self.main_data(data)
 			#reset graph and db
 			else:
