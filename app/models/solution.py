@@ -52,7 +52,7 @@ class Solution:
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
 		
 		(uips, uip) = self.graph.uips(self.recent_decision)
-		(cut_con, cut_other, lits) = self.graph.cut(uip)
+		(cut_con, lits) = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(lits)
 		
 		#add conflict clause to database
@@ -62,8 +62,7 @@ class Solution:
 		# Save data of current state for frontend
 		state_data = self.state_data()
 		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause":
-			str(conflict_clause), "cut_conflict": cut_con,
-			"cut_other": cut_other, "conflict_label": str(conflictnode)}		
+			str(conflict_clause), "cut_conflict": cut_con, "conflict_label": str(conflictnode)}		
 		c_data.update(state_data)
 		return (c_data, reset_level)
 
@@ -77,8 +76,8 @@ class Solution:
 		return self.state_data(data)
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, s_data={}):
-		# s_data = {}
+	def state_data(self, data={}):
+		s_data = {}
 		s_data["new_nodes"] = copy.copy(self.new_nodes)
 		s_data["level"] = copy.copy(self.level)
 		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
@@ -86,7 +85,7 @@ class Solution:
 		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		self.new_nodes = {}
-		# data["state"] = s_data
+		data["state"] = s_data
 		return s_data
 
 	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propogated

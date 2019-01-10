@@ -205,6 +205,8 @@ class Graph:
 		all_nodes = self.edges.keys()
 		con = self.rec_path([[uip]])
 		con_set = self.path_to_set(con)
+
+
 		for r in all_nodes:
 			if r not in con_set or r is uip:
 				other_side.append(r.literal.index)
@@ -221,7 +223,7 @@ class Graph:
 					clause.append(l)
 					break
 
-		return (conflict_side, other_side, clause)
+		return (conflict_side, clause)
 
 
 	# Compute backtrack level after conflict
