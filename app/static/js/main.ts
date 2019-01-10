@@ -79,8 +79,8 @@ function processResponse(response: any) {
 
   if (response.conflict > 0) {
     addNodes({'K': response.conflict_info[0].conflict_label});
-    addNodes(response.conflict_info[0].pre_prop_nodes);
-    addEdges(response.conflict_info[0].pre_prop_edges);
+    addNodes(response.conflict_info[0].pre_prop_state.pre_prop_nodes);
+    addEdges(response.conflict_info[0].pre_prop_state.pre_prop_edges);
     updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
   } else {
     addNodes(response.new_nodes);

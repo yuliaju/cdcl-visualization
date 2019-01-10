@@ -71,7 +71,7 @@ function addConflictClause() {
   // to-do: add button to view propagation as a separate step
   addNodes(conflict_info.new_nodes);
   addEdges(conflict_info.edges);
-  updateClauseDatabaseState(conflict_info.pre_prop_all_clauses, conflict_info.pre_prop_clause_sat);
+  updateClauseDatabaseState(conflict_info.pre_prop_state.pre_prop_all_clauses, conflict_info.pre_prop_state.pre_prop_clause_sat);
 
   s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
   s.refresh();
