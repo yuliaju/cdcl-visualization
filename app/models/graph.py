@@ -231,16 +231,28 @@ class Graph:
 		all_nodes = self.edges.keys()
 		con = self.rec_path([[uip]])
 		conflict_side = self.path_to_set(con)
+		for c in conflict_side:
+			print(c)
+		print()
+
+		conflict_side.remove(uip)
 				
 		clause = []
 		for n in self.edges.keys():
+			print(n)
 			if n not in conflict_side:
+				print(n)
 				for adj in self.edges[n]:
-					if adj.literal.index in conflict_side:
+					print("adj: " + str(adj))
+					if adj in conflict_side:
 						l = copy.deepcopy(n.literal)
 						l.sign = not l.sign
+						print(l)
 						clause.append(l)
 						break 
+		print("clause: ")
+		print(clause)
+		conflict_side = [i.literal.index for i in conflict_side]
 		return (conflict_side, clause)
 
 
@@ -250,6 +262,8 @@ class Graph:
 		# Find all nodes associated with conflict clause
 		for lit in conflict_clause.literals:
 			nodes.append(self.getNode(lit.literal))
+		for n in nodes:
+			print(n)
 		# If only one node exists, implemenet convention
 		if len(nodes) == 1:
 			if nodes[0].level == 0:

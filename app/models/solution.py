@@ -57,6 +57,8 @@ class Solution:
 		
 		#add conflict clause to database
 		self.original_clause_db.addClause(conflict_clause)
+		print("here")
+		print(conflict_clause)
 		reset_level = self.graph.backtrack_level(conflict_clause)
 
 		# Save data of current state for frontend
