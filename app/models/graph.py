@@ -148,6 +148,25 @@ class Graph:
 	def dist_to_conflict(self, node):
 		return self.dist([node], 0)
 
+
+	# def paths(self, node):
+	# 	table = {}
+	# 	wl = [node]
+	# 	visited = []
+
+	# def travel(wl, visited, table):
+	# 	curr = wl.pop()
+	# 	visited.append(curr)
+	# 	if curr.conflict:
+
+	# 	for adj in self.edges[curr]:
+	# 		if adj in visited:
+
+	# 		else:
+	# 			wl.append(curr.append(adj))
+
+
+
 	# Return list of lists of paths from node to conflict
 	def rec_path(self, paths):
 		#for all (possibly incomplete) paths in the array
@@ -200,29 +219,19 @@ class Graph:
 	#given the uip, return (conflict_side, other_side, conflict_clause)
 	def cut(self, uip):
 		conflict_side = []
-		other_side = []
-		other_side_nodes = []
 		all_nodes = self.edges.keys()
 		con = self.rec_path([[uip]])
-		con_set = self.path_to_set(con)
-
-
-		for r in all_nodes:
-			if r not in con_set or r is uip:
-				other_side.append(r.literal.index)
-				other_side_nodes.append(r)
-			else:
-				conflict_side.append(r.literal.index)
+		conflict_side = self.path_to_set(con)
 				
 		clause = []
-		for n in other_side_nodes:
-			for adj in self.edges[n]:
-				if adj.literal.index in conflict_side:
-					l = copy.deepcopy(n.literal)
-					l.sign = not l.sign
-					clause.append(l)
-					break
-
+		for n in self.edges.keys():
+			if n not in conflict_side:
+				for adj in self.edges[n]:
+					if adj.literal.index in conflict_side:
+						l = copy.deepcopy(n.literal)
+						l.sign = not l.sign
+						clause.append(l)
+						break 
 		return (conflict_side, clause)
 
 

@@ -86,7 +86,7 @@ class Solution:
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		self.new_nodes = {}
 		data["state"] = s_data
-		return s_data
+		return data
 
 	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propogated
 	def pre_prop(self, data = {}):
@@ -107,13 +107,16 @@ class Solution:
 			self.satisfied = False
 			return self.main_data()
 		else:
+			print("here1")
 			return self.run_alg()
 
 	# Body of algorithm. While propogated and not satisfied, ask for user decision
 	def run_alg(self, data={}):
+		print("here2")
 		#while all clauses are not satisfied, send frontend current state and ask for user decision
 		while not self.clause_db.is_satisfied():
 			self.level += 1
+			print("here3")
 			return self.main_data(data)
 		#Satisfiable solution is found. Send frontend solution
 		self.finished = True
