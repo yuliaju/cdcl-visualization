@@ -136,9 +136,6 @@ class Graph:
 
 	#get node of most recent decision
 	def recentDecision(self, level):
-		print("recentD")
-		print(level)
-		print(self)
 		for i in self.edges.keys():
 			if (i.level == level and i.clause is None) or i.level == 0:
 				return i

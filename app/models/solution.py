@@ -105,10 +105,13 @@ class Solution:
 
 	#First run only: Propogate. If conflict reached, db is unsat. Else continue algorithm
 	def start_alg(self):
-		if not self.propogate:
+		if not self.propogate():
 			self.finished = True
 			self.satisfied = False
-			return self.main_data()
+			(c_data, reset_level) = self.analyze_conflict()
+			data = {}
+			data["conflict_info"] = c_data
+			return self.main_data(data)
 		else:
 			return self.run_alg()
 
@@ -146,6 +149,7 @@ class Solution:
 			if reset_level < 0:
 				self.finished = True
 				self.satisfied = False
+				data["conflict_info"] = c_data
 				return self.main_data(data)
 			#reset graph and db
 			else:
