@@ -107,16 +107,13 @@ class Solution:
 			self.satisfied = False
 			return self.main_data()
 		else:
-			print("here1")
 			return self.run_alg()
 
 	# Body of algorithm. While propogated and not satisfied, ask for user decision
 	def run_alg(self, data={}):
-		print("here2")
 		#while all clauses are not satisfied, send frontend current state and ask for user decision
 		while not self.clause_db.is_satisfied():
 			self.level += 1
-			print("here3")
 			return self.main_data(data)
 		#Satisfiable solution is found. Send frontend solution
 		self.finished = True

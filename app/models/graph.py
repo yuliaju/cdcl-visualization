@@ -149,21 +149,30 @@ class Graph:
 		return self.dist([node], 0)
 
 
-	# def paths(self, node):
-	# 	table = {}
-	# 	wl = [node]
-	# 	visited = []
+	def paths(self, node):
+		table = {}
+		wl = [node]
+		visited = []
 
-	# def travel(wl, visited, table):
-	# 	curr = wl.pop()
-	# 	visited.append(curr)
-	# 	if curr.conflict:
+	def travel(wl, visited, table):
+		curr = wl.pop()
+		visited.append(curr)
+		if curr.conflict:
+			pass
+		for adj in self.edges[curr]:
+			if adj in visited:
+				pass
+			else:
+				wl.append(curr.append(adj))
 
-	# 	for adj in self.edges[curr]:
-	# 		if adj in visited:
+	def travel2():
+		if curr[len(curr)-1].conflict():
+			return curr
+		else:
+			currs = []
+			for adj in self.edges[curr]:
+				currs.append(travel2(copy.copy(curr).append(adj)))
 
-	# 		else:
-	# 			wl.append(curr.append(adj))
 
 
 
