@@ -51,8 +51,6 @@ class Solution:
 		conflictnode = self.graph.addNode(Graph.Node(Literal(-1, True), self.level, self.clause_db.getClause(cl), cl, True))
 		#update edges
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
-
-		print(self.graph)
 		
 		(uips, uip) = self.graph.uips(self.level)
 		(cut_con, lits) = self.graph.cut(uip)
@@ -137,6 +135,7 @@ class Solution:
 		node = self.graph.decide_graph(self.level, l)
 		self.recent_decision = node
 		self.new_nodes[num] = str(node)
+		self.conflict = 0
 
 		data["conflict_info"] = []
 		#while propogating creates a conflict, handle the conflict
@@ -144,12 +143,11 @@ class Solution:
 			print("propogate")
 			#compute conflict data and save for frontend
 			(c_data, reset_level) = self.analyze_conflict()
-			print(c_data)
 			#clause db is unsat
 			if reset_level < 0:
 				self.finished = True
 				self.satisfied = False
-				data["conflict_info"] = c_data
+				data["conflict_info"].append(c_data)
 				return self.main_data(data)
 			#reset graph and db
 			else:

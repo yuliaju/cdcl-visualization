@@ -136,8 +136,11 @@ class Graph:
 
 	#get node of most recent decision
 	def recentDecision(self, level):
+		print("recentD")
+		print(level)
 		for i in self.edges.keys():
-			if (i.level == level and i.clause is None) or i.level == 0:
+			if (i.level == level and i.clause is None) or (i.level == 0 and level == 0):
+				print(i)
 				return i
 		raise Exception("Problem! No recent decision")
 
@@ -226,7 +229,6 @@ class Graph:
 	def uips(self, level):
 		print("uips")
 		node = self.recentDecision(level)
-		print(node)
 		paths = self.rec_path([[node]])
 		nodes = self.edges.keys()
 		for path in paths:
