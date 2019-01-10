@@ -23,7 +23,6 @@ var uips;
 var closest_uip;
 var conflict_info;
 var post_conflict_info;
-var out_of_conflict = true;
 // to-do: definitely need to refactor this
 var next_conflict_response = [];
 /*************************************************************/
@@ -68,40 +67,27 @@ function processResponse(response) {
     console.log(response);
     if (response.conflict > 0) {
         addNodes({ 'K': response.conflict_info[0].conflict_label });
-        addNodes(response.conflict_info[0].pre_prop_state.pre_prop_nodes);
-        addEdges(response.conflict_info[0].pre_prop_state.pre_prop_edges);
-        updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
+        addNodes(response.conflict_info[0].state.new_nodes);
+        addEdges(response.conflict_info[0].state.edges);
+        updateClauseDatabaseState(response.conflict_info[0].state.all_clauses, response.conflict_info[0].state.clause_sat);
     }
     else {
         addNodes(response.state.new_nodes);
         addEdges(response.state.edges);
         updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
     }
-    // similarly, these will be undefined in the last response (if it's not a conflict)
     updateLevel(response.state.level);
     updateDropdown(response.available);
     if (response.conflict > 0) {
         hideSelectionSection();
         showConflictUI();
         conflict_info = response.conflict_info[0];
-        if (response.conflict - 1 !== 0) {
-            out_of_conflict = false;
-            // shallow copy
-            next_conflict_response = __assign({}, response);
-            next_conflict_response.conflict = response.conflict - 1;
-            next_conflict_response.conflict_info = response.conflict_info.slice(1);
-        }
-        else {
-            out_of_conflict = true;
-            next_conflict_response = null;
-            if (response.finished) {
-                addNodes(response.state.new_nodes);
-                addEdges(response.state.edges);
-                updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
-            }
-        }
+        // shallow copy
+        next_conflict_response = __assign({}, response);
+        next_conflict_response.conflict = response.conflict - 1;
+        next_conflict_response.conflict_info = response.conflict_info.slice(1);
     }
-    if (response.finished && out_of_conflict) {
+    if (response.finished && response.conflict == 0) {
         hideSelectionSection();
         showFinishedSection(response.satisfied, response.decided);
     }

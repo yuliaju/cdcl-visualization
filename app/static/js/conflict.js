@@ -55,8 +55,8 @@ function addConflictClause() {
     s.graph.clear();
     s.refresh();
     // to-do: add button to view propagation as a separate step
-    addNodes(conflict_info.new_nodes);
-    addEdges(conflict_info.edges);
+    addNodes(conflict_info.pre_prop_state.pre_prop_nodes);
+    addEdges(conflict_info.pre_prop_state.pre_prop_edges);
     updateClauseDatabaseState(conflict_info.pre_prop_state.pre_prop_all_clauses, conflict_info.pre_prop_state.pre_prop_clause_sat);
     s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
     s.refresh();
@@ -64,12 +64,11 @@ function addConflictClause() {
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";
     hideConflictUI();
-    if (!out_of_conflict) {
-        processResponse(next_conflict_response);
-    }
-    else {
-        showSelectionSection();
-        updateClauseDatabaseState(conflict_info.all_clauses, conflict_info.clause_sat);
-        updateLevel(conflict_info.level);
-    }
+    // if (!out_of_conflict) {
+    processResponse(next_conflict_response);
+    // } else {
+    showSelectionSection();
+    updateClauseDatabaseState(conflict_info.state.all_clauses, conflict_info.state.clause_sat);
+    updateLevel(conflict_info.state.level);
+    // }
 }
