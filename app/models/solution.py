@@ -76,8 +76,8 @@ class Solution:
 		return self.state_data(data)
 
 	#state data for frontend: info about clause db, graph, and level
-	def state_data(self, s_data={}):
-		# s_data = {}
+	def state_data(self, data={}):
+		s_data = {}
 		s_data["new_nodes"] = copy.copy(self.new_nodes)
 		s_data["level"] = copy.copy(self.level)
 		s_data["edges"] = copy.copy(self.graph.new_edges_front(self.new_nodes))
@@ -85,7 +85,7 @@ class Solution:
 		s_data["all_clauses"] = copy.copy(self.clause_db.array_of())
 		s_data["clause_sat"] = copy.copy(self.clause_db.array_sat())
 		self.new_nodes = {}
-		# data["state"] = s_data
+		data["state"] = s_data
 		return s_data
 
 	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propogated
