@@ -51,7 +51,7 @@ function sendClauseLibrary(cl) {
                 showSelectionSection();
                 // Show the state of the clause database in the backend
                 showClauseDatabaseState();
-                updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+                updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
                 // In case there's a propagation already
                 processResponse(response);
             }
@@ -73,12 +73,12 @@ function processResponse(response) {
         updateClauseDatabaseState(response.conflict_info[0].all_clauses, response.conflict_info[0].clause_sat);
     }
     else {
-        addNodes(response.new_nodes);
-        addEdges(response.edges);
-        updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+        addNodes(response.state.new_nodes);
+        addEdges(response.state.edges);
+        updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
     }
     // similarly, these will be undefined in the last response (if it's not a conflict)
-    updateLevel(response.level);
+    updateLevel(response.state.level);
     updateDropdown(response.available);
     if (response.conflict > 0) {
         hideSelectionSection();
@@ -95,9 +95,9 @@ function processResponse(response) {
             out_of_conflict = true;
             next_conflict_response = null;
             if (response.finished) {
-                addNodes(response.new_nodes);
-                addEdges(response.edges);
-                updateClauseDatabaseState(response.all_clauses, response.clause_sat);
+                addNodes(response.state.new_nodes);
+                addEdges(response.state.edges);
+                updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
             }
         }
     }
