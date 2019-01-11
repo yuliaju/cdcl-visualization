@@ -136,11 +136,8 @@ class Graph:
 
 	#get node of most recent decision
 	def recentDecision(self, level):
-		print("recentD")
-		print(level)
 		for i in self.edges.keys():
 			if (i.level == level and i.clause is None) or (i.level == 0 and level == 0):
-				print(i)
 				return i
 		raise Exception("Problem! No recent decision")
 
@@ -227,14 +224,13 @@ class Graph:
 
 	#Finds all nodes appearing in all paths to conflict from node, excluding the conflict node. Return (all_uips, closest_uip)
 	def uips(self, level):
-		print("uips")
 		node = self.recentDecision(level)
 		paths = self.rec_path([[node]])
 		nodes = self.edges.keys()
 		for path in paths:
 			nodes = [x for x in nodes if x in path and x in nodes and x.conflict == False]
 		uip = self.closest(nodes)
-		return (nodes, uip)
+		return (node.literal.index, nodes, uip)
 
 	#given the uip, return (conflict_side, other_side, conflict_clause)
 	def cut(self, uip):
@@ -254,8 +250,14 @@ class Graph:
 						l.sign = not l.sign
 						clause.append(l)
 						break 
-		conflict_side = [i.literal.index for i in conflict_side]
-		return (conflict_side, clause)
+		# Convert conflict_side list to indices
+		con_side = []
+		for i in conflict_side:
+			if i.conflict:
+				con_side.append("K")
+			else:
+				con_side.append(i.literal.index)
+		return (con_side, clause)
 
 
 	# Compute backtrack level after conflict
@@ -267,10 +269,7 @@ class Graph:
 
 		# If only one node exists, implemenet convention
 		if len(nodes) == 1:
-			if nodes[0].level == 0:
-				return -1
-			else:
-				return 0
+			return nodes[0].level -1
 
 		# Find second highest level in list of nodes
 		highest = max(nodes[0].level, nodes[1].level)

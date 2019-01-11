@@ -43,7 +43,6 @@ class Solution:
 		return True
 
 	def analyze_conflict(self):
-		print("analyze")
 		c_data = {}
 		#get conflict clause number
 		cl = self.clause_db.is_conflict()
@@ -52,7 +51,7 @@ class Solution:
 		#update edges
 		self.graph.new_edges(conflictnode, self.clause_db.getClause(cl), None)
 		
-		(uips, uip) = self.graph.uips(self.level)
+		(recent_decision_node, uips, uip) = self.graph.uips(self.level)
 		(cut_con, lits) = self.graph.cut(uip)
 		conflict_clause = Clause().addLiterals(lits)
 		
@@ -63,7 +62,8 @@ class Solution:
 		# Save data of current state for frontend
 		state_data = self.state_data()
 		c_data = { "all_uips": [str(u) for u in uips], "right_uip": str(uip), "conflict_clause":
-			str(conflict_clause), "cut_conflict": cut_con, "conflict_label": str(conflictnode)}		
+			str(conflict_clause), "cut_conflict": cut_con, "conflict_label": str(conflictnode),
+			"recent_decision": recent_decision_node}		
 		c_data.update(state_data)
 		return (c_data, reset_level)
 
@@ -140,7 +140,6 @@ class Solution:
 		data["conflict_info"] = []
 		#while propogating creates a conflict, handle the conflict
 		while not self.propogate():
-			print("propogate")
 			#compute conflict data and save for frontend
 			(c_data, reset_level) = self.analyze_conflict()
 			#clause db is unsat

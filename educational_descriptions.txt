@@ -7,18 +7,33 @@ The CDCL algorithm finds a satisfying solution to a propositional formula in Con
 into the clause database.
 
 
-on_send_db
-First the algorithm will propogate any decisions. For instance, if a unit clause exists, we know the value of that literal.
+propogation --if graph empty first time
+First the algorithm will propogate any decisions. For instance, if a unit clause exists, we know the value of that literal. The database is still not satisfied, so the algorithm needs an arbitrary assignment of a literal.
 
-user_decision
-This literal is added to the graph, and the decision is propogated. Nodes indicate the literal, its level, and (if it is not a decision node)
-the clause in which it was propogated. A propogated node is pointed to by all other nodes in its corresponding clause.
-If it has been propogated but the database is not satisfied, the algorithm asks the user for an arbitrary assignment of a literal.
+pre_user_decision --when asking for user decision
+The database is yet not satisfied, so the algorithm needs an arbitrary assignment of a literal.
 
+post_user_decision --after user decision
+The chosen literal is added to the graph, and the decision is propogated. Nodes indicate the literal, its level, and (if it is not a decision node) the clause in which it was propogated. A propogated node is pointed to by all other nodes in its corresponding clause.
 
-conflict
-When a conflict is reached, ...
-UIP
-CUT
-conflict clause
-propogate
+conflict --on conflict
+Given your arbitrary decisions thus far, a conflict in the database was reached. We now take steps to resolve the conflict
+
+all_uips --on conflict
+To calculate all possible UIPs, the algorithm finds every path from the most recent decision node to the conflict. All nodes that appear on every path are considered possible UIPs
+
+uip - on conflict
+The algorithm chooses the closest UIP to the conflict.
+
+cut --on conflict
+A cut is made on the graph: all nodes reachable from the UIP are place in the conflict cut (see the red nodes above).
+
+conflict_clause --on conflict
+A new conflict clause is calculated: any node pointing into the conflict cut is negated. This clause is added to the database
+
+rewind --on conflict
+After the new clause is added to the database, the algorithm rewinds the graph to the second highest level of all nodes associated
+with the conflict clause. If only one node is associated with the clause, by convention the algorithm rewinds to one level earlier.
+
+propogate --on conflict
+After the algorithm rewinds to the appropriate level, it propogates (if possible).
