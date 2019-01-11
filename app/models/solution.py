@@ -18,8 +18,8 @@ class Solution:
 		self.clause_db = copy.deepcopy(original_clause_db)
 
 
-	#Propogate: Decide any singular clauses. Return false if conflict
-	def propogate(self):
+	#Propagate: Decide any singular clauses. Return false if conflict
+	def propagate(self):
 		new_decide = True
 		#if new_decide, graph might have unit clause
 		while new_decide:
@@ -89,7 +89,7 @@ class Solution:
 		data["state"] = s_data
 		return data
 
-	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propogated
+	#Data for frontend: the state once the algorithm has rewinded after a conflict but before it has propagated
 	def pre_prop(self, data = {}):
 		p_data = {}
 		p_data["pre_prop_nodes"] = copy.copy(self.new_nodes)
@@ -101,22 +101,32 @@ class Solution:
 		return data
 
 
-	#First run only: Propogate. If conflict reached, db is unsat. Else continue algorithm
+	#First run only: Propagate. If conflict reached, db is unsat. Else continue algorithm
 	def start_alg(self):
-		if not self.propogate():
+		data = {}
+		if not self.propagate():
 			self.finished = True
 			self.satisfied = False
-			(c_data, reset_level) = self.analyze_conflict()
-			data = {}
+			(c_data, reset_level) = self.analyze_conflict()			
 			data["conflict_info"] = c_data
 			return self.main_data(data)
 		else:
-			return self.run_alg()
+			if self.graph.size > 0:
+				data["explanation"] = "propagation"
+			else:
+				data["explanation"] = "pre_user_decision"
+			return self.run_alg(data, True)
 
-	# Body of algorithm. While propogated and not satisfied, ask for user decision
-	def run_alg(self, data={}):
+	# Body of algorithm. While propagated and not satisfied, ask for user decision
+	def run_alg(self, data={}, exp=False):
 		#while all clauses are not satisfied, send frontend current state and ask for user decision
 		while not self.clause_db.is_satisfied():
+			if not exp:
+				if self.conflict == 0 and self.finished == 0:
+					exp = "btwn_user_decisions"
+				elif self.conflict > 0:
+					exp = "conflict"
+				data["explanation"] = exp
 			self.level += 1
 			return self.main_data(data)
 		#Satisfiable solution is found. Send frontend solution
@@ -138,8 +148,8 @@ class Solution:
 		self.conflict = 0
 
 		data["conflict_info"] = []
-		#while propogating creates a conflict, handle the conflict
-		while not self.propogate():
+		#while propagating creates a conflict, handle the conflict
+		while not self.propagate():
 			#compute conflict data and save for frontend
 			(c_data, reset_level) = self.analyze_conflict()
 			#clause db is unsat
@@ -157,7 +167,7 @@ class Solution:
 				for l in self.graph.decided:
 					self.clause_db.decide_clauses(l)
 					self.new_nodes[l.index] = str(self.graph.getNode(l))
-				#save the state of graph pre propogation
+				#save the state of graph pre propagation
 				data["conflict_info"].append(self.pre_prop(c_data))
 
 		return self.run_alg(data)

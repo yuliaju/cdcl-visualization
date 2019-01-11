@@ -155,7 +155,6 @@ class Graph:
 	def dist_to_conflict(self, node):
 		return self.dist([node], 0)
 
-
 	def paths(self, node):
 		table = {}
 		wl = [node]
@@ -179,8 +178,6 @@ class Graph:
 			currs = []
 			for adj in self.edges[curr]:
 				currs.append(travel2(copy.copy(curr).append(adj)))
-
-
 
 
 	# Return list of lists of paths from node to conflict
