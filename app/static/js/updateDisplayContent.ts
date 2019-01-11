@@ -1,3 +1,11 @@
+let explanations = {
+                      on_load: "The CDCL algorithm finds a satisfying solution to a propositional formula in Conjunctive Normal Form (CNF) if one exists. First enter clauses into the clause database."
+                      , on_send_db: "First the algorithm will propagate any decisions. For instance, if a unit clause exists, we know the value of that literal."
+                      , user_decision: "This literal is added to the graph, and the decision is propagated. Nodes indicate the literal, its level, and (if it is not a decision node) the clause from which it was propagated. A propagated node is pointed to by all other nodes in its corresponding clause. If a decision has been propagated but the database is not yet satisfied, the algorithm asks the user for an arbitrary assignment of a literal."
+                      , conflict: "When a conflict is reached, ... UIP, CUT, conflict clause, propagate"
+                   };
+
+
 function updateButtons() {
   let varButton = document.getElementById("decideVar") as HTMLElement;
   let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
@@ -59,4 +67,10 @@ function updateSelectedVar() {
   selected_var = selectedValue;
 
   updateButtons();
+}
+
+function updateEducationalExplanation(step: string) {
+  console.log('here');
+  var explanation = document.getElementById("explanation") as HTMLElement;
+  explanation.innerHTML = explanations[step];
 }
