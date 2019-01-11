@@ -1,15 +1,8 @@
 IF TIME
 let user load sample clause databases
-add helpful educational tidbits
 add helpful error messages about incorrect input
-allow users to add unconsecutive p numbers
 propogation button
-hide input box when start alg. Include button to "regenerate database"
-sally optimize uips, rec_path and path_to_set
-
-TESTING TO DOS
-what happens when...
-	aftermath of 2 simultaneous conflicts - I think this works now!
+sally optimize rec_path
 
 
 
