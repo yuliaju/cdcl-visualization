@@ -15,11 +15,10 @@ Julia to do:
 -refactor ts
 -conflict bar doesn't disappear when regenerating db during other conflict
 -maybe don't hide graph when solution is unsat?
--Yellow arrow colors identifying the cut are a bit off: The highlight edges coming out of ALL uips. We 
-want all paths coming out of the correct UIP only (in out examples: 4->2, 2->3, 3->K, 4->K)
 -Would it be hard to color the recent decision point if I sent it to you? Not a huge deal but may help 
-explain how to choose a UIP. I included it in conflict_info in case its easy to do, but if its not then
+explain how to choose a UIP. I included it in conflict_info ("recent_decision") in case its easy to do, but if its not then
 ignore this!!
+-exps are implemented on my end - sent as "exp" but only when finished = False!!!
 
 
 ***FIRST check for conflict and display
