@@ -155,31 +155,6 @@ class Graph:
 	def dist_to_conflict(self, node):
 		return self.dist([node], 0)
 
-	def paths(self, node):
-		table = {}
-		wl = [node]
-		visited = []
-
-	def travel(wl, visited, table):
-		curr = wl.pop()
-		visited.append(curr)
-		if curr.conflict:
-			pass
-		for adj in self.edges[curr]:
-			if adj in visited:
-				pass
-			else:
-				wl.append(curr.append(adj))
-
-	def travel2():
-		if curr[len(curr)-1].conflict():
-			return curr
-		else:
-			currs = []
-			for adj in self.edges[curr]:
-				currs.append(travel2(copy.copy(curr).append(adj)))
-
-
 	# Return list of lists of paths from node to conflict
 	def rec_path(self, paths):
 		#for all (possibly incomplete) paths in the array
