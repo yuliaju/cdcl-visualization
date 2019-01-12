@@ -107,8 +107,9 @@ class Solution:
 		if not self.propagate():
 			self.finished = True
 			self.satisfied = False
-			(c_data, reset_level) = self.analyze_conflict()			
-			data["conflict_info"] = c_data
+			(c_data, reset_level) = self.analyze_conflict()		
+			data["conflict_info"] = []
+			data["conflict_info"].append(c_data)
 			return self.main_data(data)
 		else:
 			if self.graph.size > 0:
@@ -127,7 +128,6 @@ class Solution:
 				elif self.conflict > 0:
 					exp = "conflict"
 				data["explanation"] = exp
-			self.level += 1
 			return self.main_data(data)
 		#Satisfiable solution is found. Send frontend solution
 		self.finished = True
@@ -139,6 +139,7 @@ class Solution:
 	#Upon receiving user input, continue algorithm
 	def new_input(self, num, sign):
 		data = {}
+		self.level += 1
 		l = Literal(num, sign)
 		self.graph.decided.append(l)
 		self.clause_db.decide_clauses(l)
