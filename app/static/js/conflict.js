@@ -4,6 +4,9 @@ function getUIPs() {
         if (conflict_info.all_uips.indexOf(node.label) > -1) {
             node.color = 'red';
         }
+        // else if (conflict_info.recent_decision == node.id) {
+        //   node.color = '#FFB700';
+        // }
     });
     // recolor all the edges to be blue again
     s.graph.edges().forEach(function (edge) { return edge.color = '#357EDD'; });
@@ -41,7 +44,7 @@ function showCut() {
     });
     // recolor all the edges to be blue again
     s.graph.edges().forEach(function (edge) { return edge.color = '#357EDD'; });
-    // Recolor all the edges going into the cut as green
+    // Recolor all the edges going into the cut as yellow
     s.graph.edges().forEach(function (edge) {
         if (cut_conflict.indexOf(edge.target) > -1 && cut_conflict.indexOf(edge.source) <= -1) {
             edge.color = '#FFB700';
@@ -64,10 +67,19 @@ function addConflictClause() {
     s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
     s.refresh();
     s.render();
+    updateEducationalExplanation("conflict_clause");
+    // need to do this manually
+    updateLevel(next_conflict_response.state.level);
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";
+    var nextButton = document.getElementById("conflict_propagate");
+    nextButton.style.display = "inline-flex";
+}
+function propagatePostConflict() {
     hideConflictUI();
-    processResponse(next_conflict_response);
+    var thisButton = document.getElementById("conflict_propagate");
+    thisButton.style.display = "none";
     showSelectionSection();
-    updateEducationalExplanation("conflict_clause");
+    processResponse(next_conflict_response);
+    updateEducationalExplanation("propagate");
 }
