@@ -107,8 +107,9 @@ class Solution:
 		if not self.propagate():
 			self.finished = True
 			self.satisfied = False
-			(c_data, reset_level) = self.analyze_conflict()			
-			data["conflict_info"] = c_data
+			(c_data, reset_level) = self.analyze_conflict()		
+			data["conflict_info"] = []
+			data["conflict_info"].append(c_data)
 			return self.main_data(data)
 		else:
 			if self.graph.size > 0:
