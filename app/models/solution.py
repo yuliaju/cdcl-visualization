@@ -128,7 +128,6 @@ class Solution:
 				elif self.conflict > 0:
 					exp = "conflict"
 				data["explanation"] = exp
-			self.level += 1
 			return self.main_data(data)
 		#Satisfiable solution is found. Send frontend solution
 		self.finished = True
@@ -140,6 +139,7 @@ class Solution:
 	#Upon receiving user input, continue algorithm
 	def new_input(self, num, sign):
 		data = {}
+		self.level += 1
 		l = Literal(num, sign)
 		self.graph.decided.append(l)
 		self.clause_db.decide_clauses(l)
