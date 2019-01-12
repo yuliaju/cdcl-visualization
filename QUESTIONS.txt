@@ -7,19 +7,13 @@ sally optimize rec_path
 Sally to do:
 -test!!!
 -check uip alg
+- always send conflict_info as an array (cf. the ~p1, ~p2, p1 or p2 example)
 
 Julia to do:
--(maybe) make graph database state section look nicer
-- propagation button
 -maybe don't hide graph when solution is unsat?
 -Would it be hard to color the recent decision point if I sent it to you? Not a huge deal but may help
 explain how to choose a UIP. I included it in conflict_info ("recent_decision") in case its easy to do, but if its not then
 ignore this!!
--exps are implemented on my end - sent as "exp" but only when finished = False!!!
-  - need to add rewind and propagate
-  - I combined rewind with conflict clause, so you only need to add propogate. If you want, we can combine that too!
-- update explanations to account for showing them after
-
 
 ***FIRST check for conflict and display
 ***THEN check for finished - b/c if finished is true and conflict is true, must display conflict first
