@@ -106,7 +106,7 @@ function processResponse(response: any) {
 
   if (response.finished && response.conflict == 0) {
     hideSelectionSection();
-    showFinishedSection(response.satisfied, response.decided);
+    showFinishedSection(response.satisfied, response.state.decided);
   }
 }
 
