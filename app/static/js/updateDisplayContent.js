@@ -58,7 +58,6 @@ function updateSelectedVar() {
     updateButtons();
 }
 function updateEducationalExplanation(step) {
-    console.log('here');
     var explanation = document.getElementById("explanation");
     explanation.innerHTML = explanations[step];
 }

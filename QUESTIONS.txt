@@ -7,7 +7,6 @@ sally optimize rec_path
 Sally to do:
 -test!!!
 -check uip alg
-- resend decided
 - always send conflict_info as an array (cf. the ~p1, ~p2, p1 or p2 example)
 
 Julia to do:

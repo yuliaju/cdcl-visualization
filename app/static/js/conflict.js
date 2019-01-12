@@ -69,7 +69,5 @@ function addConflictClause() {
     hideConflictUI();
     processResponse(next_conflict_response);
     showSelectionSection();
-    updateClauseDatabaseState(conflict_info.state.all_clauses, conflict_info.state.clause_sat);
-    updateLevel(conflict_info.state.level);
     updateEducationalExplanation("conflict_clause");
 }

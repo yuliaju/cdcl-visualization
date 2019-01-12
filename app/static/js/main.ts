@@ -82,13 +82,14 @@ function processResponse(response: any) {
     addNodes(response.conflict_info[0].state.new_nodes);
     addEdges(response.conflict_info[0].state.edges);
     updateClauseDatabaseState(response.conflict_info[0].state.all_clauses, response.conflict_info[0].state.clause_sat);
+    updateLevel(response.conflict_info[0].state.level);
   } else {
     addNodes(response.state.new_nodes);
     addEdges(response.state.edges);
     updateClauseDatabaseState(response.state.all_clauses, response.state.clause_sat);
+    updateLevel(response.state.level);
   }
 
-  updateLevel(response.state.level);
   updateDropdown(response.available);
   updateEducationalExplanation(response.explanation);
 
