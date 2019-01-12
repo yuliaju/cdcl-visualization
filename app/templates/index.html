@@ -81,7 +81,7 @@
 
         <div class="row flex-row" style="justify-content:space-between; width:100%">
           <div id="parseErrorMsg" class="flex-col" style="display:none">
-            <div class="dark-red f6">There was an error parsing your input. <a class="link underline blue hover-orange" onclick="copyToClipboard()">Click here</a> to copy an example clause database to your clipboard.</div>
+            <div class="dark-red f6">There was an error parsing your input. <a class="link underline blue hover-orange" onclick="insertSampleClauseLibrary()">Click here</a> to copy an example clause database into the text area.</div>
           </div>
           <div class="flex-col" style="width:40px"></div>
           <div class="flex-col" style="align-items: flex-start">
@@ -141,7 +141,8 @@
              minEdgeSize: 3,
              maxEdgeSize: 3,
              minArrowSize: 12,
-             defaultLabelSize: 16
+             defaultLabelSize: 16,
+             adjustSizes:false
            }
          }
        );
@@ -149,17 +150,6 @@
        // to-do: draggable + zoomable graph
        // this zooms out
        s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 1.5 });
-
-       function copyToClipboard() {
-           function handler (event){
-               event.clipboardData.setData('text/plain', '~p1 or ~p2 or ~p4\n~p1 or p2 or ~p3\np3 or ~p4\np4 or p5 or p6\n~p5 or p7\n~p6 or p7 or ~p8');
-               event.preventDefault();
-               document.removeEventListener('copy', handler, true);
-           }
-
-           document.addEventListener('copy', handler, true);
-           document.execCommand('copy');
-       }
     </script>
   </body>
 </html>

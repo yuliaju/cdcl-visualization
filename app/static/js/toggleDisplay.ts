@@ -9,7 +9,6 @@ function showButtons() {
 
 function showClauseDatabaseState() {
   let clauseDatabaseStateSection = document.getElementById("clauseDatabaseStateSection") as HTMLElement;
-
   clauseDatabaseStateSection.style.display = "flex";
 }
 
@@ -19,6 +18,11 @@ function showConflictUI() {
 
   let firstButton = document.getElementById("conflict_getUIPs") as HTMLElement;
   firstButton.style.display = "inline-flex";
+}
+
+function showEducationalExplanation() {
+  let educationalExplanationSection = document.getElementById("educationalExplanationSection") as HTMLElement;
+  educationalExplanationSection.style.display = "flex";
 }
 
 function showFinishedSection(satisfiable: boolean, decided: any) {
@@ -59,6 +63,11 @@ function hideButtons() {
 function hideConflictUI() {
   let conflictSection = document.getElementById("conflictSection") as HTMLElement;
   conflictSection.style.display = "none";
+}
+
+function hideEducationalExplanation() {
+  let educationalExplanationSection = document.getElementById("educationalExplanationSection") as HTMLElement;
+  educationalExplanationSection.style.display = "none";
 }
 
 function hideFinishedSection() {

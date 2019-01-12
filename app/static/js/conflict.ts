@@ -4,9 +4,6 @@ function getUIPs() {
     if (conflict_info.all_uips.indexOf(node.label) > -1) {
       node.color = 'red';
     }
-    // else if (conflict_info.recent_decision == node.id) {
-    //   node.color = '#FFB700';
-    // }
   });
 
   // recolor all the edges to be blue again
@@ -28,6 +25,7 @@ function getClosestUIP() {
     if (conflict_info.right_uip !== node.label) {
       node.color = '#357EDD'
     }
+    node.size = 1;
   });
 
   s.render()

@@ -3,10 +3,12 @@ function getUIPs() {
     s.graph.nodes().forEach(function (node) {
         if (conflict_info.all_uips.indexOf(node.label) > -1) {
             node.color = 'red';
+            node.size = 10;
         }
-        // else if (conflict_info.recent_decision == node.id) {
-        //   node.color = '#FFB700';
-        // }
+        if (conflict_info.recent_decision.toString() == node.id) {
+            node.size *= 3;
+            console.log("here");
+        }
     });
     // recolor all the edges to be blue again
     s.graph.edges().forEach(function (edge) { return edge.color = '#357EDD'; });
@@ -23,6 +25,7 @@ function getClosestUIP() {
         if (conflict_info.right_uip !== node.label) {
             node.color = '#357EDD';
         }
+        node.size = 1;
     });
     s.render();
     var thisButton = document.getElementById("conflict_getUIP");

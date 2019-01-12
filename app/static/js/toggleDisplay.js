@@ -15,6 +15,10 @@ function showConflictUI() {
     var firstButton = document.getElementById("conflict_getUIPs");
     firstButton.style.display = "inline-flex";
 }
+function showEducationalExplanation() {
+    var educationalExplanationSection = document.getElementById("educationalExplanationSection");
+    educationalExplanationSection.style.display = "flex";
+}
 function showFinishedSection(satisfiable, decided) {
     var finishedSection = document.getElementById("finishedSection");
     finishedSection.style.display = "flex";
@@ -45,6 +49,10 @@ function hideButtons() {
 function hideConflictUI() {
     var conflictSection = document.getElementById("conflictSection");
     conflictSection.style.display = "none";
+}
+function hideEducationalExplanation() {
+    var educationalExplanationSection = document.getElementById("educationalExplanationSection");
+    educationalExplanationSection.style.display = "none";
 }
 function hideFinishedSection() {
     var finishedSection = document.getElementById("finishedSection");

@@ -7,11 +7,17 @@ let explanations = {
                       ,conflict: "Given your arbitrary decisions thus far, a conflict in the database was reached. We now take steps to resolve the conflict."
                       ,all_uips: "To calculate all possible UIPs, the algorithm finds every path from the most recent decision node to the conflict. All nodes that appear on every path are considered possible UIPs (see red nodes above)."
                       ,uip: "The algorithm chooses the closest UIP to the conflict."
-                      ,cut: "A cut is made on the graph: all nodes reachable from the UIP are place in the conflict cut (see the red nodes above). \n\n A new conflict clause is calculated: any node pointing into the conflict cut (the yellow arrows above) is negated to create the clause."
+                      ,cut: "A cut is made on the graph: all nodes reachable from the UIP are place in the conflict cut (see the red nodes above).\n\nA new conflict clause is calculated: any node pointing into the conflict cut (the yellow arrows above) is negated to create the clause."
                       ,conflict_clause: " The clause is then added to the database. After the new clause is added to the database, the algorithm rewinds the graph to the second highest level of all nodes associated with the conflict clause. If only one node is associated with the clause, by convention the algorithm rewinds to one level earlier."
                       ,propagate: "After the algorithm rewinds to the appropriate level, it propagates (if possible)."
+                      ,finished: "The CDCL algorithm has finished. You can enter another clause database to run it again!"
                    };
 
+
+function insertSampleClauseLibrary() {
+  let clauseLibrary = document.getElementById("clauseLibrary") as HTMLTextAreaElement;
+  clauseLibrary.value = "~p1 or ~p2 or ~p4\n~p1 or p2 or ~p3\np3 or ~p4\np4 or p5 or p6\n~p5 or p7\n~p6 or p7 or ~p8";
+}
 
 function updateButtons() {
   let varButton = document.getElementById("decideVar") as HTMLElement;
