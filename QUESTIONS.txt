@@ -1,9 +1,7 @@
 IF TIME
 let user load sample clause databases
 add helpful error messages about incorrect input
-propogation button
 sally optimize rec_path
-
 
 
 Sally to do:
@@ -12,13 +10,14 @@ Sally to do:
 
 Julia to do:
 -(maybe) make graph database state section look nicer
--refactor ts
--conflict bar doesn't disappear when regenerating db during other conflict
+- propagation button
 -maybe don't hide graph when solution is unsat?
--Would it be hard to color the recent decision point if I sent it to you? Not a huge deal but may help 
+-Would it be hard to color the recent decision point if I sent it to you? Not a huge deal but may help
 explain how to choose a UIP. I included it in conflict_info ("recent_decision") in case its easy to do, but if its not then
 ignore this!!
 -exps are implemented on my end - sent as "exp" but only when finished = False!!!
+  - need to add rewind and propagate
+- update explanations to account for showing them after
 
 
 ***FIRST check for conflict and display

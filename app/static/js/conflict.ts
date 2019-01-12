@@ -15,6 +15,8 @@ function getUIPs() {
 
   let nextButton = document.getElementById("conflict_getUIP") as HTMLElement;
   nextButton.style.display = "inline-flex";
+
+  updateEducationalExplanation("all_uips");
 }
 
 function getClosestUIP() {
@@ -32,6 +34,8 @@ function getClosestUIP() {
 
   let nextButton = document.getElementById("conflict_showCut") as HTMLElement;
   nextButton.style.display = "inline-flex";
+
+  updateEducationalExplanation("uip");
 }
 
 function showCut() {
@@ -62,6 +66,8 @@ function showCut() {
 
   let nextButton = document.getElementById("conflict_addConflictClause") as HTMLElement;
   nextButton.style.display = "inline-flex";
+
+  updateEducationalExplanation("cut");
 }
 
 function addConflictClause() {
@@ -82,12 +88,11 @@ function addConflictClause() {
 
   hideConflictUI();
 
-  // if (!out_of_conflict) {
-    processResponse(next_conflict_response);
-  // } else {
-    showSelectionSection();
+  processResponse(next_conflict_response);
+  showSelectionSection();
 
-    updateClauseDatabaseState(conflict_info.state.all_clauses, conflict_info.state.clause_sat);
-    updateLevel(conflict_info.state.level);
-  // }
+  updateClauseDatabaseState(conflict_info.state.all_clauses, conflict_info.state.clause_sat);
+  updateLevel(conflict_info.state.level);
+
+  updateEducationalExplanation("conflict_clause");
 }

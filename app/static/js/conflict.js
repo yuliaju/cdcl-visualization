@@ -12,6 +12,7 @@ function getUIPs() {
     thisButton.style.display = "none";
     var nextButton = document.getElementById("conflict_getUIP");
     nextButton.style.display = "inline-flex";
+    updateEducationalExplanation("all_uips");
 }
 function getClosestUIP() {
     // only the closest uip remains red
@@ -25,6 +26,7 @@ function getClosestUIP() {
     thisButton.style.display = "none";
     var nextButton = document.getElementById("conflict_showCut");
     nextButton.style.display = "inline-flex";
+    updateEducationalExplanation("uip");
 }
 function showCut() {
     var cut_conflict = conflict_info.cut_conflict.map(function (x) { return x.toString(); });
@@ -50,6 +52,7 @@ function showCut() {
     thisButton.style.display = "none";
     var nextButton = document.getElementById("conflict_addConflictClause");
     nextButton.style.display = "inline-flex";
+    updateEducationalExplanation("cut");
 }
 function addConflictClause() {
     s.graph.clear();
@@ -64,11 +67,9 @@ function addConflictClause() {
     var thisButton = document.getElementById("conflict_addConflictClause");
     thisButton.style.display = "none";
     hideConflictUI();
-    // if (!out_of_conflict) {
     processResponse(next_conflict_response);
-    // } else {
     showSelectionSection();
     updateClauseDatabaseState(conflict_info.state.all_clauses, conflict_info.state.clause_sat);
     updateLevel(conflict_info.state.level);
-    // }
+    updateEducationalExplanation("conflict_clause");
 }

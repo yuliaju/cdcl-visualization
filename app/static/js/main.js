@@ -38,6 +38,7 @@ function sendClauseLibrary(cl) {
             s.refresh();
             hideFinishedSection();
             hideSelectionSection();
+            hideConflictUI();
             console.log(response);
             var parseErrorMsg = document.getElementById("parseErrorMsg");
             if (!response.parser) {
@@ -78,6 +79,7 @@ function processResponse(response) {
     }
     updateLevel(response.state.level);
     updateDropdown(response.available);
+    updateEducationalExplanation(response.explanation);
     if (response.conflict > 0) {
         hideSelectionSection();
         showConflictUI();

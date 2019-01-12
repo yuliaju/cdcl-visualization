@@ -8,7 +8,7 @@ let explanations = {
                       ,all_uips: "To calculate all possible UIPs, the algorithm finds every path from the most recent decision node to the conflict. All nodes that appear on every path are considered possible UIPs."
                       ,uip: "The algorithm chooses the closest UIP to the conflict."
                       ,cut: "A cut is made on the graph: all nodes reachable from the UIP are place in the conflict cut (see the red nodes above)."
-                      ,conflict_clause: "A new conflict clause is calculated: any node pointing into the conflict cut (see yellow errors above) is negated to create the clause. The clause is then added to the database"
+                      ,conflict_clause: "A new conflict clause is calculated: any node pointing into the conflict cut (the yellow arrows previously above) is negated to create the clause. The clause is then added to the database"
                       ,rewind: "After the new clause is added to the database, the algorithm rewinds the graph to the second highest level of all nodes associated with the conflict clause. If only one node is associated with the clause, by convention the algorithm rewinds to one level earlier."
                       ,propagate: "After the algorithm rewinds to the appropriate level, it propagates (if possible)."
                    };

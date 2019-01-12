@@ -42,6 +42,7 @@ function sendClauseLibrary(cl: string) {
       s.refresh();
       hideFinishedSection();
       hideSelectionSection();
+      hideConflictUI();
 
       console.log(response);
 
@@ -89,6 +90,7 @@ function processResponse(response: any) {
 
   updateLevel(response.state.level);
   updateDropdown(response.available);
+  updateEducationalExplanation(response.explanation);
 
   if (response.conflict > 0) {
     hideSelectionSection();
