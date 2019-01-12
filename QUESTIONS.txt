@@ -19,6 +19,7 @@ explain how to choose a UIP. I included it in conflict_info ("recent_decision") 
 ignore this!!
 -exps are implemented on my end - sent as "exp" but only when finished = False!!!
   - need to add rewind and propagate
+  - I combined rewind with conflict clause, so you only need to add propogate. If you want, we can combine that too!
 - update explanations to account for showing them after
 
 
