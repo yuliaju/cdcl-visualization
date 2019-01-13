@@ -1,5 +1,4 @@
 IF TIME
-let user load sample clause databases
 add helpful error messages about incorrect input
 sally optimize rec_path
 
