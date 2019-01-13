@@ -110,6 +110,7 @@ class Solution:
 			(c_data, reset_level) = self.analyze_conflict()		
 			data["conflict_info"] = []
 			data["conflict_info"].append(c_data)
+			data["explanation"] = "finished"
 			return self.main_data(data)
 		else:
 			if self.graph.size > 0:
@@ -132,6 +133,7 @@ class Solution:
 		#Satisfiable solution is found. Send frontend solution
 		self.finished = True
 		self.satisfied = True
+		data["explanation"] = "finished"
 		return self.main_data(data)
 
 
@@ -158,6 +160,7 @@ class Solution:
 				self.finished = True
 				self.satisfied = False
 				data["conflict_info"].append(self.pre_prop(c_data))
+				data["explanation"] = "finished"
 				return self.main_data(data)
 			#reset graph and db
 			else:
