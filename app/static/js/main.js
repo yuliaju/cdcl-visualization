@@ -15,12 +15,7 @@ var __assign = (this && this.__assign) || function () {
 /// <reference path="toggleDisplay.ts" />
 /// <reference path="conflict.ts" />
 var s;
-function isNot(maybeNot) {
-    return maybeNot.num !== undefined;
-}
 var selected_var;
-var uips;
-var closest_uip;
 var conflict_info;
 var post_conflict_info;
 // to-do: definitely need to refactor this
@@ -39,7 +34,6 @@ function sendClauseLibrary(cl) {
             hideFinishedSection();
             hideSelectionSection();
             hideConflictUI();
-            console.log(response);
             var parseErrorMsg = document.getElementById("parseErrorMsg");
             if (!response.parser) {
                 // parsing error
@@ -59,13 +53,12 @@ function sendClauseLibrary(cl) {
         error: function (errorMsg) {
             // add better error response
             $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-            console.log(errorMsg);
+            console.log("Error sending clause database to backend. ", errorMsg);
         },
         dataType: "json"
     });
 }
 function processResponse(response) {
-    console.log(response);
     if (response.conflict > 0) {
         addNodes({ 'K': response.conflict_info[0].conflict_label });
         addNodes(response.conflict_info[0].state.new_nodes);
@@ -112,7 +105,7 @@ function sendDecision(decision) {
         error: function (errorMsg) {
             // add better error response
             $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-            console.log(errorMsg);
+            console.log("Error sending decision to backend. ", errorMsg);
         },
         dataType: "json"
     });

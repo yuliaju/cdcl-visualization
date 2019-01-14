@@ -3,11 +3,6 @@ function getUIPs() {
     s.graph.nodes().forEach(function (node) {
         if (conflict_info.all_uips.indexOf(node.label) > -1) {
             node.color = 'red';
-            node.size = 10;
-        }
-        if (conflict_info.recent_decision.toString() == node.id) {
-            node.size *= 3;
-            console.log("here");
         }
     });
     // recolor all the edges to be blue again

@@ -17,7 +17,6 @@ function addNodes(nodes: object) {
     let locInTwoRows: number = i % (sizeOddRows + sizeEvenRows);
 
     // check if it's in the first or the second of the two rows
-
     let inOddRow: boolean = locInTwoRows < sizeOddRows;
 
     let colNumber: number = inOddRow ? locInTwoRows : locInTwoRows - sizeOddRows;

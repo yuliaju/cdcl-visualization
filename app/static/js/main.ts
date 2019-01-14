@@ -5,24 +5,7 @@
 /// <reference path="conflict.ts" />
 let s;
 
-interface Not {
-  num: number;
-}
-
-function isNot(maybeNot: Not | number): maybeNot is Not {
-  return (<Not>maybeNot).num !== undefined;
-}
-
-type variable = number | Not;
-type clause = variable[];
-type clause_library = clause[];
-type label = string;
-type id = number;
-type outgoingEdges = number;
-
 let selected_var: number;
-let uips: string[];
-let closest_uip: string;
 let conflict_info: any;
 let post_conflict_info: any;
 // to-do: definitely need to refactor this
@@ -43,8 +26,6 @@ function sendClauseLibrary(cl: string) {
       hideFinishedSection();
       hideSelectionSection();
       hideConflictUI();
-
-      console.log(response);
 
       let parseErrorMsg = document.getElementById("parseErrorMsg") as HTMLElement;
 
@@ -68,15 +49,13 @@ function sendClauseLibrary(cl: string) {
     error: function(errorMsg) {
       // add better error response
       $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-      console.log(errorMsg);
+      console.log("Error sending clause database to backend. ", errorMsg);
     },
     dataType: "json"
   });
 }
 
 function processResponse(response: any) {
-  console.log(response);
-
   if (response.conflict > 0) {
     addNodes({'K': response.conflict_info[0].conflict_label});
     addNodes(response.conflict_info[0].state.new_nodes);
@@ -129,7 +108,7 @@ function sendDecision(decision: boolean) {
     error: function(errorMsg) {
       // add better error response
       $("#errorMsg").text("{{ _('Error: Could not contact server.') }}");
-      console.log(errorMsg);
+      console.log("Error sending decision to backend. ", errorMsg);
     },
     dataType: "json"
   });

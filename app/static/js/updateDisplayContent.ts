@@ -13,12 +13,6 @@ let explanations = {
                       ,finished: "The CDCL algorithm has finished. You can enter another clause database to run it again!"
                    };
 
-
-function insertSampleClauseLibrary() {
-  let clauseLibrary = document.getElementById("clauseLibrary") as HTMLTextAreaElement;
-  clauseLibrary.value = "~p1 or ~p2 or ~p4\n~p1 or p2 or ~p3\np3 or ~p4\np4 or p5 or p6\n~p5 or p7\n~p6 or p7 or ~p8";
-}
-
 function updateButtons() {
   let varButton = document.getElementById("decideVar") as HTMLElement;
   let notVarButton = document.getElementById("decideNotVar") as HTMLElement;
@@ -67,6 +61,11 @@ function updateDropdown(available_variables: number[]) {
   dropdown.value = '';
 }
 
+function updateEducationalExplanation(step: string) {
+  var explanation = document.getElementById("explanation") as HTMLElement;
+  explanation.innerHTML = explanations[step];
+}
+
 function updateLevel(level: number) {
   var levelDiv = document.getElementById("currentLevel") as HTMLElement;
   levelDiv.style.display = "inline-flex";
@@ -82,7 +81,7 @@ function updateSelectedVar() {
   updateButtons();
 }
 
-function updateEducationalExplanation(step: string) {
-  var explanation = document.getElementById("explanation") as HTMLElement;
-  explanation.innerHTML = explanations[step];
+function updateSampleClauseLibrary() {
+  let clauseLibrary = document.getElementById("clauseLibrary") as HTMLTextAreaElement;
+  clauseLibrary.value = "~p1 or ~p2 or ~p4\n~p1 or p2 or ~p3\np3 or ~p4\np4 or p5 or p6\n~p5 or p7\n~p6 or p7 or ~p8";
 }
