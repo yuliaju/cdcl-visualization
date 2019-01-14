@@ -1,0 +1,29 @@
+* conflict :: int
+* finished :: boolean
+* satisfied :: boolean
+* available :: [int]
+* if finished != True
+  -exp :: str
+* state :: object
+  - all_clauses :: [string]
+  - clause_sat :: [boolean]
+  - decided :: [string]
+  - edges :: [[int]]
+  - level :: int
+  - new_nodes :: {int : string}
+* if conflict != 0:
+  conflict_info :: [object]
+  - state :: object
+    ~ (edges :: [int or "K"])
+  - all_uips :: [string]
+  - right_uip :: string
+  - conflict_clause :: string
+  - cut_conflict :: [int or "K"]
+  - cut_other :: [int]
+  - conflict_label :: string
+  - recent_decision :: int
+  - pre_prop_state:
+    ~ pre_prop_nodes :: {int : string}
+    ~ pre_prop_edges :: [[int]]
+    ~ pre_prop_all_clauses :: [string]
+    ~ pre_prop_clause_sat :: [boolean]
