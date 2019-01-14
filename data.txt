@@ -2,8 +2,7 @@
 * finished :: boolean
 * satisfied :: boolean
 * available :: [int]
-* if finished != True
-  -exp :: str
+* explanation :: string
 * state :: object
   - all_clauses :: [string]
   - clause_sat :: [boolean]
