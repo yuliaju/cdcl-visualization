@@ -1,7 +1,8 @@
-From the project directory
+To run:
 
 ```shell
-$ pip install flask
 $ export FLASK_APP=app/app.py
 $ flask run
 ```
+
+Requires Python3
