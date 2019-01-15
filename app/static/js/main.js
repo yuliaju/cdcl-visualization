@@ -91,6 +91,8 @@ function processResponse(response) {
 // On button click
 function sendDecision(decision) {
     hideButtons();
+    console.log(decision);
+    console.log(selected_var);
     $.ajax({
         type: "POST",
         contentType: "application/json; charset=utf-8",
